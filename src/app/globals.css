@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-stone-50 text-stone-900 antialiased;
+  }
+
+  /* Tipografía de números tabulares: las columnas de importes quedan alineadas */
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@layer components {
+  /* Superficie base de todas las tarjetas del panel */
+  .surface {
+    @apply rounded-xl border border-stone-200 bg-white shadow-card;
+  }
+
+  /* Scrollbar discreta para las tablas con overflow horizontal */
+  .scroll-subtle {
+    scrollbar-width: thin;
+    scrollbar-color: theme('colors.stone.300') transparent;
+  }
+
+  .scroll-subtle::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+  }
+
+  .scroll-subtle::-webkit-scrollbar-thumb {
+    @apply rounded-full bg-stone-300;
+  }
+
+  .scroll-subtle::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
