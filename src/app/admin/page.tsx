@@ -65,6 +65,7 @@ export default async function DashboardPage() {
             value={money(data.today.profit)}
             icon={PiggyBank}
             accent={data.today.profit >= 0 ? 'positive' : 'negative'}
+            hint={`${money(data.today.revenue)} − ${money(data.today.expenses)}`}
           />
           <StatCard
             label="Pedidos pendientes"
@@ -170,6 +171,10 @@ export default async function DashboardPage() {
             <MonthRow label="Pedidos" value={String(data.month.orders_count)} />
             <MonthRow label="Ticket promedio" value={money(data.month.average_ticket)} />
           </dl>
+          <p className="px-5 pb-3 pt-3 text-xs leading-snug text-stone-400">
+            Ganancia estimada = facturación − gastos registrados. El costo de producción se mide
+            aparte, en Estadísticas, para no contarlo dos veces.
+          </p>
           <div className="border-t border-stone-200 px-5 py-3">
             <Link
               href="/admin/estadisticas"

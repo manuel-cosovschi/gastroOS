@@ -118,7 +118,7 @@ export default function StatsPage() {
               change={percentChange(summary.profit, previous.profit)}
               icon={PiggyBank}
               accent={summary.profit >= 0 ? 'positive' : 'negative'}
-              hint={`${summary.margin_pct}% de margen`}
+              hint={`${money(summary.revenue)} − ${money(summary.expenses)} · ${summary.margin_pct}% de margen`}
             />
             <StatCard
               label="Pedidos"
