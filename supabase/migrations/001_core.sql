@@ -129,9 +129,20 @@ CREATE POLICY "members read own business" ON businesses
   FOR SELECT USING (is_business_member(id));
 CREATE POLICY "members update own business" ON businesses
   FOR UPDATE USING (is_business_member(id)) WITH CHECK (is_business_member(id));
--- La tienda pública necesita leer nombre/logo/moneda del negocio
+-- La tienda pública necesita leer nombre, logo, moneda y contacto del negocio.
 CREATE POLICY "public read storefront business" ON businesses
   FOR SELECT USING (storefront_enabled = true);
+
+-- RLS filtra filas, no columnas: sin esto un anónimo que lee el negocio para
+-- pintar la tienda se lleva también `order_seq`, que revela cuántos pedidos
+-- lleva hecho el negocio. Los permisos por columna cierran eso; los miembros
+-- autenticados conservan acceso completo.
+REVOKE SELECT ON businesses FROM anon;
+GRANT SELECT (
+  id, name, slug, industry, logo_url,
+  phone, email, instagram, address,
+  currency, locale, timezone, storefront_enabled
+) ON businesses TO anon;
 
 CREATE POLICY "members read own memberships" ON business_members
   FOR SELECT USING (user_id = auth.uid());

@@ -1,9 +1,9 @@
 import Link from 'next/link';
 import { AtSign, Instagram, MapPin, Phone } from 'lucide-react';
 import { APP_NAME } from '@/lib/constants';
-import type { Business } from '@/types';
+import type { StorefrontBusiness } from '@/types';
 
-export function StorefrontFooter({ business }: { business: Business }) {
+export function StorefrontFooter({ business }: { business: StorefrontBusiness }) {
   const hasContact = business.phone || business.email || business.instagram || business.address;
 
   return (

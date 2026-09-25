@@ -3,10 +3,10 @@
 import { createContext, useContext, useMemo } from 'react';
 import { formatPrice as baseFormatPrice } from '@/lib/utils';
 import { DEFAULT_CURRENCY, DEFAULT_LOCALE } from '@/lib/constants';
-import type { Business } from '@/types';
+import type { StorefrontBusiness } from '@/types';
 
 interface BusinessContextValue {
-  business: Business | null;
+  business: StorefrontBusiness | null;
   /** Formatea con la moneda y el idioma configurados en el negocio. */
   money: (value: number | null | undefined, decimals?: boolean) => string;
   currencySymbol: string;
@@ -28,7 +28,7 @@ export function BusinessProvider({
   business,
   children,
 }: {
-  business: Business | null;
+  business: StorefrontBusiness | null;
   children: React.ReactNode;
 }) {
   const value = useMemo<BusinessContextValue>(() => {

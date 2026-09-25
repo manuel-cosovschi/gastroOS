@@ -130,6 +130,12 @@ export interface Business {
   updated_at: string;
 }
 
+/**
+ * El negocio tal como lo ve la tienda pública: sin las columnas que el rol
+ * anónimo no tiene permiso de leer (ver el GRANT de la migración 001).
+ */
+export type StorefrontBusiness = Omit<Business, 'created_at' | 'updated_at'>;
+
 export interface UpdateBusinessInput {
   name?: string;
   industry?: string | null;

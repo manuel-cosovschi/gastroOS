@@ -4,7 +4,6 @@ import { createServerClient } from '@/lib/supabase/server';
 import { getStorefrontBusiness } from '@/lib/business';
 import { createOrderForBusiness } from '@/actions/orders';
 import type {
-  Business,
   Category,
   CreateOrderInput,
   Order,
@@ -13,6 +12,7 @@ import type {
   Package,
   PackageDetail,
   Product,
+  StorefrontBusiness,
 } from '@/types';
 
 /**
@@ -21,7 +21,7 @@ import type {
  * su tienda.
  */
 
-export async function getStorefront(): Promise<Business | null> {
+export async function getStorefront(): Promise<StorefrontBusiness | null> {
   return getStorefrontBusiness();
 }
 

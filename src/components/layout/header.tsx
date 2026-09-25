@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { CartBadge } from '@/components/cart/cart-badge';
-import type { Business } from '@/types';
+import type { StorefrontBusiness } from '@/types';
 
 const NAV_LINKS = [
   { href: '/catalogo', label: 'Catálogo' },
@@ -9,7 +9,7 @@ const NAV_LINKS = [
   { href: '/pedido/seguimiento', label: 'Seguir mi pedido' },
 ];
 
-export function StorefrontHeader({ business }: { business: Business }) {
+export function StorefrontHeader({ business }: { business: StorefrontBusiness }) {
   return (
     <header className="sticky top-0 z-40 w-full border-b border-stone-200 bg-white/90 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">

@@ -1,6 +1,6 @@
 import { cache } from 'react';
 import { createServerClient } from '@/lib/supabase/server';
-import type { Business } from '@/types';
+import type { Business, StorefrontBusiness } from '@/types';
 
 /**
  * Resolución del negocio activo (tenant).
@@ -63,17 +63,27 @@ export async function requireBusinessId(): Promise<string> {
  * `NEXT_PUBLIC_STOREFRONT_BUSINESS_SLUG` permite fijarlo explícitamente cuando
  * hay más de uno en la misma base.
  */
-export const getStorefrontBusiness = cache(async (): Promise<Business | null> => {
+/**
+ * Columnas que la tienda pública puede leer.
+ *
+ * Tienen que coincidir con el GRANT por columna de la migración 001: el rol
+ * anónimo no tiene permiso sobre la tabla completa (`order_seq` revelaría
+ * cuántos pedidos lleva el negocio), así que un `select('*')` acá falla.
+ */
+const STOREFRONT_BUSINESS_COLUMNS =
+  'id, name, slug, industry, logo_url, phone, email, instagram, address, currency, locale, timezone, storefront_enabled';
+
+export const getStorefrontBusiness = cache(async (): Promise<StorefrontBusiness | null> => {
   const supabase = await createServerClient();
   const slug = process.env.NEXT_PUBLIC_STOREFRONT_BUSINESS_SLUG;
 
   let query = supabase
     .from('businesses')
-    .select('*')
+    .select(STOREFRONT_BUSINESS_COLUMNS)
     .eq('storefront_enabled', true);
 
   if (slug) query = query.eq('slug', slug);
 
-  const { data } = await query.order('created_at').limit(1).maybeSingle();
-  return (data as Business) || null;
+  const { data } = await query.order('slug').limit(1).maybeSingle();
+  return (data as unknown as StorefrontBusiness) || null;
 });
