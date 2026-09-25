@@ -156,6 +156,19 @@ día en que se corre, así que la demo siempre se ve "de hoy".
 
 El dataset se edita en `scripts/demo-data.ts`.
 
+### Sin `service_role` key
+
+`demo:seed` necesita la `service_role` key porque crea el usuario de Auth por
+API. Si no la tenés a mano:
+
+```bash
+npm run demo:sql > demo.sql
+```
+
+y pegá el resultado en el **SQL Editor** del dashboard. Sale del mismo dataset,
+es idempotente (borra y recrea) y hashea la contraseña con bcrypt dentro de
+Postgres, así que nunca viaja en texto plano.
+
 ---
 
 ## Scripts
@@ -170,6 +183,7 @@ El dataset se edita en `scripts/demo-data.ts`.
 | `npm run db:migrate` | Aplica `supabase/migrations/` al proyecto |
 | `npm run demo:seed` | Crea el negocio demo con todos sus datos |
 | `npm run demo:reset` | Borra y recrea los datos de la demo |
+| `npm run demo:sql` | Emite la demo como SQL, para pegar en el SQL Editor |
 
 ---
 

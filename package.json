@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "db:migrate": "tsx scripts/migrate.ts",
     "demo:seed": "tsx scripts/demo.ts seed",
-    "demo:reset": "tsx scripts/demo.ts reset"
+    "demo:reset": "tsx scripts/demo.ts reset",
+    "demo:sql": "tsx scripts/demo-sql.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
