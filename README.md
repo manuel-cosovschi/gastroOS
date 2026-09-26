@@ -69,7 +69,8 @@ npm install
 ### 2. Crear el proyecto de Supabase
 
 Creá un proyecto nuevo en [supabase.com](https://supabase.com/dashboard). Anotá
-de **Project Settings → API**: la URL, la `anon key` y la `service_role key`.
+de **Project Settings → API**: la URL y la `anon key`. La `service_role key`
+sólo hace falta si vas a usar `npm run demo:seed`.
 
 ### 3. Configurar las variables de entorno
 
@@ -83,7 +84,7 @@ Completá `.env.local`:
 |---|---|---|
 | `NEXT_PUBLIC_SUPABASE_URL` | sí | URL del proyecto |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | sí | Clave pública (protegida por RLS) |
-| `SUPABASE_SERVICE_ROLE_KEY` | sí | Clave secreta: subida de imágenes y seed |
+| `SUPABASE_SERVICE_ROLE_KEY` | sólo para `demo:seed` | Clave secreta. La app no la usa: no la cargues en el hosting |
 | `SUPABASE_ACCESS_TOKEN` | no | Token personal, sólo para `npm run db:migrate` |
 | `SUPABASE_PROJECT_REF` | no | Ref del proyecto, sólo para `npm run db:migrate` |
 | `NEXT_PUBLIC_DEMO_MODE` | no | `true` muestra el cartel de demo |
@@ -262,8 +263,10 @@ negocios por usuario alcanza con agregar un selector y pasar el id elegido a
 
 - Ningún secreto vive en el repositorio: todo sale de variables de entorno, y
   `.env*.local` está en `.gitignore`.
-- La `service_role` key sólo se usa del lado del servidor (subida de imágenes y
-  scripts). Nunca llega al navegador.
+- La aplicación no usa la `service_role` key en ningún punto: las subidas de
+  imágenes van con la sesión del usuario, contra las policies del bucket. La
+  clave sólo la necesita `demo:seed` para crear el usuario de Auth, y ni
+  siquiera eso si sembrás con `demo:sql`. El hosting nunca la ve.
 - Todas las tablas tienen RLS activo. El acceso anónimo se limita al catálogo
   activo de un negocio con la tienda habilitada y a crear pedidos; los pedidos
   no son legibles por anónimos (el seguimiento devuelve sólo campos concretos,

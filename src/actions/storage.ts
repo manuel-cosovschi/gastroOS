@@ -1,7 +1,6 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { createAdminClient } from '@/lib/supabase/admin';
 import { createServerClient } from '@/lib/supabase/server';
 import { requireBusinessId } from '@/lib/business';
 import { ACCEPTED_IMAGE_TYPES, MAX_IMAGE_SIZE, MEDIA_BUCKET } from '@/lib/constants';
@@ -9,9 +8,10 @@ import { ACCEPTED_IMAGE_TYPES, MAX_IMAGE_SIZE, MEDIA_BUCKET } from '@/lib/consta
 /**
  * Subida de imágenes al storage de Supabase.
  *
- * Se usa el service role porque las policies de storage no distinguen negocio;
- * la autorización la hace esta capa: sin sesión no se sube nada, y los archivos
- * se guardan bajo un prefijo por negocio para poder limpiarlos después.
+ * Va con la sesión del usuario, no con el service role: las policies del bucket
+ * ya exigen estar autenticado, así que saltear RLS no aportaba nada y obligaba
+ * a tener una clave con permisos totales en el entorno del servidor web.
+ * Los archivos se guardan bajo un prefijo por negocio para poder limpiarlos.
  */
 async function assertAuthenticated(): Promise<boolean> {
   const supabase = await createServerClient();
@@ -38,11 +38,11 @@ export async function uploadImage(
   }
 
   const businessId = await requireBusinessId();
-  const admin = createAdminClient();
+  const supabase = await createServerClient();
   const extension = file.name.split('.').pop()?.toLowerCase() || 'jpg';
   const path = `${businessId}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${extension}`;
 
-  const { error } = await admin.storage
+  const { error } = await supabase.storage
     .from(MEDIA_BUCKET)
     .upload(path, file, { cacheControl: '3600', upsert: false });
 
@@ -53,7 +53,7 @@ export async function uploadImage(
     };
   }
 
-  const { data } = admin.storage.from(MEDIA_BUCKET).getPublicUrl(path);
+  const { data } = supabase.storage.from(MEDIA_BUCKET).getPublicUrl(path);
   return { success: true, url: data.publicUrl };
 }
 
@@ -63,8 +63,8 @@ export async function deleteImage(imageUrl: string): Promise<{ success: boolean;
   const parts = imageUrl.split(`/storage/v1/object/public/${MEDIA_BUCKET}/`);
   if (parts.length < 2) return { success: false, error: 'URL de imagen inválida.' };
 
-  const admin = createAdminClient();
-  const { error } = await admin.storage.from(MEDIA_BUCKET).remove([parts[1]]);
+  const supabase = await createServerClient();
+  const { error } = await supabase.storage.from(MEDIA_BUCKET).remove([parts[1]]);
 
   if (error) return { success: false, error: 'No se pudo eliminar la imagen.' };
   return { success: true };
