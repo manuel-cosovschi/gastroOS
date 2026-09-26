@@ -90,6 +90,9 @@ Completá `.env.local`:
 | `NEXT_PUBLIC_DEMO_MODE` | no | `true` muestra el cartel de demo |
 | `DEMO_EMAIL` / `DEMO_PASSWORD` | para el seed | Usuario demo que crea el seed |
 | `NEXT_PUBLIC_STOREFRONT_BUSINESS_SLUG` | no | Qué negocio publica la tienda |
+| `NEXT_PUBLIC_BOOKING_URL` | no | Link de reserva de la home comercial |
+| `NEXT_PUBLIC_WHATSAPP` | no | WhatsApp de contacto, sin `+` ni espacios |
+| `NEXT_PUBLIC_CONTACT_EMAIL` | no | Mail de contacto |
 
 ### 4. Crear el esquema de la base
 
@@ -172,6 +175,34 @@ Postgres, así que nunca viaja en texto plano.
 
 ---
 
+## Home comercial
+
+La raíz (`/`) es la página de venta: rubros, problema, módulos, recorrido con
+capturas reales, cómo funciona, diferenciales, contacto y preguntas frecuentes.
+Todo el texto vive en `src/lib/marketing.ts`, así que se edita sin tocar
+componentes.
+
+Los botones de contacto salen de variables de entorno y **cada uno se muestra
+sólo si su variable está cargada**: una landing con un botón que no lleva a
+ningún lado es peor que no tener el botón.
+
+| Variable | Botón |
+|---|---|
+| `NEXT_PUBLIC_BOOKING_URL` | «Reservar una demo» |
+| `NEXT_PUBLIC_WHATSAPP` | «WhatsApp» |
+| `NEXT_PUBLIC_CONTACT_EMAIL` | «Escribinos» |
+
+Sin `NEXT_PUBLIC_BOOKING_URL` la página no promete coordinar una reunión: el
+llamado a la acción pasa a ser entrar a la demo y escribir por WhatsApp.
+
+### El link de reserva
+
+Se genera en Google Calendar, no hay API que lo cree: **Crear → Página de
+citas**, se define duración y disponibilidad, y **Compartir** devuelve una URL
+`https://calendar.app.google/…`. Esa URL es la que va en la variable.
+
+---
+
 ## Scripts
 
 | Comando | Qué hace |
@@ -218,7 +249,8 @@ src/
 │   ├── analytics.ts      Motor de métricas compartido
 │   ├── business.ts       Resolución del negocio activo (tenant)
 │   ├── production-cost.ts Costo unitario desde receta u override
-│   └── supabase/         Clientes de Supabase (browser, server, admin)
+│   ├── marketing.ts      Contenido y contactos de la home comercial
+│   └── supabase/         Clientes de Supabase (browser y server)
 └── types/                Tipos y constantes del dominio
 
 scripts/
@@ -281,3 +313,7 @@ negocios por usuario alcanza con agregar un selector y pasar el id elegido a
 Estas piezas no están y la arquitectura no las bloquea: Mercado Pago y pagos
 online, facturación AFIP/ARCA, WhatsApp API, envío automático de emails,
 integraciones de delivery, funciones de IA y planes/suscripciones de SaaS.
+
+---
+
+GastroOS es un producto de **SOVARE**.

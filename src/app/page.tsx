@@ -15,8 +15,10 @@ import {
   REASONS,
   SHOWCASE,
   STEPS,
+  WHATSAPP_URL,
 } from '@/lib/marketing';
 import { Logo } from '@/components/brand/logo';
+import { SovareCredit } from '@/components/brand/sovare';
 import { SiteNav } from '@/components/marketing/site-nav';
 import { BrowserFrame, SectionHeading } from '@/components/marketing/section';
 import {
@@ -385,9 +387,21 @@ export default function LandingPage() {
                 <ul className="mt-3 space-y-2 text-sm">
                   <li>
                     <a href="#contacto" className="text-stone-500 transition-colors hover:text-stone-900">
-                      Reservar una demo
+                      {BOOKING_URL ? 'Reservar una demo' : 'Ver la demo'}
                     </a>
                   </li>
+                  {WHATSAPP_URL && (
+                    <li>
+                      <a
+                        href={WHATSAPP_URL}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-stone-500 transition-colors hover:text-stone-900"
+                      >
+                        WhatsApp
+                      </a>
+                    </li>
+                  )}
                   {CONTACT_EMAIL && (
                     <li>
                       <a
@@ -408,16 +422,19 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div className="mt-10 flex flex-wrap items-center justify-between gap-3 border-t border-stone-200 pt-6">
-            <p className="text-xs text-stone-400">
-              &copy; {new Date().getFullYear()} {APP_NAME}
-            </p>
-            <a
-              href="#"
-              className="inline-flex items-center gap-1 text-xs text-stone-400 transition-colors hover:text-stone-600"
-            >
-              Volver arriba <ArrowRight className="h-3 w-3 -rotate-90" />
-            </a>
+          <div className="mt-10 flex flex-wrap items-center justify-between gap-6 border-t border-stone-200 pt-6">
+            <SovareCredit />
+            <div className="flex flex-wrap items-center gap-4">
+              <p className="text-xs text-stone-400">
+                &copy; {new Date().getFullYear()} {APP_NAME}
+              </p>
+              <a
+                href="#"
+                className="inline-flex items-center gap-1 text-xs text-stone-400 transition-colors hover:text-stone-600"
+              >
+                Volver arriba <ArrowRight className="h-3 w-3 -rotate-90" />
+              </a>
+            </div>
           </div>
         </div>
       </footer>

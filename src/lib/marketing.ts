@@ -21,7 +21,10 @@ import {
 // Contacto
 // ============================================
 
-/** Link de reserva (Cal.com, Calendly, etc.). Sin esto el botón no se muestra. */
+/**
+ * Link de reserva: la página de citas de Google Calendar
+ * (https://calendar.app.google/…). Sin esto el botón no se muestra.
+ */
 export const BOOKING_URL = process.env.NEXT_PUBLIC_BOOKING_URL || '';
 
 /** Teléfono en formato internacional sin + ni espacios, p. ej. 5491155550134. */
