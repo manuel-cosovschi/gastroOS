@@ -28,8 +28,10 @@ import {
   DEMO_PRODUCTS,
 } from './demo-data';
 
-config({ path: '.env.local' });
-config();
+// `quiet`: la salida de este script es SQL puro y se redirige a un archivo,
+// así que dotenv no puede escribir sus avisos en stdout.
+config({ path: '.env.local', quiet: true });
+config({ quiet: true });
 
 const DEMO_EMAIL = process.env.DEMO_EMAIL || 'demo@gastroos.app';
 const DEMO_PASSWORD = process.env.DEMO_PASSWORD;
@@ -88,9 +90,15 @@ write(`DELETE FROM auth.users WHERE email = ${q(DEMO_EMAIL)};`);
 // ============================================
 
 section('Usuario demo');
+// Las columnas de token van en cadena vacía, no en NULL: GoTrue las lee como
+// string no-nullable y con NULL el login falla entero con
+// "Database error querying schema", sin pista de cuál fue la causa.
 write(`INSERT INTO auth.users (
   instance_id, id, aud, role, email, encrypted_password, email_confirmed_at,
-  raw_app_meta_data, raw_user_meta_data, created_at, updated_at
+  raw_app_meta_data, raw_user_meta_data, created_at, updated_at,
+  confirmation_token, recovery_token, email_change_token_new,
+  email_change_token_current, email_change, phone_change,
+  phone_change_token, reauthentication_token
 ) VALUES (
   '00000000-0000-0000-0000-000000000000',
   gen_random_uuid(),
@@ -102,7 +110,8 @@ write(`INSERT INTO auth.users (
   '{"provider":"email","providers":["email"]}'::jsonb,
   '{}'::jsonb,
   now(),
-  now()
+  now(),
+  '', '', '', '', '', '', '', ''
 );`);
 
 // Sin la fila en auth.identities, Supabase no reconoce el login por email.
