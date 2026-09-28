@@ -32,10 +32,10 @@ import { ProfitCalculator } from '@/components/marketing/profit-calculator';
 import { Pricing } from '@/components/marketing/pricing';
 import { FloatingWhatsApp, MobileCtaBar } from '@/components/marketing/floating-contact';
 import {
-  BookDemoButton,
+  BookMeetingButton,
   ContactLinks,
   PrimaryCta,
-  TryDemoButton,
+  TrySystemButton,
 } from '@/components/marketing/cta-buttons';
 
 export const metadata: Metadata = {
@@ -563,16 +563,19 @@ export default function LandingPage() {
                 reserva cargado, no prometemos coordinar una reunión. */}
             <p className="mx-auto mt-4 max-w-xl text-lg leading-relaxed text-stone-600">
               {BOOKING_URL
-                ? 'Reservá 20 minutos y lo recorremos juntos con tus productos y tus números. Si preferís, entrá ahora a la demo y mirala por tu cuenta.'
-                : 'Entrá ahora a la demo y recorrela por tu cuenta, o escribinos y lo vemos juntos con los productos y los números de tu negocio.'}
+                ? 'Dos formas de verlo, y no son la misma: podés entrar solo al sistema ahora mismo, o que te lo mostremos nosotros con tus productos y tus números adelante.'
+                : 'Entrá ahora al sistema de prueba y recorrelo por tu cuenta, o escribinos y lo vemos juntos con los productos y los números de tu negocio.'}
             </p>
 
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-              <BookDemoButton />
-              <TryDemoButton />
+            {/* Cada botón con su renglón: son dos cosas distintas y con sólo el
+                título se confundían —una es una reunión con una persona y la
+                otra es entrar solo. */}
+            <div className="mt-8 flex flex-col items-center justify-center gap-6 sm:flex-row sm:items-start sm:gap-8">
+              <BookMeetingButton caption />
+              <TrySystemButton caption />
             </div>
 
-            {BOOKING_URL && <p className="mt-3 text-xs text-stone-500">{BOOKING_NOTE}</p>}
+            {BOOKING_URL && <p className="mt-6 text-xs text-stone-500">{BOOKING_NOTE}</p>}
 
             {HAS_CONTACT && (
               <>
@@ -650,7 +653,7 @@ export default function LandingPage() {
                 <ul className="mt-3 space-y-2 text-sm">
                   <li>
                     <a href="#contacto" className="text-stone-500 transition-colors hover:text-stone-900">
-                      {BOOKING_URL ? 'Reservar una demo' : 'Ver la demo'}
+                      {BOOKING_URL ? 'Reservar una reunión' : 'Probar el sistema'}
                     </a>
                   </li>
                   {WHATSAPP_URL && (

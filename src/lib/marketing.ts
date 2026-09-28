@@ -39,7 +39,7 @@ export const WHATSAPP_NUMBER = (process.env.NEXT_PUBLIC_WHATSAPP || '').replace(
 
 export const CONTACT_EMAIL = process.env.NEXT_PUBLIC_CONTACT_EMAIL || '';
 
-/** A dónde lleva "Ver la demo". Por defecto, el login con el usuario demo. */
+/** A dónde lleva "Probar el sistema". Por defecto, el login del usuario de prueba. */
 export const DEMO_URL = process.env.NEXT_PUBLIC_DEMO_URL || '/login';
 
 const WHATSAPP_MESSAGE = encodeURIComponent(
@@ -274,7 +274,7 @@ export const CASE_STUDY = {
 
 export const STEPS = [
   {
-    title: 'Charlamos 20 minutos',
+    title: 'Reservás una reunión de 20 minutos',
     body: 'Nos contás cómo trabajás hoy: qué vendés, cómo entran los pedidos, qué te duele. Sin compromiso.',
   },
   {
@@ -608,6 +608,6 @@ export const FAQS = [
   },
   {
     q: '¿Puedo probarlo antes de decidir?',
-    a: 'Sí, y sin que tengas que adivinar nada: la demo se abre con una guía que te va mostrando para qué sirve cada pantalla, dónde está cada cosa y qué conviene probar. Son datos de ejemplo, así que podés tocar todo. Si preferís que lo recorramos juntos con el caso de tu negocio, coordinamos una demostración en vivo.',
+    a: 'Sí, y de dos formas distintas. Una es entrar vos solo al sistema de prueba, ahora mismo y sin registrarte: se abre con una guía que te muestra para qué sirve cada pantalla y qué conviene probar, con datos de ejemplo, así que podés tocar todo. La otra es reservar una reunión de 20 minutos por videollamada, donde lo recorremos nosotros con los productos y los números de tu negocio adelante. No son lo mismo y podés hacer las dos.',
   },
 ];

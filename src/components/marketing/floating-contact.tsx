@@ -89,7 +89,7 @@ export function MobileCtaBar() {
             className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-brand-700 text-sm font-medium text-white"
           >
             <CalendarCheck className="h-4 w-4" />
-            Reservar una demo
+            Reservar una reunión
           </a>
         ) : (
           <Link
@@ -97,7 +97,7 @@ export function MobileCtaBar() {
             className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-stone-900 text-sm font-medium text-white"
           >
             <PlayCircle className="h-4 w-4" />
-            Entrar a la demo
+            Probar el sistema
           </Link>
         )}
 

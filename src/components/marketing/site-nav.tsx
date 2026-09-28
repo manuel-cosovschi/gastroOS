@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Menu, X } from 'lucide-react';
 import { Logo } from '@/components/brand/logo';
 import { cn } from '@/lib/utils';
-import { BookDemoButton, TryDemoButton } from './cta-buttons';
+import { BookMeetingButton, TrySystemButton } from './cta-buttons';
 import { BOOKING_URL } from '@/lib/marketing';
 
 const LINKS = [
@@ -55,8 +55,8 @@ export function SiteNav() {
         </nav>
 
         <div className="hidden items-center gap-2 md:flex">
-          <TryDemoButton size="md" />
-          <BookDemoButton size="md" />
+          <TrySystemButton size="md" />
+          <BookMeetingButton size="md" />
         </div>
 
         <button
@@ -83,8 +83,8 @@ export function SiteNav() {
             ))}
           </nav>
           <div className="mt-3 flex flex-col gap-2">
-            <TryDemoButton className="w-full" />
-            {BOOKING_URL && <BookDemoButton className="w-full" />}
+            <TrySystemButton className="w-full" />
+            {BOOKING_URL && <BookMeetingButton className="w-full" />}
           </div>
         </div>
       )}

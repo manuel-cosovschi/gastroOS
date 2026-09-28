@@ -2,7 +2,7 @@ import { Check, ShieldCheck, Wrench } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { PRICING } from '@/lib/marketing';
 import { SectionHeading } from '@/components/marketing/section';
-import { BookDemoButton, TryDemoButton } from '@/components/marketing/cta-buttons';
+import { BookMeetingButton, TrySystemButton } from '@/components/marketing/cta-buttons';
 
 /**
  * Planes y garantía.
@@ -134,8 +134,8 @@ export function Pricing() {
               </div>
             </div>
             <div className="flex shrink-0 flex-wrap gap-2">
-              <BookDemoButton size="md" />
-              <TryDemoButton size="md" />
+              <BookMeetingButton size="md" />
+              <TrySystemButton size="md" />
             </div>
           </div>
         </div>
