@@ -13,6 +13,8 @@ interface StatCardProps {
   icon?: React.ComponentType<{ className?: string }>;
   href?: string;
   accent?: 'default' | 'positive' | 'negative' | 'warning';
+  /** Ancla para la visita guiada. Ver `src/lib/tour.ts`. */
+  'data-tour'?: string;
 }
 
 const ACCENTS = {
@@ -31,6 +33,7 @@ export function StatCard({
   icon: Icon,
   href,
   accent = 'default',
+  'data-tour': dataTour,
 }: StatCardProps) {
   const body = (
     <>
@@ -59,13 +62,17 @@ export function StatCard({
 
   if (href) {
     return (
-      <Link href={href} className={cn(className, 'block')}>
+      <Link href={href} data-tour={dataTour} className={cn(className, 'block')}>
         {body}
       </Link>
     );
   }
 
-  return <div className={className}>{body}</div>;
+  return (
+    <div data-tour={dataTour} className={className}>
+      {body}
+    </div>
+  );
 }
 
 function ChangeBadge({ change, invert }: { change: number; invert: boolean }) {

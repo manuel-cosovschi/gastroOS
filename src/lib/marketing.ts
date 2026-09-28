@@ -27,6 +27,13 @@ import {
  */
 export const BOOKING_URL = process.env.NEXT_PUBLIC_BOOKING_URL || '';
 
+/**
+ * Franja en la que se toman reuniones. El tope real lo pone la página de
+ * citas de Google Calendar; esto lo dice antes de que el visitante haga clic,
+ * para que no descubra recién ahí que no hay horarios a la tarde.
+ */
+export const BOOKING_NOTE = 'Coordinamos reuniones hasta las 16 h.';
+
 /** Teléfono en formato internacional sin + ni espacios, p. ej. 5491155550134. */
 export const WHATSAPP_NUMBER = (process.env.NEXT_PUBLIC_WHATSAPP || '').replace(/\D/g, '');
 
@@ -293,6 +300,6 @@ export const FAQS = [
   },
   {
     q: '¿Puedo probarlo antes de decidir?',
-    a: 'Sí. Podés entrar ahora mismo a la demo con datos de ejemplo, o coordinar una demostración en vivo donde lo recorremos juntos con el caso de tu negocio.',
+    a: 'Sí, y sin que tengas que adivinar nada: la demo se abre con una guía que te va mostrando para qué sirve cada pantalla, dónde está cada cosa y qué conviene probar. Son datos de ejemplo, así que podés tocar todo. Si preferís que lo recorramos juntos con el caso de tu negocio, coordinamos una demostración en vivo.',
   },
 ];

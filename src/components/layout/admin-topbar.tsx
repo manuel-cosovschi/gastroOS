@@ -1,9 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { Menu, Package, Plus, Receipt, UserPlus } from 'lucide-react';
+import { HelpCircle, Menu, Package, Plus, Receipt, UserPlus } from 'lucide-react';
 import { DEMO_MODE } from '@/lib/constants';
 import { cn } from '@/lib/utils';
+import { useTour } from '@/components/admin/tour/tour-provider';
 
 /**
  * Barra superior con las acciones rápidas.
@@ -20,11 +21,16 @@ const SHORTCUTS = [
 ];
 
 export function AdminTopbar({ onOpenMenu }: { onOpenMenu: () => void }) {
+  const { start } = useTour();
+
   return (
     <header className="sticky top-0 z-30 border-b border-stone-200 bg-white/80 backdrop-blur">
       {DEMO_MODE && (
         <div className="bg-brand-700 px-4 py-1.5 text-center text-xs font-medium text-white">
-          Estás viendo una demo de GastroOS con datos de ejemplo
+          Estás viendo una demo de GastroOS con datos de ejemplo.{' '}
+          <button onClick={() => start()} className="underline underline-offset-2">
+            Ver la guía
+          </button>
         </div>
       )}
       <div className="flex h-14 items-center gap-2 px-4 lg:px-6">
@@ -37,6 +43,18 @@ export function AdminTopbar({ onOpenMenu }: { onOpenMenu: () => void }) {
         </button>
 
         <div className="flex-1" />
+
+        {/* La guía queda siempre a mano, no sólo en la demo: un sistema que
+            hay que explicar una sola vez igual se olvida a los dos meses. */}
+        <button
+          onClick={() => start()}
+          data-tour="guide"
+          title="Ver la guía del sistema"
+          className="inline-flex h-9 items-center gap-2 rounded-lg px-3 text-sm font-medium text-stone-600 transition-colors hover:bg-stone-100 hover:text-stone-900"
+        >
+          <HelpCircle className="h-4 w-4" />
+          <span className="hidden sm:inline">Guía</span>
+        </button>
 
         <div className="hidden items-center gap-1 sm:flex">
           {SHORTCUTS.map((shortcut) => (
@@ -58,6 +76,7 @@ export function AdminTopbar({ onOpenMenu }: { onOpenMenu: () => void }) {
 
         <Link
           href="/admin/pedidos/nuevo"
+          data-tour="new-order"
           className="inline-flex h-9 items-center gap-2 rounded-lg bg-stone-900 px-4 text-sm font-medium text-white shadow-sm transition-colors hover:bg-stone-800"
         >
           <Plus className="h-4 w-4" />

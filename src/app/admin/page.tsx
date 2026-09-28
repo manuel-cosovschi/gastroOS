@@ -46,7 +46,7 @@ export default async function DashboardPage() {
       {/* ---------- Hoy ---------- */}
       <section className="space-y-3">
         <SectionTitle>Resumen de hoy</SectionTitle>
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-6">
+        <div data-tour="today" className="grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-6">
           <StatCard
             label="Pedidos de hoy"
             value={String(data.today.orders_count)}
@@ -61,6 +61,7 @@ export default async function DashboardPage() {
           />
           <StatCard label="Gastos del día" value={money(data.today.expenses)} icon={Receipt} />
           <StatCard
+            data-tour="profit"
             label="Ganancia estimada"
             value={money(data.today.profit)}
             icon={PiggyBank}
@@ -87,7 +88,7 @@ export default async function DashboardPage() {
       {data.alerts.length > 0 && (
         <section className="space-y-3">
           <SectionTitle>Necesita tu atención</SectionTitle>
-          <div className="grid gap-2 sm:grid-cols-2">
+          <div data-tour="alerts" className="grid gap-2 sm:grid-cols-2">
             {data.alerts.map((alert, index) => (
               <AlertRow key={`${alert.kind}-${index}`} alert={alert} />
             ))}

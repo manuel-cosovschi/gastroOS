@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { ArrowRight, Check, Sparkles } from 'lucide-react';
 import { APP_NAME, APP_TAGLINE } from '@/lib/constants';
 import {
+  BOOKING_NOTE,
   BOOKING_URL,
   CONTACT_EMAIL,
   FAQS,
@@ -310,6 +311,8 @@ export default function LandingPage() {
               <BookDemoButton />
               <TryDemoButton />
             </div>
+
+            {BOOKING_URL && <p className="mt-3 text-xs text-stone-500">{BOOKING_NOTE}</p>}
 
             {HAS_CONTACT && (
               <>

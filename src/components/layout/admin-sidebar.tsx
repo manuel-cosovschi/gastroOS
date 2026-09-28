@@ -60,7 +60,8 @@ export function AdminSidebar({
   const handleLogout = async () => {
     const supabase = createClient();
     await supabase.auth.signOut();
-    window.location.href = '/admin/login';
+    // La pantalla de login es /login: /admin/login no existe y mandaba a un 404.
+    window.location.href = '/login';
   };
 
   const content = (
@@ -103,7 +104,7 @@ export function AdminSidebar({
         </div>
       )}
 
-      <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
+      <nav data-tour="nav" className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
         {PRIMARY_LINKS.map((link) => (
           <NavLink key={link.href} {...link} active={isActive(link.href)} />
         ))}

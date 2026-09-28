@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { AdminSidebar } from '@/components/layout/admin-sidebar';
 import { AdminTopbar } from '@/components/layout/admin-topbar';
+import { TourOverlay } from '@/components/admin/tour/tour-overlay';
+import { TourProvider, useTour } from '@/components/admin/tour/tour-provider';
 
 /**
  * Cáscara del panel.
@@ -19,17 +21,39 @@ export function AdminShell({
   business: Parameters<typeof AdminSidebar>[0]['business'];
   children: React.ReactNode;
 }) {
+  return (
+    <TourProvider>
+      <AdminShellInner business={business}>{children}</AdminShellInner>
+      <TourOverlay />
+    </TourProvider>
+  );
+}
+
+function AdminShellInner({
+  business,
+  children,
+}: {
+  business: Parameters<typeof AdminSidebar>[0]['business'];
+  children: React.ReactNode;
+}) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+  const { needsSidebar } = useTour();
 
   // Navegar cierra el menú: si no, tapa la pantalla recién abierta.
   useEffect(() => {
     setMenuOpen(false);
   }, [pathname]);
 
+  // Cuando la guía señala algo del menú, el menú tiene que estar abierto. Se
+  // resuelve con un `or` y no con un `setState` para que los dos efectos no
+  // se peleen: el de arriba lo cierra al navegar y la guía lo volvería a
+  // abrir, dejando el menú parpadeando.
+  const sidebarOpen = menuOpen || needsSidebar;
+
   return (
     <div className="min-h-screen bg-stone-50">
-      <AdminSidebar business={business} open={menuOpen} onClose={() => setMenuOpen(false)} />
+      <AdminSidebar business={business} open={sidebarOpen} onClose={() => setMenuOpen(false)} />
       <div className="lg:pl-64">
         <AdminTopbar onOpenMenu={() => setMenuOpen(true)} />
         <main className="mx-auto max-w-7xl p-4 pb-16 sm:p-6 lg:p-8">{children}</main>

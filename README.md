@@ -147,6 +147,30 @@ estadísticas.
 **No hay contraseña por defecto en el código.** El seed falla si `DEMO_PASSWORD`
 está vacía: así ninguna instancia queda publicada con una clave conocida.
 
+### Visita guiada
+
+El panel trae una guía de 16 pasos que recorre el sistema entero: qué hace cada
+módulo, dónde está, cómo funcionan los estados y qué conviene probar. Arranca
+sola la primera vez que se entra **con `NEXT_PUBLIC_DEMO_MODE=true`**, y después
+queda a mano en el botón **Guía** de la barra superior, también fuera de la demo.
+
+El guion vive en `src/lib/tour.ts` y se edita como un texto corrido. Cada paso
+declara cómo se muestra:
+
+| | |
+|---|---|
+| `focus` | Ilumina un elemento y oscurece el resto. Para «esto es esto, y está acá». |
+| `page` | No oscurece nada: la pantalla queda entera a la vista y se puede tocar. |
+| `center` | Tarjeta al medio. Apertura y cierre. |
+
+Los pasos `focus` apuntan a atributos `data-tour` (no a clases de Tailwind, que
+cambian cuando se retoca el diseño). Si un ancla desaparece, la guía no se
+rompe: ese paso se muestra sin señalar nada.
+
+El progreso se guarda en `localStorage`, así que recargar no vuelve al paso uno.
+La clave está versionada: si cambiás el guion, subí la versión en
+`TOUR_STORAGE_KEY` y la guía se vuelve a ofrecer.
+
 ### Resetear la demo
 
 ```bash
@@ -201,6 +225,11 @@ Se genera en Google Calendar, no hay API que lo cree: **Crear → Página de
 citas**, se define duración y disponibilidad, y **Compartir** devuelve una URL
 `https://calendar.app.google/…`. Esa URL es la que va en la variable.
 
+El tope de horario se pone ahí, en la disponibilidad de la página de citas: hoy
+el último turno no puede empezar después de las **16 h**. La landing lo anuncia
+antes del clic con `BOOKING_NOTE`, en `src/lib/marketing.ts`; si cambiás la
+franja en Calendar, cambiá también esa línea.
+
 ---
 
 ## Scripts
@@ -239,6 +268,7 @@ src/
 │   └── login/            Autenticación
 ├── components/
 │   ├── admin/            Formularios y piezas del panel
+│   │   └── tour/         Visita guiada: estado y dibujado
 │   ├── brand/            Logo e identidad
 │   ├── cart/             Carrito de la tienda pública
 │   ├── catalog/          Tarjetas y filtros del catálogo
@@ -250,6 +280,7 @@ src/
 │   ├── business.ts       Resolución del negocio activo (tenant)
 │   ├── production-cost.ts Costo unitario desde receta u override
 │   ├── marketing.ts      Contenido y contactos de la home comercial
+│   ├── tour.ts           Guion de la visita guiada del panel
 │   └── supabase/         Clientes de Supabase (browser y server)
 └── types/                Tipos y constantes del dominio
 
