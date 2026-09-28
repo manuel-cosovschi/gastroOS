@@ -42,6 +42,13 @@ export const CONTACT_EMAIL = process.env.NEXT_PUBLIC_CONTACT_EMAIL || '';
 /** A dónde lleva "Probar el sistema". Por defecto, el login del usuario de prueba. */
 export const DEMO_URL = process.env.NEXT_PUBLIC_DEMO_URL || '/login';
 
+/**
+ * Panel interno de SOVARE. Sin esto, el crédito del pie es sólo una firma.
+ * Va en variable de entorno porque este repositorio es la plantilla que se
+ * forkea por cliente y esa URL no tiene por qué viajar en su instalación.
+ */
+export const SOVARE_PANEL_URL = process.env.NEXT_PUBLIC_SOVARE_PANEL_URL || '';
+
 const WHATSAPP_MESSAGE = encodeURIComponent(
   'Hola, vi GastroOS y me gustaría saber más.'
 );
