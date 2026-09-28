@@ -6,6 +6,7 @@ import { APP_NAME, APP_TAGLINE } from '@/lib/constants';
 import {
   BOOKING_NOTE,
   BOOKING_URL,
+  CASE_STUDY,
   CONTACT_EMAIL,
   FAQS,
   HAS_CONTACT,
@@ -240,6 +241,89 @@ export default function LandingPage() {
                 className="w-full rounded-[1.6rem]"
               />
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ---------- Caso de éxito ---------- */}
+      <section id="caso" className="scroll-mt-20 border-t border-stone-200 py-20 sm:py-24">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <SectionHeading eyebrow={CASE_STUDY.eyebrow} title={CASE_STUDY.title} />
+
+          <div className="mx-auto mt-10 max-w-3xl space-y-4 text-center">
+            <p className="text-lg leading-relaxed text-stone-600">{CASE_STUDY.lead}</p>
+            <p className="text-lg leading-relaxed text-stone-600">{CASE_STUDY.outcome}</p>
+          </div>
+
+          <dl className="mx-auto mt-10 grid max-w-3xl gap-4 sm:grid-cols-3">
+            {CASE_STUDY.facts.map((fact) => (
+              <div key={fact.label} className="surface p-4 text-center">
+                <dt className="text-[11px] font-semibold uppercase tracking-wider text-stone-400">
+                  {fact.label}
+                </dt>
+                <dd className="mt-1.5 text-sm font-medium leading-snug text-stone-900">
+                  {fact.value}
+                </dd>
+              </div>
+            ))}
+          </dl>
+
+          {/* La comparación es el argumento: misma estructura, otra marca. */}
+          <div className="mt-16">
+            <SectionHeading
+              title={CASE_STUDY.skins.title}
+              subtitle={CASE_STUDY.skins.body}
+              align="left"
+              className="max-w-3xl"
+            />
+
+            <div className="mt-8 grid gap-6 lg:grid-cols-2">
+              {[CASE_STUDY.skins.left, CASE_STUDY.skins.right].map((skin) => (
+                <figure key={skin.image}>
+                  <BrowserFrame>
+                    <Image
+                      src={skin.image}
+                      alt={skin.alt}
+                      width={1000}
+                      height={626}
+                      className="w-full"
+                      sizes="(min-width: 1024px) 50vw, 100vw"
+                    />
+                  </BrowserFrame>
+                  <figcaption className="mt-3 text-sm font-medium text-stone-700">
+                    {skin.caption}
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
+
+            <p className="mt-4 text-xs text-stone-400">{CASE_STUDY.skins.note}</p>
+          </div>
+
+          <div className="mt-16 grid items-center gap-10 lg:grid-cols-2">
+            <div>
+              <h3 className="text-2xl font-semibold tracking-tight text-stone-900">
+                {CASE_STUDY.storefront.title}
+              </h3>
+              <p className="mt-4 text-lg leading-relaxed text-stone-600">
+                {CASE_STUDY.storefront.body}
+              </p>
+            </div>
+            <figure>
+              <BrowserFrame>
+                <Image
+                  src={CASE_STUDY.storefront.image}
+                  alt={CASE_STUDY.storefront.alt}
+                  width={1280}
+                  height={820}
+                  className="w-full"
+                  sizes="(min-width: 1024px) 50vw, 100vw"
+                />
+              </BrowserFrame>
+              <figcaption className="mt-3 text-sm text-stone-500">
+                {CASE_STUDY.storefront.caption}
+              </figcaption>
+            </figure>
           </div>
         </div>
       </section>

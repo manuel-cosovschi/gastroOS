@@ -220,6 +220,55 @@ export const SHOWCASE: Showcase[] = [
 ];
 
 // ============================================
+// Caso de éxito
+// ============================================
+
+/**
+ * El caso de COSOV.
+ *
+ * Las capturas de la tienda son de su sistema real, que es público. Las del
+ * panel no: son GastroOS con su paleta y sus tipografías sobre los datos de la
+ * demo. El panel de un cliente muestra sus clientes, sus pedidos y su
+ * facturación, y eso no va en una página de venta.
+ */
+export const CASE_STUDY = {
+  eyebrow: 'Caso real',
+  client: 'COSOV.',
+  title: 'El mismo sistema, con la cara de su negocio',
+  lead: 'COSOV. es una pastelería artesanal que produce por encargo para cafeterías y eventos. Los pedidos entraban por WhatsApp e Instagram y se anotaban a mano; el costo real de cada producto era una estimación.',
+  outcome:
+    'Hoy trabaja sobre su propia instalación de GastroOS: su paleta, sus tipografías, su dominio y su base de datos. No comparte el sistema con nadie y no parece software alquilado — parece de ellos, porque lo es.',
+  facts: [
+    { label: 'Rubro', value: 'Pastelería artesanal por encargo' },
+    { label: 'Trabaja con', value: 'Cafeterías y eventos' },
+    { label: 'Qué se personalizó', value: 'Identidad, tienda y flujo de pedidos' },
+  ],
+  /** El antes y después no es de versiones: es la misma pantalla en dos marcas. */
+  skins: {
+    title: 'La misma pantalla, dos identidades',
+    body: 'A la izquierda, GastroOS como viene. A la derecha, la misma pantalla con la paleta y la tipografía de COSOV. No es un tema que elegís de una lista de cuatro: es la identidad de tu negocio llevada al sistema.',
+    left: {
+      image: '/casos/gastroos-panel.webp',
+      alt: 'Panel de GastroOS con su identidad por defecto, en verde',
+      caption: 'GastroOS, como viene',
+    },
+    right: {
+      image: '/casos/cosov-panel.webp',
+      alt: 'La misma pantalla del panel con la paleta bordó y las tipografías de COSOV.',
+      caption: 'Con la identidad de COSOV.',
+    },
+    note: 'Capturas del panel con datos de ejemplo. Los números de un cliente no se muestran nunca.',
+  },
+  storefront: {
+    title: 'Y la tienda, con su marca',
+    body: 'Sus clientes arman el pedido desde un catálogo que es de COSOV., no de un proveedor de software. El pedido cae directo en el panel.',
+    image: '/casos/cosov-tienda.webp',
+    alt: 'Catálogo público de COSOV. con sus productos, en bordó y crema',
+    caption: 'Tienda pública de COSOV., en producción',
+  },
+};
+
+// ============================================
 // Cómo funciona
 // ============================================
 
@@ -252,6 +301,10 @@ export const REASONS = [
     body: 'No es un punto de venta adaptado. Está pensado para quien produce contra pedido, con fecha de entrega y seña.',
   },
   {
+    title: 'Lleva tu marca, no la nuestra',
+    body: 'Tu paleta, tus tipografías y tu dominio. Tus clientes ven tu negocio, no el logo de un proveedor de software.',
+  },
+  {
     title: 'Arrancás con tus datos adentro',
     body: 'La carga inicial la hacemos nosotros. No te dejamos un sistema vacío para que lo llenes en tus ratos libres.',
   },
@@ -264,12 +317,8 @@ export const REASONS = [
     body: 'Cargar un pedido, cambiar un estado o ver las entregas del día se hace igual de bien desde el celular.',
   },
   {
-    title: 'Tus datos son tuyos',
-    body: 'Exportables cuando quieras. Sin quedar atado a nosotros para llevarte tu información.',
-  },
-  {
-    title: 'Crece con vos',
-    body: 'Sumás tienda online, usuarios y sucursales cuando los necesites. Sin migrar a otra cosa.',
+    title: 'Tu instalación, no una cuenta compartida',
+    body: 'Cada negocio tiene la suya, con su propia base de datos. Tus números no conviven con los de nadie, y lo que se ajusta para vos no depende de lo que necesiten otros.',
   },
 ];
 
@@ -281,6 +330,10 @@ export const FAQS = [
   {
     q: '¿Sirve si vendo por WhatsApp e Instagram?',
     a: 'Sí, es el caso más común. Vos seguís recibiendo el pedido por donde ya lo recibís y lo cargás en GastroOS en menos de un minuto. Si querés, además te damos una tienda online para que el cliente lo cargue solo.',
+  },
+  {
+    q: '¿Puedo ponerle los colores y la tipografía de mi marca?',
+    a: 'Sí, y no de una lista de temas: tu instalación se arma con tu paleta y tus tipografías, igual que el caso de COSOV. que está más arriba. Si tenés manual de marca lo seguimos; si no, lo sacamos de tu logo y tus redes. Va incluido en la puesta a punto, no es un extra.',
   },
   {
     q: '¿Tengo que cargar todo de cero?',
