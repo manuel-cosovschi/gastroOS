@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { CreditCard, LayoutDashboard, LogOut, Menu, Plus, Users, X } from 'lucide-react';
+import { CreditCard, LayoutDashboard, LogOut, Menu, Plus, UserCog, Users, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { createClient } from '@/lib/supabase/client';
 
@@ -76,7 +76,21 @@ export function Shell({ email, children }: { email: string; children: React.Reac
         </nav>
 
         <div className="border-t border-stone-200 p-3">
-          <p className="truncate px-3 pb-2 text-xs text-stone-400">{email}</p>
+          <Link
+            href="/cuenta"
+            onClick={() => setOpen(false)}
+            className={cn(
+              'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+              isActive('/cuenta')
+                ? 'bg-brand-100 text-brand-900'
+                : 'text-stone-600 hover:bg-stone-100 hover:text-stone-900'
+            )}
+          >
+            <UserCog
+              className={cn('h-4 w-4', isActive('/cuenta') ? 'text-brand-700' : 'text-stone-400')}
+            />
+            <span className="min-w-0 flex-1 truncate">{email}</span>
+          </Link>
           <button
             onClick={logout}
             className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-stone-500 transition-colors hover:bg-stone-100 hover:text-stone-900"
