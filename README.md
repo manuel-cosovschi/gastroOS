@@ -320,6 +320,43 @@ Hoy la interfaz asume un negocio por usuario. Para abrir el producto a varios
 negocios por usuario alcanza con agregar un selector y pasar el id elegido a
 `getCurrentBusiness()`; el resto del código ya está preparado.
 
+### Cómo se entrega
+
+La base soporta varios negocios conviviendo, pero **el producto se entrega como
+una instalación por cliente**: su repositorio, su proyecto de Supabase, su
+deploy y su dominio. Eso es lo que permite personalizar la identidad, y es lo
+que se vende en la home.
+
+Dos consecuencias prácticas:
+
+- Cada cambio de esquema hay que correrlo en cada instalación. `npm run db:migrate`
+  toma `SUPABASE_PROJECT_REF` del entorno, así que es cambiar esa variable y
+  volver a correrlo, una vez por cliente.
+- El multi-tenant de la base sigue sirviendo: aísla los datos aunque haya un
+  solo negocio, y deja abierta la puerta a una cuenta compartida más adelante
+  sin rehacer el modelo.
+
+---
+
+## Personalizar la identidad de un cliente
+
+Es lo que diferencia una instalación de la siguiente, y son dos archivos:
+
+| Dónde | Qué |
+|---|---|
+| `tailwind.config.ts` | La escala `brand` (acentos, botones, gráficos) y, si hace falta, `stone` (fondos, bordes, texto) |
+| `src/app/layout.tsx` | Las familias tipográficas, vía `next/font/google` |
+
+Si el cliente usa una tipografía con serifa para los títulos, se suma la
+variable en `tailwind.config.ts` (`fontFamily.serif`) y una regla en
+`globals.css` para `h1, h2`.
+
+Conviene mover también `themeColor` en `layout.tsx`: es el color de la barra
+del navegador en mobile, y con el verde por defecto canta que es plantilla.
+
+La referencia real es COSOV.: bordó `#5B1A1A` con una escala crema, Inter para
+el cuerpo y Playfair Display para los títulos.
+
 ---
 
 ## Seguridad
