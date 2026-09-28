@@ -468,63 +468,104 @@ export const NOT_INCLUDED = {
 /**
  * Planes.
  *
- * `enabled` está en false a propósito: la sección no se muestra hasta que los
- * precios sean los que elegiste vos. Los de acá abajo son una estructura
- * propuesta, no una lista de precios — cambiá los números y poné `enabled` en
- * true, y la sección aparece sola.
+ * Los números están puestos contra la competencia relevada en septiembre de
+ * 2026: los sistemas de gestión gastronómica en Argentina arrancan cerca de
+ * $21.000 + IVA por el plan más chico, y los que traen tienda online y control
+ * de stock —lo comparable a esto— van de $68.000 a $99.000 + IVA, con los
+ * módulos de mesa, cocina y facturación cobrados aparte a $23.000–24.500 cada
+ * uno. La implementación en el más conocido son $180.000.
+ *
+ * El piso de `Base` no es arbitrario: cada instalación tiene su propio proyecto
+ * de Supabase, que cuesta unos USD 10 de compute por mes más la parte
+ * proporcional de la organización. Con el dólar a ~$1.550 eso es $17.000–19.000
+ * por cliente antes de tocar nada. Por eso `Base` no incluye soporte: a ese
+ * precio no entra, y meterlo igual sería vender a pérdida.
+ *
+ * Son pesos y hay inflación: `asOf` está para que se note cuándo se fijaron.
  */
 export const PRICING = {
-  enabled: false,
+  enabled: true,
   eyebrow: 'Precios',
   title: 'Cuánto cuesta',
   subtitle:
-    'Una instalación propia para tu negocio, con tu marca. Sin porcentaje sobre tus ventas: lo que vendas es tuyo.',
-  currencyNote: 'Precios en pesos, por mes, con IVA incluido.',
+    'Una instalación propia, con tu marca y tu base de datos. Sin porcentaje sobre tus ventas: lo que vendas es tuyo.',
+  asOf: 'Precios de septiembre de 2026, en pesos y con IVA incluido.',
+  /** El ancla: contra qué se compara el número de abajo. */
+  context:
+    'Los sistemas de gestión gastronómica con tienda online y control de stock cobran entre $68.000 y $99.000 por mes más IVA, y te cobran aparte cada módulo. Nosotros arrancamos en menos de la mitad.',
+
+  setup: {
+    name: 'Puesta a punto',
+    price: 95000,
+    unit: 'pago único',
+    summary:
+      'Se paga una sola vez, al principio. Es el trabajo de dejarte el sistema andando con tu negocio adentro, no una licencia.',
+    features: [
+      'Tu instalación con tu paleta y tus tipografías',
+      'Carga de catálogo, precios, insumos y clientes',
+      'Recetas y costo real de cada producto',
+      'Tu tienda online publicada',
+      'Una sesión de capacitación con tu equipo',
+    ],
+  },
+
   plans: [
     {
-      name: 'Instalación',
-      price: null as number | null,
-      unit: 'pago único',
-      summary: 'La puesta a punto: tu instancia, tu identidad y tus datos adentro.',
+      name: 'Base',
+      price: 26900,
+      unit: 'por mes',
+      summary:
+        'El sistema entero funcionando. Sin soporte ni cambios incluidos: si necesitás algo, se cobra por hora.',
       features: [
-        'Tu instalación con tu paleta y tipografías',
-        'Carga de catálogo, precios, insumos y clientes',
-        'Recetas y costos de tus productos',
-        'Una sesión de capacitación con tu equipo',
+        'Todos los módulos, sin límite de pedidos',
+        'Tienda online con tu marca',
+        'Tu propia base de datos, con backup diario',
+        'Actualizaciones de seguridad',
+        'Soporte y cambios aparte, por hora',
       ],
       highlight: false,
     },
     {
-      name: 'Mensual',
-      price: null as number | null,
+      name: 'Con soporte',
+      price: 46900,
       unit: 'por mes',
-      summary: 'El sistema andando, con soporte y todo lo que vaya saliendo.',
+      summary:
+        'Lo mismo, pero con alguien del otro lado. Es el que toma casi todo el mundo.',
       features: [
-        'Todos los módulos, sin límite de pedidos',
-        'Tienda online con tu marca',
-        'Soporte por WhatsApp',
-        'Actualizaciones y mejoras incluidas',
-        'Backups y mantenimiento',
+        'Todo lo del plan Base',
+        'Soporte por WhatsApp, respuesta en el día hábil',
+        'Ajustes y cambios chicos incluidos',
+        'Las mejoras del producto, a medida que salen',
+        'Te ayudamos a cargar los cambios de temporada',
       ],
       highlight: true,
     },
     {
       name: 'A medida',
-      price: null as number | null,
-      unit: 'a convenir',
-      summary: 'Si necesitás algo que el sistema no hace, se puede construir.',
+      price: 89000,
+      unit: 'por mes',
+      priceFrom: true,
+      summary:
+        'Cuando el sistema tiene que hacer algo que hoy no hace, o el negocio ya no entra en una sola cocina.',
       features: [
-        'Todo lo del plan mensual',
+        'Todo lo del plan Con soporte',
         'Desarrollo de funciones propias',
         'Integraciones con lo que ya uses',
         'Varias sucursales o equipos',
+        'Prioridad en los pedidos de cambio',
       ],
       highlight: false,
     },
   ],
+
+  hourly: {
+    label: 'Hora de soporte o cambios, para el plan Base',
+    price: 19000,
+  },
+
   guarantee: {
-    title: 'El primer mes, sin cargo',
-    body: 'Lo dejamos andando con tus datos y lo usás un mes completo. Si no te sirve, no pagás la mensualidad y te llevás tu información exportada. La puesta a punto la cobramos igual, porque el trabajo ya está hecho.',
+    title: 'El primer mes de sistema, sin cargo',
+    body: 'Te lo dejamos andando con tus datos y lo usás un mes completo antes de pagar la primera mensualidad. Si no te sirve, no pagás y te llevás tu información exportada. La puesta a punto se cobra igual: ese trabajo ya está hecho y es tuyo.',
   },
 };
 
@@ -544,6 +585,14 @@ export const FAQS = [
   {
     q: '¿Tengo que cargar todo de cero?',
     a: 'No. La carga inicial de productos, precios, insumos y clientes la hacemos nosotros con la información que nos pases, aunque esté en un Excel o en fotos.',
+  },
+  {
+    q: '¿Por qué el plan Base no incluye soporte?',
+    a: 'Porque queríamos un precio de entrada real y no uno que se cae cuando pedís algo. Cada instalación tiene su propio servidor y su propia base de datos, y eso cuesta plata todos los meses aunque nadie toque nada. El plan Base cubre eso y el sistema funcionando; si necesitás ayuda, se cobra por hora y sabés cuánto. Si preferís tenerlo incluido y no pensar, está el plan Con soporte, que es el que toma casi todo el mundo.',
+  },
+  {
+    q: '¿Por qué son más baratos que los demás?',
+    a: 'Por dos cosas. Una, no somos un punto de venta: no tenemos que mantener módulos de mesas, comandas ni impresoras fiscales, que es de donde sale buena parte del precio de los otros. Y dos, no cobramos cada función aparte — lo que ves es lo que hay, sin módulos que se suman de a $24.000.',
   },
   {
     q: '¿Cuánto tarda en estar funcionando?',

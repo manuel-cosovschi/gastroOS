@@ -13,6 +13,7 @@ const LINKS = [
   { href: '#caso', label: 'Caso real' },
   { href: '#calculadora', label: 'Calculadora' },
   { href: '#como-funciona', label: 'Cómo funciona' },
+  { href: '#precios', label: 'Precios' },
   { href: '#por-que', label: 'Por qué GastroOS' },
   { href: '#faq', label: 'Preguntas' },
 ];

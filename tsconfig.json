@@ -19,5 +19,8 @@
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  // sovare-panel es otra aplicación, con su propio tsconfig y su propio alias
+  // `@/`. Sin excluirla, este `include` se la lleva puesta y resuelve sus
+  // imports contra el `src` de acá.
+  "exclude": ["node_modules", "sovare-panel"]
 }
