@@ -323,6 +323,212 @@ export const REASONS = [
 ];
 
 // ============================================
+// Contra qué competimos de verdad
+// ============================================
+
+/**
+ * El competidor real no es otro software: es el cuaderno, el Excel y la
+ * memoria. Nombrarlos es más honesto que comparar features contra un rival
+ * que el visitante no está evaluando.
+ */
+export const COMPARISON = {
+  eyebrow: 'Comparación',
+  title: 'Contra qué lo estás comparando',
+  subtitle:
+    'La mayoría no viene de otro sistema: viene del cuaderno, del Excel y de acordarse. Así queda cada uno.',
+  columns: ['El cuaderno y WhatsApp', 'Una planilla de Excel', 'GastroOS'],
+  rows: [
+    {
+      criterion: 'Cargar un pedido',
+      values: ['Rápido, pero se pierde', 'Lento, y hay que acordarse', 'Menos de un minuto, y queda'],
+    },
+    {
+      criterion: 'Saber qué entregás hoy',
+      values: ['Revisando conversaciones', 'Si filtraste bien', 'La pantalla abre con eso'],
+    },
+    {
+      criterion: 'Stock de insumos',
+      values: ['Cuando te falta, te enteraste tarde', 'Otra planilla más', 'Se descuenta solo y avisa antes'],
+    },
+    {
+      criterion: 'Costo real de un producto',
+      values: ['A ojo', 'Si mantenés las fórmulas', 'Sale de la receta, se actualiza solo'],
+    },
+    {
+      criterion: 'Cuánto ganaste este mes',
+      values: ['Una sensación', 'Facturación, no ganancia', 'Facturación menos gastos, con el margen'],
+    },
+    {
+      criterion: 'Si se rompe el teléfono',
+      values: ['Perdiste todo', 'Si lo tenías en la nube', 'Está en la base, no en el aparato'],
+    },
+    {
+      criterion: 'Cuando entra alguien nuevo al equipo',
+      values: ['Le explicás tu sistema', 'Le explicás tu planilla', 'Abre y entiende'],
+    },
+  ],
+  note: 'Si tu Excel funciona y lo mantenés al día, no te hace falta cambiar. Este sistema es para cuando dejó de alcanzar.',
+};
+
+// ============================================
+// Un día antes y después
+// ============================================
+
+export const BEFORE_AFTER = {
+  eyebrow: 'Un día cualquiera',
+  title: 'Lo que cambia no son las funciones, es el día',
+  before: {
+    label: 'Hoy',
+    items: [
+      'Abrís WhatsApp y revisás qué quedó sin contestar de anoche',
+      'Anotás tres pedidos en el cuaderno y uno se te pasa',
+      'Buscás el precio de una torta en una conversación de hace dos meses',
+      'Vas a comprar y te olvidás del chocolate, otra vez',
+      'A la noche sumás con la calculadora para saber cómo te fue',
+      'A fin de mes no sabés si ganaste o sólo facturaste',
+    ],
+  },
+  after: {
+    label: 'Con GastroOS',
+    items: [
+      'Abrís el panel y ves lo que entregás hoy, ordenado por hora',
+      'Cargás el pedido mientras hablás con el cliente, en un minuto',
+      'El precio y el cliente ya están: los tomás del catálogo',
+      'La lista de compra la arma el sistema con lo que está bajo el mínimo',
+      'La facturación del día está calculada antes de que cierres',
+      'A fin de mes ves la ganancia, el margen y contra qué comparar',
+    ],
+  },
+};
+
+// ============================================
+// Calculadora
+// ============================================
+
+/**
+ * Los tres números que devuelve la calculadora.
+ *
+ * Dos son aritmética pura y el tercero es un condicional explícito: nada de
+ * prometer un retorno inventado. Los supuestos van escritos en la pantalla,
+ * no escondidos en una nota al pie.
+ */
+export const CALCULATOR = {
+  eyebrow: 'Calculadora',
+  title: '¿Cuánto te está costando no tener el número?',
+  subtitle:
+    'Dos datos que ya sabés de memoria, y te devuelve tres que probablemente no tengas a mano.',
+  fields: {
+    orders: { label: 'Pedidos por mes', min: 5, max: 400, step: 5, initial: 60 },
+    ticket: { label: 'Ticket promedio', min: 2000, max: 150000, step: 1000, initial: 25000 },
+  },
+  /** Minutos que se ahorran por pedido al cargarlo en el sistema en vez de a mano. */
+  minutesSavedPerOrder: 5,
+  /** Desvío de margen que se usa para el tercer número. */
+  marginErrorPct: 5,
+  results: {
+    revenue: {
+      label: 'Facturás por año',
+      note: 'Pedidos por mes × ticket promedio × 12.',
+    },
+    hours: {
+      label: 'Horas al mes en administración',
+      note: 'Estimado sobre 5 minutos de ahorro por pedido: anotarlo, buscar el precio, confirmarlo y acordarse de la entrega.',
+    },
+    margin: {
+      label: 'Si tu margen real es 5 puntos menor',
+      note: 'No decimos que lo sea. Decimos que sin el costo por receta cargado, no hay forma de saberlo — y que 5 puntos sobre tu facturación es esta plata.',
+    },
+  },
+  cta: 'Estos números salen de dos datos. El sistema los calcula con los tuyos, todos los días.',
+};
+
+// ============================================
+// Qué no hace
+// ============================================
+
+export const NOT_INCLUDED = {
+  eyebrow: 'Honestidad',
+  title: 'Qué no hace',
+  subtitle:
+    'Preferimos que lo sepas ahora y no en la tercera reunión. Nada de esto está, y si lo necesitás hoy, no somos para vos.',
+  items: [
+    { title: 'No cobra online', body: 'No procesa pagos ni se integra con Mercado Pago. Registrás lo que cobraste, no lo cobrás desde acá.' },
+    { title: 'No factura', body: 'No emite comprobantes AFIP/ARCA. Tu facturación electrónica sigue donde está.' },
+    { title: 'No manda WhatsApp solo', body: 'No hay envío automático de mensajes ni de mails al cliente.' },
+    { title: 'No gestiona delivery', body: 'No se conecta con PedidosYa, Rappi ni apps de reparto.' },
+    { title: 'No es un punto de venta', body: 'No está pensado para cobrar en mostrador con caja y ticket. Está pensado para producir contra pedido.' },
+    { title: 'No tiene IA', body: 'No predice tu demanda ni te sugiere precios. Te muestra tus números y las decisiones las tomás vos.' },
+  ],
+};
+
+// ============================================
+// Precios
+// ============================================
+
+/**
+ * Planes.
+ *
+ * `enabled` está en false a propósito: la sección no se muestra hasta que los
+ * precios sean los que elegiste vos. Los de acá abajo son una estructura
+ * propuesta, no una lista de precios — cambiá los números y poné `enabled` en
+ * true, y la sección aparece sola.
+ */
+export const PRICING = {
+  enabled: false,
+  eyebrow: 'Precios',
+  title: 'Cuánto cuesta',
+  subtitle:
+    'Una instalación propia para tu negocio, con tu marca. Sin porcentaje sobre tus ventas: lo que vendas es tuyo.',
+  currencyNote: 'Precios en pesos, por mes, con IVA incluido.',
+  plans: [
+    {
+      name: 'Instalación',
+      price: null as number | null,
+      unit: 'pago único',
+      summary: 'La puesta a punto: tu instancia, tu identidad y tus datos adentro.',
+      features: [
+        'Tu instalación con tu paleta y tipografías',
+        'Carga de catálogo, precios, insumos y clientes',
+        'Recetas y costos de tus productos',
+        'Una sesión de capacitación con tu equipo',
+      ],
+      highlight: false,
+    },
+    {
+      name: 'Mensual',
+      price: null as number | null,
+      unit: 'por mes',
+      summary: 'El sistema andando, con soporte y todo lo que vaya saliendo.',
+      features: [
+        'Todos los módulos, sin límite de pedidos',
+        'Tienda online con tu marca',
+        'Soporte por WhatsApp',
+        'Actualizaciones y mejoras incluidas',
+        'Backups y mantenimiento',
+      ],
+      highlight: true,
+    },
+    {
+      name: 'A medida',
+      price: null as number | null,
+      unit: 'a convenir',
+      summary: 'Si necesitás algo que el sistema no hace, se puede construir.',
+      features: [
+        'Todo lo del plan mensual',
+        'Desarrollo de funciones propias',
+        'Integraciones con lo que ya uses',
+        'Varias sucursales o equipos',
+      ],
+      highlight: false,
+    },
+  ],
+  guarantee: {
+    title: 'El primer mes, sin cargo',
+    body: 'Lo dejamos andando con tus datos y lo usás un mes completo. Si no te sirve, no pagás la mensualidad y te llevás tu información exportada. La puesta a punto la cobramos igual, porque el trabajo ya está hecho.',
+  },
+};
+
+// ============================================
 // Preguntas frecuentes
 // ============================================
 

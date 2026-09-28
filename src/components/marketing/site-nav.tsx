@@ -11,6 +11,7 @@ import { BOOKING_URL } from '@/lib/marketing';
 const LINKS = [
   { href: '#producto', label: 'Producto' },
   { href: '#caso', label: 'Caso real' },
+  { href: '#calculadora', label: 'Calculadora' },
   { href: '#como-funciona', label: 'Cómo funciona' },
   { href: '#por-que', label: 'Por qué GastroOS' },
   { href: '#faq', label: 'Preguntas' },

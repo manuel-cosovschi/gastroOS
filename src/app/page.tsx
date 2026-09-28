@@ -1,13 +1,18 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight, Check, Sparkles } from 'lucide-react';
+import { ArrowRight, Check, Minus, Sparkles } from 'lucide-react';
 import { APP_NAME, APP_TAGLINE } from '@/lib/constants';
+import { cn } from '@/lib/utils';
 import {
+  BEFORE_AFTER,
   BOOKING_NOTE,
   BOOKING_URL,
+  CALCULATOR,
   CASE_STUDY,
+  COMPARISON,
   CONTACT_EMAIL,
+  NOT_INCLUDED,
   FAQS,
   HAS_CONTACT,
   HERO,
@@ -23,6 +28,9 @@ import { Logo } from '@/components/brand/logo';
 import { SovareCredit } from '@/components/brand/sovare';
 import { SiteNav } from '@/components/marketing/site-nav';
 import { BrowserFrame, SectionHeading } from '@/components/marketing/section';
+import { ProfitCalculator } from '@/components/marketing/profit-calculator';
+import { Pricing } from '@/components/marketing/pricing';
+import { FloatingWhatsApp, MobileCtaBar } from '@/components/marketing/floating-contact';
 import {
   BookDemoButton,
   ContactLinks,
@@ -328,6 +336,148 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* ---------- Calculadora ---------- */}
+      <section id="calculadora" className="scroll-mt-20 bg-stone-50 py-20 sm:py-24">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <SectionHeading
+            eyebrow={CALCULATOR.eyebrow}
+            title={CALCULATOR.title}
+            subtitle={CALCULATOR.subtitle}
+          />
+          <div className="mt-12">
+            <ProfitCalculator />
+          </div>
+        </div>
+      </section>
+
+      {/* ---------- Un día antes y después ---------- */}
+      <section className="py-20 sm:py-24">
+        <div className="mx-auto max-w-5xl px-4 sm:px-6">
+          <SectionHeading eyebrow={BEFORE_AFTER.eyebrow} title={BEFORE_AFTER.title} />
+
+          <div className="mt-12 grid gap-6 md:grid-cols-2">
+            {[BEFORE_AFTER.before, BEFORE_AFTER.after].map((side, index) => {
+              const isAfter = index === 1;
+              return (
+                <div
+                  key={side.label}
+                  className={cn(
+                    'rounded-2xl border p-6',
+                    isAfter ? 'border-brand-200 bg-brand-50/60' : 'border-stone-200 bg-stone-50'
+                  )}
+                >
+                  <h3
+                    className={cn(
+                      'text-xs font-semibold uppercase tracking-wider',
+                      isAfter ? 'text-brand-700' : 'text-stone-400'
+                    )}
+                  >
+                    {side.label}
+                  </h3>
+                  <ul className="mt-4 space-y-3">
+                    {side.items.map((item) => (
+                      <li key={item} className="flex gap-2.5 text-sm leading-relaxed text-stone-700">
+                        {isAfter ? (
+                          <Check className="mt-0.5 h-4 w-4 shrink-0 text-brand-600" />
+                        ) : (
+                          <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-stone-400" />
+                        )}
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ---------- Comparación ---------- */}
+      <section className="border-t border-stone-200 bg-stone-50 py-20 sm:py-24">
+        <div className="mx-auto max-w-5xl px-4 sm:px-6">
+          <SectionHeading
+            eyebrow={COMPARISON.eyebrow}
+            title={COMPARISON.title}
+            subtitle={COMPARISON.subtitle}
+          />
+
+          {/* En mobile la tabla no entra: se desarma en tarjetas por criterio. */}
+          <div className="mt-12 space-y-3 md:hidden">
+            {COMPARISON.rows.map((row) => (
+              <div key={row.criterion} className="surface p-4">
+                <p className="text-sm font-semibold text-stone-900">{row.criterion}</p>
+                <dl className="mt-3 space-y-2">
+                  {row.values.map((value, index) => (
+                    <div key={COMPARISON.columns[index]} className="flex flex-col gap-0.5">
+                      <dt className="text-[11px] uppercase tracking-wide text-stone-400">
+                        {COMPARISON.columns[index]}
+                      </dt>
+                      <dd
+                        className={cn(
+                          'text-sm leading-snug',
+                          index === 2 ? 'font-medium text-brand-800' : 'text-stone-600'
+                        )}
+                      >
+                        {value}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-12 hidden overflow-hidden rounded-2xl border border-stone-200 bg-white md:block">
+            <table className="w-full text-left text-sm">
+              <thead>
+                <tr className="border-b border-stone-200">
+                  <th scope="col" className="w-1/4 px-5 py-4 font-medium text-stone-400">
+                    <span className="sr-only">Criterio</span>
+                  </th>
+                  {COMPARISON.columns.map((column, index) => (
+                    <th
+                      key={column}
+                      scope="col"
+                      className={cn(
+                        'px-5 py-4 font-semibold',
+                        index === 2 ? 'bg-brand-50 text-brand-900' : 'text-stone-500'
+                      )}
+                    >
+                      {column}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-stone-100">
+                {COMPARISON.rows.map((row) => (
+                  <tr key={row.criterion}>
+                    <th scope="row" className="px-5 py-4 text-left font-medium text-stone-900">
+                      {row.criterion}
+                    </th>
+                    {row.values.map((value, index) => (
+                      <td
+                        key={COMPARISON.columns[index]}
+                        className={cn(
+                          'px-5 py-4 align-top leading-snug',
+                          index === 2
+                            ? 'bg-brand-50/60 font-medium text-brand-900'
+                            : 'text-stone-600'
+                        )}
+                      >
+                        {value}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <p className="mt-6 text-sm leading-relaxed text-stone-500">{COMPARISON.note}</p>
+        </div>
+      </section>
+
       {/* ---------- Cómo funciona ---------- */}
       <section id="como-funciona" className="scroll-mt-20 py-20 sm:py-24">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
@@ -375,6 +525,32 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+
+      {/* ---------- Qué no hace ---------- */}
+      <section className="border-t border-stone-200 py-20 sm:py-24">
+        <div className="mx-auto max-w-5xl px-4 sm:px-6">
+          <SectionHeading
+            eyebrow={NOT_INCLUDED.eyebrow}
+            title={NOT_INCLUDED.title}
+            subtitle={NOT_INCLUDED.subtitle}
+          />
+
+          <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {NOT_INCLUDED.items.map((item) => (
+              <div key={item.title} className="rounded-xl border border-stone-200 bg-stone-50 p-5">
+                <h3 className="flex items-center gap-2 text-sm font-semibold text-stone-900">
+                  <Minus className="h-4 w-4 shrink-0 text-stone-400" />
+                  {item.title}
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-stone-600">{item.body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Planes: no se muestra hasta que los precios sean los definitivos. */}
+      <Pricing />
 
       {/* ---------- CTA + contacto ---------- */}
       <section id="contacto" className="scroll-mt-20 py-20 sm:py-24">
@@ -525,6 +701,12 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
+
+      {/* La barra fija de mobile tapa el pie: este hueco lo compensa. */}
+      <div className="h-20 sm:hidden" aria-hidden />
+
+      <FloatingWhatsApp />
+      <MobileCtaBar />
     </div>
   );
 }
