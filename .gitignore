@@ -33,3 +33,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 supabase/.temp/
+
+# La app del panel interno tiene sus propias dependencias y su propio build
+sovare-panel/node_modules
+sovare-panel/.next
