@@ -563,9 +563,10 @@ export const PRICING = {
     price: 19000,
   },
 
-  guarantee: {
-    title: 'El primer mes de sistema, sin cargo',
-    body: 'Te lo dejamos andando con tus datos y lo usás un mes completo antes de pagar la primera mensualidad. Si no te sirve, no pagás y te llevás tu información exportada. La puesta a punto se cobra igual: ese trabajo ya está hecho y es tuyo.',
+  /** Cierre de la sección. Sin permanencia es lo único que prometemos acá. */
+  closing: {
+    title: 'Sin contrato de permanencia',
+    body: 'Se paga mes a mes. Si un mes decidís que no va más, avisás y listo — y te llevás tu información exportada, que es tuya.',
   },
 };
 

@@ -1,11 +1,11 @@
-import { Check, ShieldCheck, Wrench } from 'lucide-react';
+import { Check, Unlock, Wrench } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { PRICING } from '@/lib/marketing';
 import { SectionHeading } from '@/components/marketing/section';
 import { BookMeetingButton, TrySystemButton } from '@/components/marketing/cta-buttons';
 
 /**
- * Planes y garantía.
+ * Planes.
  *
  * La puesta a punto va separada de las mensualidades y no como una cuarta
  * columna: es un pago único y mezclarla con los planes hace que el visitante
@@ -121,15 +121,15 @@ export function Pricing() {
           <p className="text-xs text-stone-500">{PRICING.asOf}</p>
         </div>
 
-        {/* ---------- Garantía ---------- */}
+        {/* ---------- Cierre ---------- */}
         <div className="mt-10 rounded-2xl border border-brand-200 bg-brand-50 p-6 sm:p-8">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex gap-4">
-              <ShieldCheck className="mt-0.5 h-6 w-6 shrink-0 text-brand-700" />
+              <Unlock className="mt-0.5 h-6 w-6 shrink-0 text-brand-700" />
               <div>
-                <h3 className="text-lg font-semibold text-stone-900">{PRICING.guarantee.title}</h3>
+                <h3 className="text-lg font-semibold text-stone-900">{PRICING.closing.title}</h3>
                 <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-stone-700">
-                  {PRICING.guarantee.body}
+                  {PRICING.closing.body}
                 </p>
               </div>
             </div>
