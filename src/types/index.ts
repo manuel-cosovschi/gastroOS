@@ -709,6 +709,15 @@ export interface CartItem {
 // Seguimiento público de pedido
 // ============================================
 
+/**
+ * Lo único que la tienda devuelve al visitante cuando encarga: su número de
+ * pedido. El resto de la fila no sale nunca del servidor, y el tipo lo dice.
+ */
+export interface StorefrontOrderReceipt {
+  id: string;
+  order_number: number;
+}
+
 export interface OrderTracking {
   order_number: number;
   status: OrderStatus;

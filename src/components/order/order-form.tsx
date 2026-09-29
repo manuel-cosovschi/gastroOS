@@ -12,7 +12,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { storefrontOrderSchema, type StorefrontOrderValues } from '@/lib/validations/order';
+import {
+  storefrontOrderFormSchema,
+  type StorefrontOrderFormValues,
+} from '@/lib/validations/order';
 import { getMinDeliveryDate } from '@/lib/advance-time';
 import { cn, toISODate } from '@/lib/utils';
 import { DELIVERY_METHODS, DELIVERY_METHOD_LABELS } from '@/types';
@@ -41,18 +44,17 @@ export function OrderForm() {
     watch,
     setValue,
     formState: { errors },
-  } = useForm<StorefrontOrderValues>({
-    resolver: zodResolver(storefrontOrderSchema),
+  } = useForm<StorefrontOrderFormValues>({
+    resolver: zodResolver(storefrontOrderFormSchema),
     defaultValues: {
       delivery_method: 'pickup',
       delivery_date: minDate,
-      items: [],
     },
   });
 
   const deliveryMethod = watch('delivery_method');
 
-  const onSubmit = async (values: StorefrontOrderValues) => {
+  const onSubmit = async (values: StorefrontOrderFormValues) => {
     if (items.length === 0) {
       toast.error('Tu pedido está vacío.');
       return;

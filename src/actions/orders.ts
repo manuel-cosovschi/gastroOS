@@ -103,23 +103,15 @@ export async function getOrder(id: string): Promise<OrderDetail | null> {
 // Escritura
 // ============================================
 
+/**
+ * Alta de pedido desde el panel. La tienda pública no pasa por acá: no tiene
+ * sesión, y sus pedidos los escribe `create_storefront_order` en la base (ver
+ * `submitStorefrontOrder`).
+ */
 export async function createOrder(
   input: CreateOrderInput
 ): Promise<{ success: boolean; order?: Order; error?: string }> {
   const businessId = await requireBusinessId();
-  return createOrderForBusiness(businessId, input, 'manual');
-}
-
-/**
- * Crea un pedido. Se usa desde el panel (channel `manual`) y desde la tienda
- * pública (channel `storefront`), que no tiene sesión y por eso recibe el
- * `businessId` resuelto por slug en vez de por membresía.
- */
-export async function createOrderForBusiness(
-  businessId: string,
-  input: CreateOrderInput,
-  channel: 'manual' | 'storefront'
-): Promise<{ success: boolean; order?: Order; error?: string }> {
   const validation = validateOrderInput(input);
   if (validation) return { success: false, error: validation };
 
@@ -157,7 +149,7 @@ export async function createOrderForBusiness(
       production_cost: priced.productionCost > 0 ? priced.productionCost : null,
       deposit_amount: round2(input.deposit_amount || 0),
       payment_method: input.payment_method || null,
-      channel,
+      channel: 'manual',
       observations: input.observations?.trim() || null,
       admin_notes: input.admin_notes?.trim() || null,
       requires_invoice: input.requires_invoice || false,
@@ -166,12 +158,24 @@ export async function createOrderForBusiness(
     .single();
 
   if (error || !order) {
+    // El detalle va al log del servidor: a quien usa el panel no le sirve y a
+    // quien depura le ahorra media hora. Sin esto, un fallo de RLS o una
+    // constraint rota se ven exactamente igual desde afuera.
+    console.error('[createOrder] no se pudo insertar el pedido:', error);
     return { success: false, error: 'No se pudo crear el pedido. Probá de nuevo.' };
   }
 
-  await supabase
+  const { error: itemsError } = await supabase
     .from('order_items')
     .insert(priced.items.map((item) => ({ ...item, order_id: order.id })));
+
+  // Un pedido sin líneas no es un pedido: si las líneas no entraron, se
+  // deshace la cabecera en vez de dejar un fantasma de $0 en la lista.
+  if (itemsError) {
+    console.error('[createOrder] no se pudieron insertar las líneas:', itemsError);
+    await supabase.from('orders').delete().eq('id', order.id);
+    return { success: false, error: 'No se pudo crear el pedido. Probá de nuevo.' };
+  }
 
   await supabase.from('order_status_history').insert({
     order_id: order.id,
