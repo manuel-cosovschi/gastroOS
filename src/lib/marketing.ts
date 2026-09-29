@@ -239,9 +239,9 @@ export const SHOWCASE: Showcase[] = [
  * facturación, y eso no va en una página de venta.
  */
 export const CASE_STUDY = {
-  eyebrow: 'Caso real',
+  eyebrow: 'COSOV.',
   client: 'COSOV.',
-  title: 'El mismo sistema, con la cara de su negocio',
+  title: 'Caso real: el mismo sistema, con la cara de su negocio',
   lead: 'COSOV. es una pastelería artesanal que produce por encargo para cafeterías y eventos. Los pedidos entraban por WhatsApp e Instagram y se anotaban a mano; el costo real de cada producto era una estimación.',
   outcome:
     'Hoy trabaja sobre su propia instalación de GastroOS: su paleta, sus tipografías, su dominio y su base de datos. No comparte el sistema con nadie y no parece software alquilado — parece de ellos, porque lo es.',
