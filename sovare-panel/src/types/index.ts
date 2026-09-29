@@ -119,3 +119,95 @@ export interface Activity {
 }
 
 export const ACTIVITY_KINDS = ['nota', 'llamada', 'reunión', 'whatsapp', 'mail', 'soporte'] as const;
+
+// ============================================
+// Contrataciones desde la página
+// ============================================
+
+export const SIGNUP_STATUSES = [
+  'esperando_comprobante',
+  'en_revision',
+  'aprobado',
+  'rechazado',
+] as const;
+
+export type SignupStatus = (typeof SIGNUP_STATUSES)[number];
+
+export const SIGNUP_STATUS_META: Record<
+  SignupStatus,
+  { label: string; badge: string; dot: string; help: string }
+> = {
+  esperando_comprobante: {
+    label: 'Sin comprobante',
+    badge: 'bg-stone-100 text-stone-700 border-stone-200',
+    dot: 'bg-stone-400',
+    help: 'Dejó los datos y todavía no subió nada.',
+  },
+  en_revision: {
+    label: 'Para revisar',
+    badge: 'bg-amber-50 text-amber-800 border-amber-200',
+    dot: 'bg-amber-500',
+    help: 'Subió el comprobante y no se pudo confirmar solo.',
+  },
+  aprobado: {
+    label: 'Aprobada',
+    badge: 'bg-emerald-50 text-emerald-800 border-emerald-200',
+    dot: 'bg-emerald-500',
+    help: 'El pago está confirmado.',
+  },
+  rechazado: {
+    label: 'Rechazada',
+    badge: 'bg-rose-50 text-rose-700 border-rose-200',
+    dot: 'bg-rose-500',
+    help: 'No se pudo confirmar el pago.',
+  },
+};
+
+export type AiVerdict = 'valido' | 'dudoso' | 'invalido';
+
+export const AI_VERDICT_META: Record<AiVerdict, { label: string; badge: string }> = {
+  valido: { label: 'La IA lo dio por válido', badge: 'bg-emerald-50 text-emerald-800 border-emerald-200' },
+  dudoso: { label: 'La IA no se definió', badge: 'bg-amber-50 text-amber-800 border-amber-200' },
+  invalido: { label: 'La IA lo dio por inválido', badge: 'bg-rose-50 text-rose-700 border-rose-200' },
+};
+
+export interface Signup {
+  id: string;
+  token: string;
+  business_name: string;
+  contact_name: string | null;
+  email: string;
+  whatsapp: string | null;
+  city: string | null;
+  industry: string | null;
+  plan: string;
+  includes_setup: boolean;
+  amount: number;
+  currency: string;
+  status: SignupStatus;
+  receipt_path: string | null;
+  receipt_uploaded_at: string | null;
+  ai_verdict: AiVerdict | null;
+  ai_confidence: number | null;
+  ai_summary: string | null;
+  ai_extracted: Record<string, unknown> | null;
+  ai_checked_at: string | null;
+  decided_by: string | null;
+  decided_at: string | null;
+  decision_notes: string | null;
+  client_id: string | null;
+  onboarding: Record<string, string | null> | null;
+  onboarding_at: string | null;
+  notified_at: string | null;
+  created_at: string;
+}
+
+export interface Plan {
+  code: string;
+  label: string;
+  monthly: number;
+  setup: number;
+  currency: string;
+  sort_order: number;
+  is_active: boolean;
+}

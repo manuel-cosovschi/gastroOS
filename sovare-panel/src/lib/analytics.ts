@@ -43,6 +43,8 @@ export interface DashboardData {
   overdue: UpcomingPayment[];
   steps: PendingStep[];
   recent: Client[];
+  /** Contrataciones que entraron por la página y esperan una decisión. */
+  signupsToReview: number;
 }
 
 const MONTHS_BACK = 6;
@@ -56,7 +58,7 @@ export async function getDashboardData(): Promise<DashboardData> {
   since.setMonth(since.getMonth() - (MONTHS_BACK - 1));
   const seriesFrom = monthStart(since);
 
-  const [clientsResult, paymentsResult, stepsResult] = await Promise.all([
+  const [clientsResult, paymentsResult, stepsResult, signupsResult] = await Promise.all([
     supabase.from('clients').select('*').order('created_at', { ascending: false }),
     supabase.from('payments').select('*').gte('period', seriesFrom),
     supabase
@@ -65,6 +67,7 @@ export async function getDashboardData(): Promise<DashboardData> {
       .not('next_step_at', 'is', null)
       .order('next_step_at', { ascending: true })
       .limit(8),
+    supabase.from('signups').select('id', { count: 'exact', head: true }).eq('status', 'en_revision'),
   ]);
 
   const clients = (clientsResult.data ?? []) as Client[];
@@ -136,6 +139,7 @@ export async function getDashboardData(): Promise<DashboardData> {
       overdue: sum(overdueRows),
       overdueCount: overdueRows.length,
     },
+    signupsToReview: signupsResult.count ?? 0,
     series,
     upcoming,
     overdue,

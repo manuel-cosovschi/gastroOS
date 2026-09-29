@@ -4,12 +4,23 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { CreditCard, LayoutDashboard, LogOut, Menu, Plus, UserCog, Users, X } from 'lucide-react';
+import {
+  CreditCard,
+  FileSignature,
+  LayoutDashboard,
+  LogOut,
+  Menu,
+  Plus,
+  UserCog,
+  Users,
+  X,
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { createClient } from '@/lib/supabase/client';
 
 const LINKS = [
   { href: '/', label: 'Resumen', icon: LayoutDashboard },
+  { href: '/contrataciones', label: 'Contrataciones', icon: FileSignature },
   { href: '/clientes', label: 'Clientes', icon: Users },
   { href: '/cobros', label: 'Cobros', icon: CreditCard },
 ];

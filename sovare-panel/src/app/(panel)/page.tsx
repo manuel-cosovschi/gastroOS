@@ -5,6 +5,7 @@ import {
   CalendarClock,
   CircleDollarSign,
   Clock,
+  FileSignature,
   Repeat,
   Users,
   Wallet,
@@ -80,6 +81,22 @@ export default async function DashboardPage() {
           href="/cobros?estado=vencido"
         />
       </section>
+
+      {/* ---------- Contrataciones esperando ---------- */}
+      {data.signupsToReview > 0 && (
+        <Link
+          href="/contrataciones?estado=en_revision"
+          className="flex items-center gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 transition-shadow hover:shadow-card"
+        >
+          <FileSignature className="h-4 w-4 shrink-0 text-amber-600" />
+          <span className="min-w-0 flex-1 text-sm text-stone-800">
+            {data.signupsToReview === 1
+              ? 'Entró una contratación desde la página y el comprobante espera que lo mires.'
+              : `Entraron ${data.signupsToReview} contrataciones desde la página con el comprobante sin revisar.`}
+          </span>
+          <ArrowRight className="h-3.5 w-3.5 shrink-0 text-stone-400" />
+        </Link>
+      )}
 
       {/* ---------- Vencidos ---------- */}
       {data.overdue.length > 0 && (

@@ -14,10 +14,23 @@ export function money(value: number | null | undefined, currency = 'ARS') {
   }).format(value);
 }
 
+/**
+ * Convierte a Date lo que venga de la base.
+ *
+ * Una fecha sola (`2026-09-29`) se lee al mediodía y no a medianoche: parseada
+ * como UTC a las 00:00, en Argentina cae el día anterior a las 21 y las fechas
+ * se muestran corridas un día. A un timestamp completo no hay que hacerle nada,
+ * y pegarle la hora encima lo rompía: `new Date('…T03:52:00+00:00T12:00:00')`
+ * es Invalid Date, y eso tumbaba la página entera.
+ */
+function parseDate(value: string): Date {
+  return new Date(value.includes('T') ? value : `${value}T12:00:00`);
+}
+
 export function shortDate(value: string | null | undefined) {
   if (!value) return '—';
   return new Intl.DateTimeFormat('es-AR', { day: '2-digit', month: 'short' }).format(
-    new Date(`${value}T12:00:00`)
+    parseDate(value)
   );
 }
 
@@ -27,7 +40,7 @@ export function longDate(value: string | null | undefined) {
     day: 'numeric',
     month: 'long',
     year: 'numeric',
-  }).format(new Date(`${value}T12:00:00`));
+  }).format(parseDate(value));
 }
 
 export function monthLabel(value: string) {
