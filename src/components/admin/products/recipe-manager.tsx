@@ -94,11 +94,15 @@ export function RecipeManager({
       {items.length > 0 && (
         <div className="space-y-2">
           {items.map((item, index) => (
-            <div key={index} className="flex items-center gap-3">
+            // `min-w-0` en el select es lo que hace que la fila entre en un
+            // teléfono: un <select> mide por su opción más larga y con el
+            // min-width automático de flex no baja de ahí, así que empujaba la
+            // pantalla de costado. El resto no se achica, se fija.
+            <div key={index} className="flex items-center gap-2 sm:gap-3">
               <select
                 value={item.ingredient_id}
                 onChange={(e) => updateItem(index, 'ingredient_id', e.target.value)}
-                className="flex-1 rounded-md border border-stone-300 px-3 py-2 text-sm focus:border-stone-500 focus:outline-none focus:ring-1 focus:ring-stone-500"
+                className="min-w-0 flex-1 rounded-md border border-stone-300 px-3 py-2 text-sm focus:border-stone-500 focus:outline-none focus:ring-1 focus:ring-stone-500"
               >
                 {availableIngredients.map((ing) => (
                   <option key={ing.id} value={ing.id}>{ing.name} ({ing.unit})</option>
@@ -110,13 +114,13 @@ export function RecipeManager({
                 min="0"
                 value={item.quantity_per_batch}
                 onChange={(e) => updateItem(index, 'quantity_per_batch', Number(e.target.value))}
-                className="w-28 rounded-md border border-stone-300 px-3 py-2 text-sm focus:border-stone-500 focus:outline-none focus:ring-1 focus:ring-stone-500"
+                className="w-24 shrink-0 rounded-md border border-stone-300 px-3 py-2 text-sm focus:border-stone-500 focus:outline-none focus:ring-1 focus:ring-stone-500 sm:w-28"
                 placeholder="Cantidad"
               />
-              <span className="text-xs text-stone-500 w-12">
+              <span className="w-9 shrink-0 text-xs text-stone-500 sm:w-12">
                 {getIngredientUnit(item.ingredient_id)}
               </span>
-              <button onClick={() => removeItem(index)} className="text-stone-400 hover:text-red-500">
+              <button onClick={() => removeItem(index)} className="shrink-0 text-stone-400 hover:text-red-500">
                 <Trash2 className="h-4 w-4" />
               </button>
             </div>

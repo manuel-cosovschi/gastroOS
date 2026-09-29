@@ -98,7 +98,7 @@ export default async function DashboardPage() {
 
       <div className="grid gap-6 lg:grid-cols-3">
         {/* ---------- Próximas entregas ---------- */}
-        <section className="surface lg:col-span-2">
+        <section className="surface min-w-0 lg:col-span-2">
           <header className="flex items-center justify-between border-b border-stone-200 px-5 py-4">
             <h2 className="text-sm font-semibold text-stone-900">Próximas entregas</h2>
             <Link
@@ -155,7 +155,7 @@ export default async function DashboardPage() {
         </section>
 
         {/* ---------- Mes ---------- */}
-        <section className="surface self-start">
+        <section className="surface min-w-0 self-start">
           <header className="border-b border-stone-200 px-5 py-4">
             <h2 className="text-sm font-semibold text-stone-900">Resumen del mes</h2>
           </header>
@@ -189,7 +189,7 @@ export default async function DashboardPage() {
 
       {/* ---------- Gráficos ---------- */}
       <div className="grid gap-6 lg:grid-cols-3">
-        <section className="surface p-5 lg:col-span-2">
+        <section className="surface min-w-0 p-5 lg:col-span-2">
           <header className="mb-4 flex items-center gap-2">
             <TrendingUp className="h-4 w-4 text-stone-400" />
             <h2 className="text-sm font-semibold text-stone-900">
@@ -199,7 +199,7 @@ export default async function DashboardPage() {
           <TimeBars data={data.revenue_series} showExpenses height={190} />
         </section>
 
-        <section className="surface p-5">
+        <section className="surface min-w-0 p-5">
           <h2 className="mb-4 text-sm font-semibold text-stone-900">
             Más vendidos · últimos 30 días
           </h2>
@@ -261,7 +261,11 @@ function AlertRow({ alert }: { alert: DashboardAlert }) {
     <Link
       href={alert.href}
       className={cn(
-        'flex items-center gap-3 rounded-xl border px-4 py-3 transition-shadow hover:shadow-card',
+        // `min-w-0` no es decorativo: sin él el `truncate` de adentro no
+        // achica nada. Un hijo de grid arranca con min-width:auto, así que se
+        // estira hasta que entre el texto completo y empuja la página a lo
+        // ancho. En un teléfono el dashboard se movía de costado por esto.
+        'flex min-w-0 items-center gap-3 rounded-xl border px-4 py-3 transition-shadow hover:shadow-card',
         style.box
       )}
     >

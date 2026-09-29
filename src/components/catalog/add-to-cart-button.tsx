@@ -31,7 +31,7 @@ export function AddToCartButton({ product }: AddToCartButtonProps) {
   };
 
   return (
-    <div className="flex items-center gap-4">
+    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
       <div className="flex items-center gap-2">
         <Button
           size="icon"
@@ -55,7 +55,7 @@ export function AddToCartButton({ product }: AddToCartButtonProps) {
           <Plus className="h-4 w-4" />
         </Button>
       </div>
-      <Button size="lg" onClick={handleAdd} className="flex-1">
+      <Button size="lg" onClick={handleAdd} className="w-full sm:w-auto sm:flex-1">
         <ShoppingBag className="mr-2 h-4 w-4" /> Agregar al pedido
       </Button>
     </div>
