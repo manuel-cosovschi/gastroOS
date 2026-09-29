@@ -2,10 +2,12 @@
 
 import { revalidatePath } from 'next/cache';
 import { createServerClient } from '@/lib/supabase/server';
-import { requireBusinessId } from '@/lib/business';
+import { getCurrentBusiness, requireBusinessId } from '@/lib/business';
 import { getProductUnitCosts, getPackageUnitCosts } from '@/lib/production-cost';
 import { round2, todayISO } from '@/lib/utils';
 import { findOrCreateCustomer } from '@/actions/customers';
+import { sendOrderStatusUpdate } from '@/lib/order-emails';
+import { SITE_URL } from '@/lib/marketing';
 import { applyStockForOrder } from '@/actions/inventory';
 import { VALID_TRANSITIONS, ORDER_STATUS_LABELS } from '@/types';
 import type {
@@ -256,7 +258,7 @@ export async function updateOrderStatus(
 
   const { data: order } = await supabase
     .from('orders')
-    .select('id, status')
+    .select('id, status, order_number, contact_name, email')
     .eq('id', orderId)
     .eq('business_id', businessId)
     .maybeSingle();
@@ -294,6 +296,13 @@ export async function updateOrderStatus(
     const result = await applyStockForOrder(businessId, orderId);
     warnings = result.warnings;
   }
+
+  // El aviso al cliente. Sin `await`: quien está en el panel cambiando estados
+  // no tiene que esperar a que salga un mail, y si no sale, el estado ya
+  // cambió igual. No todos los estados avisan — eso lo decide el módulo.
+  notifyStatusChange(order, newStatus, notes).catch((error) =>
+    console.error('[updateOrderStatus] no se pudo avisar al cliente:', error)
+  );
 
   revalidateOrderViews(orderId);
   return { success: true, warnings };
@@ -408,6 +417,34 @@ async function priceOrderLines(
     subtotal: round2(items.reduce((sum, item) => sum + item.subtotal, 0)),
     productionCost: round2(items.reduce((sum, item) => sum + (item.cost_subtotal ?? 0), 0)),
   };
+}
+
+/**
+ * Avisa al cliente que su pedido cambió de estado.
+ *
+ * Va aparte de `updateOrderStatus` para que esa función se siga leyendo como
+ * lo que hace —validar la transición, mover el estado, tocar el stock— y no
+ * quede mezclada con el armado de un mail.
+ */
+async function notifyStatusChange(
+  order: { order_number: number; contact_name: string; email: string | null },
+  status: OrderStatus,
+  notes?: string
+) {
+  if (!order.email) return;
+
+  // `getCurrentBusiness` está memoizada por request, así que pedirla de nuevo
+  // acá no cuesta una consulta más: ya la resolvió `requireBusinessId`.
+  const business = await getCurrentBusiness();
+  if (!business) return;
+
+  await sendOrderStatusUpdate({
+    business,
+    order,
+    status,
+    notes: notes || null,
+    trackingUrl: SITE_URL ? `${SITE_URL}/pedido/seguimiento/${order.order_number}` : undefined,
+  });
 }
 
 function revalidateOrderViews(orderId: string) {

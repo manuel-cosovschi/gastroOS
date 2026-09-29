@@ -4,6 +4,12 @@ import { revalidatePath } from 'next/cache';
 import { createServerClient } from '@/lib/supabase/server';
 import { getStorefrontBusiness } from '@/lib/business';
 import { notifyBusiness } from '@/lib/push';
+import {
+  loadOrderLines,
+  sendNewOrderNotification,
+  sendOrderConfirmation,
+} from '@/lib/order-emails';
+import { SITE_URL } from '@/lib/marketing';
 import type {
   Category,
   CreateOrderInput,
@@ -195,15 +201,19 @@ export async function submitStorefrontOrder(
   revalidatePath('/admin/pedidos');
   revalidatePath('/admin/calendario');
 
-  // El aviso al teléfono. Va sin `await` a propósito: quien acaba de encargar
-  // no tiene por qué esperar a que Google le entregue una notificación a otra
-  // persona, y si el envío falla el pedido ya está guardado igual.
+  // Los avisos van sin `await` a propósito: quien acaba de encargar no tiene
+  // por qué esperar a que Google entregue una notificación ni a que Resend
+  // acepte un mail. El pedido ya está guardado, que es lo que importa.
   notifyBusiness(business.id, {
     title: `Pedido nuevo #${order.order_number}`,
     body: `${input.contact_name} encargó por la tienda. Entrega el ${formatDeliveryDate(input.delivery_date)}.`,
     url: `/admin/pedidos/${order.id}`,
     tag: `pedido-${order.order_number}`,
   }).catch((error) => console.error('[submitStorefrontOrder] no se pudo avisar:', error));
+
+  sendOrderMails(business, order, input).catch((error) =>
+    console.error('[submitStorefrontOrder] no se pudieron mandar los mails:', error)
+  );
 
   return { success: true, order };
 }
@@ -255,4 +265,42 @@ function formatDeliveryDate(date: string): string {
   return new Intl.DateTimeFormat('es-AR', { day: 'numeric', month: 'short' }).format(
     new Date(`${date}T12:00:00`)
   );
+}
+
+/**
+ * Los dos mails de un pedido de la tienda: la confirmación a quien encargó y
+ * el aviso al negocio.
+ *
+ * Van juntos y en una función aparte para que el camino feliz del alta se lea
+ * de un tirón. Las líneas se releen de la base y no se toman de la entrada: lo
+ * que el mail tiene que decir es lo que quedó guardado, con los precios del
+ * catálogo, no lo que mandó el navegador.
+ */
+async function sendOrderMails(
+  business: StorefrontBusiness,
+  receipt: StorefrontOrderReceipt,
+  input: CreateOrderInput
+) {
+  const items = await loadOrderLines(receipt.id);
+  if (items.length === 0) return;
+
+  const order = {
+    order_number: receipt.order_number,
+    contact_name: input.contact_name,
+    phone: input.phone ?? null,
+    email: input.email ?? null,
+    delivery_date: input.delivery_date,
+    delivery_method: input.delivery_method,
+    address: input.address ?? null,
+    observations: input.observations ?? null,
+    subtotal: items.reduce((total, item) => total + Number(item.subtotal), 0),
+  };
+
+  const tracking = SITE_URL ? `${SITE_URL}/pedido/seguimiento/${receipt.order_number}` : undefined;
+  const admin = SITE_URL ? `${SITE_URL}/admin/pedidos/${receipt.id}` : undefined;
+
+  await Promise.all([
+    sendOrderConfirmation({ business, order, items, trackingUrl: tracking }),
+    sendNewOrderNotification({ business, order, items, adminUrl: admin }),
+  ]);
 }

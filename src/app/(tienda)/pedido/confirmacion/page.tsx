@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { CheckCircle, Search } from 'lucide-react';
+import { mailerConfigured } from '@/lib/mailer';
 
 /**
  * El parámetro se llama `numero`: es el que manda el formulario del pedido.
@@ -41,16 +42,16 @@ export default async function ConfirmacionPage({ searchParams }: Props) {
         )}
 
         {/*
-          Acá antes decía que iba a llegar un email de confirmación y otro por
-          cada cambio de estado. No existe: el sistema no manda mails todavía.
-          Prometer algo que no pasa deja al cliente esperando y al negocio
-          quedando mal, así que la pantalla dice lo que realmente ocurre.
+          El mail se promete sólo si el envío está configurado. Antes esta
+          pantalla decía que iba a llegar uno pase lo que pase, y el sistema no
+          mandaba ninguno: el cliente quedaba esperando y el negocio quedando
+          mal por algo que nunca hizo.
         */}
         <div className="mt-6 rounded-lg border border-stone-200 bg-stone-50 p-4 text-left">
-          <p className="text-sm text-stone-600">
-            Revisamos cada pedido a mano para confirmar disponibilidad. Te contactamos por
-            teléfono o WhatsApp con los datos que dejaste, y mientras tanto podés ver en qué
-            estado está con tu número de pedido.
+          <p className="text-sm leading-relaxed text-stone-600">
+            {mailerConfigured()
+              ? 'Te mandamos un mail con el detalle. Revisamos cada pedido a mano para confirmar disponibilidad, y te avisamos por mail cada vez que cambie de estado.'
+              : 'Revisamos cada pedido a mano para confirmar disponibilidad. Te contactamos por teléfono o WhatsApp con los datos que dejaste, y mientras tanto podés ver en qué estado está con tu número de pedido.'}
           </p>
         </div>
 
