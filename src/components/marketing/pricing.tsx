@@ -1,6 +1,9 @@
+import Link from 'next/link';
 import { Check, Unlock, Wrench } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { PRICING } from '@/lib/marketing';
+import { getPlanAmounts, signupsEnabled } from '@/lib/signups';
+import { Button } from '@/components/ui/button';
 import { SectionHeading } from '@/components/marketing/section';
 import { BookMeetingButton, TrySystemButton } from '@/components/marketing/cta-buttons';
 
@@ -13,6 +16,12 @@ import { BookMeetingButton, TrySystemButton } from '@/components/marketing/cta-b
  *
  * No se renderiza si `PRICING.enabled` es false: una página de venta con
  * precios que el dueño del negocio no eligió es peor que una sin precios.
+ *
+ * Los números salen de `sovare.plans`, que es lo que se le va a pedir
+ * transferir a alguien. Los de `PRICING` quedan como respaldo para el caso en
+ * que la base no esté disponible: es mejor mostrar el precio de la última
+ * versión desplegada que dejar la sección sin precios. Si algún día se
+ * desfasan, el que manda en la contratación es el de la base.
  */
 
 const money = (value: number) =>
@@ -22,8 +31,13 @@ const money = (value: number) =>
     maximumFractionDigits: 0,
   }).format(value);
 
-export function Pricing() {
+export async function Pricing() {
   if (!PRICING.enabled) return null;
+
+  const canSignUp = signupsEnabled();
+  const amounts = canSignUp ? await getPlanAmounts() : [];
+  const priceFor = (code: string, fallback: number) =>
+    amounts.find((plan) => plan.code === code)?.monthly ?? fallback;
 
   return (
     <section id="precios" className="scroll-mt-20 border-t border-stone-200 bg-stone-50 py-20 sm:py-24">
@@ -66,7 +80,7 @@ export function Pricing() {
                   <span className="text-sm text-stone-500">desde</span>
                 )}
                 <span className="text-3xl font-semibold tracking-tight text-stone-900">
-                  {money(plan.price)}
+                  {money(priceFor(plan.code, plan.price))}
                 </span>
                 <span className="text-sm text-stone-500">{plan.unit}</span>
               </p>
@@ -79,6 +93,16 @@ export function Pricing() {
                   </li>
                 ))}
               </ul>
+
+              {canSignUp && (
+                <Button
+                  asChild
+                  variant={plan.highlight ? 'default' : 'outline'}
+                  className="mt-6 w-full"
+                >
+                  <Link href={`/contratar?plan=${plan.code}`}>Contratar {plan.name}</Link>
+                </Button>
+              )}
             </div>
           ))}
         </div>
@@ -106,7 +130,7 @@ export function Pricing() {
 
             <div className="shrink-0 rounded-xl bg-stone-50 px-6 py-5 text-center lg:text-right">
               <p className="text-3xl font-semibold tracking-tight text-stone-900">
-                {money(PRICING.setup.price)}
+                {money(amounts[0]?.setup ?? PRICING.setup.price)}
               </p>
               <p className="mt-1 text-sm text-stone-500">{PRICING.setup.unit}</p>
             </div>

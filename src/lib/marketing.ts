@@ -57,6 +57,26 @@ export const WHATSAPP_URL = WHATSAPP_NUMBER
   ? `https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MESSAGE}`
   : '';
 
+/** El mismo link con otro mensaje, para los que llegan desde otra pantalla. */
+export function whatsappUrl(message: string): string {
+  if (!WHATSAPP_NUMBER) return '';
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+}
+
+/**
+ * La URL absoluta del sitio. Hace falta en los mails, donde un link relativo no
+ * lleva a ningún lado. En Vercel sale de la variable del deploy de producción,
+ * así que en el caso normal no hay que cargar nada.
+ */
+export const SITE_URL = (() => {
+  const explicit = process.env.NEXT_PUBLIC_SITE_URL?.trim().replace(/\/$/, '');
+  if (explicit) return explicit;
+
+  const vercel =
+    process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim() || process.env.VERCEL_URL?.trim();
+  return vercel ? `https://${vercel.replace(/\/$/, '')}` : '';
+})();
+
 export const EMAIL_URL = CONTACT_EMAIL
   ? `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent('Consulta sobre GastroOS')}`
   : '';
@@ -518,6 +538,7 @@ export const PRICING = {
 
   plans: [
     {
+      code: 'base',
       name: 'Base',
       price: 26900,
       unit: 'por mes',
@@ -533,6 +554,7 @@ export const PRICING = {
       highlight: false,
     },
     {
+      code: 'soporte',
       name: 'Con soporte',
       price: 46900,
       unit: 'por mes',
@@ -548,6 +570,7 @@ export const PRICING = {
       highlight: true,
     },
     {
+      code: 'medida',
       name: 'A medida',
       price: 89000,
       unit: 'por mes',
