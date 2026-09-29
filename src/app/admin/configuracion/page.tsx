@@ -1,6 +1,8 @@
 import { getBusiness } from '@/actions/business';
 import { PageHeader } from '@/components/ui/page-header';
 import { BusinessSettingsForm } from '@/components/admin/settings/business-settings-form';
+import { NotificationSettings } from '@/components/admin/notifications';
+import { VAPID_PUBLIC_KEY, pushConfigured } from '@/lib/push';
 
 export const metadata = { title: 'Configuración' };
 
@@ -24,6 +26,22 @@ export default async function SettingsPage() {
             negocio desde la base de datos.
           </p>
         </div>
+      )}
+
+      {/*
+        Las notificaciones sólo aparecen si están configuradas del lado del
+        servidor. Un interruptor que pide permiso al navegador y después no
+        manda nunca nada es peor que no ofrecerlo.
+      */}
+      {pushConfigured() && (
+        <section className="surface p-6">
+          <h2 className="text-sm font-semibold text-stone-900">Notificaciones</h2>
+          <p className="mb-5 mt-1 text-sm leading-relaxed text-stone-500">
+            Un aviso en el teléfono cuando entra un pedido por la tienda, sin tener que estar
+            mirando la pantalla.
+          </p>
+          <NotificationSettings vapidKey={VAPID_PUBLIC_KEY} />
+        </section>
       )}
     </div>
   );

@@ -36,12 +36,14 @@
     "react-hook-form": "^7.54.0",
     "sonner": "^1.7.0",
     "tailwind-merge": "^2.6.0",
+    "web-push": "^3.6.7",
     "zod": "^3.24.0"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "@types/web-push": "^3.6.4",
     "autoprefixer": "^10.4.0",
     "dotenv": "^17.3.1",
     "eslint": "^9.0.0",
@@ -51,5 +53,5 @@
     "tsx": "^4.21.0",
     "typescript": "^5.7.0"
   },
-  "description": "GastroOS \u2014 el sistema operativo de tu negocio gastron\u00f3mico"
+  "description": "GastroOS — el sistema operativo de tu negocio gastronómico"
 }

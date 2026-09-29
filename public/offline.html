@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sin conexión · GastroOS</title>
+    <style>
+      :root { color-scheme: light; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+        background: #fafaf9;
+        color: #1c1917;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      }
+      .caja { max-width: 22rem; text-align: center; }
+      .icono {
+        width: 56px; height: 56px; margin: 0 auto 20px;
+        border-radius: 16px; background: #047857;
+        display: grid; place-items: center;
+      }
+      .icono span { color: #fff; font-size: 26px; line-height: 1; }
+      h1 { margin: 0 0 8px; font-size: 20px; font-weight: 600; }
+      p { margin: 0 0 20px; font-size: 15px; line-height: 1.6; color: #57534e; }
+      button {
+        border: 0; border-radius: 10px; background: #047857; color: #fff;
+        font: inherit; font-weight: 600; padding: 11px 22px; cursor: pointer;
+      }
+      button:hover { background: #065f46; }
+    </style>
+  </head>
+  <body>
+    <div class="caja">
+      <div class="icono"><span>⎋</span></div>
+      <h1>Sin conexión</h1>
+      <!--
+        No se muestran datos guardados a propósito: un pedido o un stock de hace
+        dos horas, presentado como si fuera de ahora, hace tomar decisiones
+        equivocadas. Es preferible decir la verdad.
+      -->
+      <p>
+        No pudimos conectarnos. Tus datos están a salvo en el servidor: en cuanto
+        vuelva la conexión, todo aparece como lo dejaste.
+      </p>
+      <button onclick="location.reload()">Reintentar</button>
+    </div>
+  </body>
+</html>

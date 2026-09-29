@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { createServerClient } from '@/lib/supabase/server';
 import { getStorefrontBusiness } from '@/lib/business';
+import { notifyBusiness } from '@/lib/push';
 import type {
   Category,
   CreateOrderInput,
@@ -194,6 +195,16 @@ export async function submitStorefrontOrder(
   revalidatePath('/admin/pedidos');
   revalidatePath('/admin/calendario');
 
+  // El aviso al teléfono. Va sin `await` a propósito: quien acaba de encargar
+  // no tiene por qué esperar a que Google le entregue una notificación a otra
+  // persona, y si el envío falla el pedido ya está guardado igual.
+  notifyBusiness(business.id, {
+    title: `Pedido nuevo #${order.order_number}`,
+    body: `${input.contact_name} encargó por la tienda. Entrega el ${formatDeliveryDate(input.delivery_date)}.`,
+    url: `/admin/pedidos/${order.id}`,
+    tag: `pedido-${order.order_number}`,
+  }).catch((error) => console.error('[submitStorefrontOrder] no se pudo avisar:', error));
+
   return { success: true, order };
 }
 
@@ -235,4 +246,13 @@ export async function getOrderTracking(orderNumber: number): Promise<OrderTracki
     })),
     timeline: tracking.timeline || [],
   };
+}
+
+/** La fecha de entrega en el texto de la notificación, corta y legible. */
+function formatDeliveryDate(date: string): string {
+  // Al mediodía y no a medianoche: una fecha sola parseada como UTC cae el día
+  // anterior en Argentina, y el aviso diría un día menos.
+  return new Intl.DateTimeFormat('es-AR', { day: 'numeric', month: 'short' }).format(
+    new Date(`${date}T12:00:00`)
+  );
 }
