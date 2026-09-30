@@ -1,8 +1,9 @@
 'use client';
 
 import { Suspense, useState } from 'react';
+import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Loader2 } from 'lucide-react';
+import { KeyRound, Loader2 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,6 +12,22 @@ import { Logo } from '@/components/brand/logo';
 import { EnterDemoButton } from '@/components/demo/enter-demo-button';
 import { APP_TAGLINE, DEMO_MODE } from '@/lib/constants';
 
+/**
+ * Esta pantalla atiende a dos personas distintas, y hasta ahora no lo decía.
+ *
+ * Una nunca vio el sistema y llegó desde "Probar el sistema": lo único que
+ * tiene que hacer es tocar un botón. La otra ya es clienta, tiene su propia
+ * instalación y viene a entrar a su negocio con su mail y su contraseña.
+ *
+ * Antes las dos cosas se veían como un solo bloque con un formulario suelto
+ * abajo, y el que venía a probar se quedaba mirando dos campos que no tenía
+ * cómo completar. Ahora la demo es la acción de la pantalla y el ingreso de
+ * clientes está detrás de un botón que dice para quién es: el formulario
+ * aparece sólo si alguien dice que es suyo.
+ *
+ * En la instalación de un cliente `DEMO_MODE` es falso: ahí no hay demo, no
+ * hay nada que separar y el formulario es la pantalla entera, como siempre.
+ */
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -20,6 +37,10 @@ function LoginForm() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // Si el middleware lo mandó acá desde una pantalla del panel, ya sabemos que
+  // venía a entrar a lo suyo: el formulario arranca abierto.
+  const [showForm, setShowForm] = useState(!DEMO_MODE || searchParams.has('next'));
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -47,16 +68,8 @@ function LoginForm() {
           <p className="mt-3 text-sm text-stone-500">{APP_TAGLINE}</p>
         </div>
 
-        {/*
-          La demo va primero y con su propio botón. Antes esta pantalla le
-          pedía al visitante "la contraseña configurada en DEMO_PASSWORD": una
-          instrucción para el que programa, en la única pantalla que tiene que
-          convencer a alguien que nunca vio el sistema. El que llega desde
-          "Probar el sistema" entra de un toque; el formulario de abajo es para
-          quien ya es cliente.
-        */}
         {DEMO_MODE && (
-          <div className="surface mb-4 space-y-3 p-6">
+          <div className="surface space-y-3 p-6">
             <div className="text-center">
               <p className="text-sm font-semibold text-stone-900">Probá el sistema ahora</p>
               <p className="mt-1 text-sm leading-relaxed text-stone-600">
@@ -68,47 +81,80 @@ function LoginForm() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="surface space-y-4 p-6">
-          {DEMO_MODE && (
-            <p className="text-center text-sm font-medium text-stone-500">
-              ¿Ya tenés tu sistema? Entrá acá
+        {DEMO_MODE && (
+          <div className="my-5 flex items-center gap-3">
+            <span className="h-px flex-1 bg-stone-200" />
+            <span className="text-xs font-medium uppercase tracking-wider text-stone-400">o</span>
+            <span className="h-px flex-1 bg-stone-200" />
+          </div>
+        )}
+
+        {DEMO_MODE && !showForm ? (
+          <div className="surface space-y-3 p-6 text-center">
+            <p className="text-sm font-semibold text-stone-900">Ya tengo mi sistema</p>
+            <p className="text-sm leading-relaxed text-stone-600">
+              Si tu negocio ya trabaja con GastroOS, entrá a tu panel con el mail y la contraseña
+              que te dimos.
             </p>
-          )}
-
-          <div>
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              className="mt-1.5"
-              autoComplete="email"
-              required
-            />
+            <Button variant="outline" className="w-full" onClick={() => setShowForm(true)}>
+              <KeyRound className="mr-2 h-4 w-4" />
+              Entrar a mi sistema
+            </Button>
           </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="surface space-y-4 p-6">
+            {DEMO_MODE && (
+              <div className="text-center">
+                <p className="text-sm font-semibold text-stone-900">Entrá a tu sistema</p>
+                <p className="mt-1 text-sm text-stone-600">
+                  Con el mail y la contraseña de tu negocio.
+                </p>
+              </div>
+            )}
 
-          <div>
-            <Label htmlFor="password">Contraseña</Label>
-            <Input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              className="mt-1.5"
-              autoComplete="current-password"
-              required
-            />
-          </div>
+            <div>
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                className="mt-1.5"
+                autoComplete="email"
+                required
+              />
+            </div>
 
-          {error && <p className="text-sm text-rose-600">{error}</p>}
+            <div>
+              <Label htmlFor="password">Contraseña</Label>
+              <Input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                className="mt-1.5"
+                autoComplete="current-password"
+                required
+              />
+            </div>
 
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-            Entrar
-          </Button>
+            {error && <p className="text-sm text-rose-600">{error}</p>}
 
-        </form>
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading && <Loader2 className="h-4 w-4 animate-spin" />}
+              Entrar
+            </Button>
+          </form>
+        )}
+
+        {DEMO_MODE && (
+          <p className="mt-6 text-center text-sm text-stone-500">
+            ¿Todavía no tenés el tuyo?{' '}
+            <Link href="/contratar" className="font-medium text-brand-700 hover:underline">
+              Mirá los planes
+            </Link>
+          </p>
+        )}
       </div>
     </div>
   );

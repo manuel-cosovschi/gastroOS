@@ -1,7 +1,7 @@
 'use client';
 
-import Link from 'next/link';
-import { HelpCircle, Menu, Package, Plus, Receipt, UserPlus } from 'lucide-react';
+import Link, { useLinkStatus } from 'next/link';
+import { HelpCircle, Loader2, Menu, Package, Plus, Receipt, UserPlus } from 'lucide-react';
 import { DEMO_MODE } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 import { useTour } from '@/components/admin/tour/tour-provider';
@@ -76,13 +76,35 @@ export function AdminTopbar({ onOpenMenu }: { onOpenMenu: () => void }) {
 
         <Link
           href="/admin/pedidos/nuevo"
+          prefetch
           data-tour="new-order"
           className="inline-flex h-9 items-center gap-2 rounded-lg bg-stone-900 px-4 text-sm font-medium text-white shadow-sm transition-colors hover:bg-stone-800"
         >
-          <Plus className="h-4 w-4" />
-          Nuevo pedido
+          <NewOrderLabel />
         </Link>
       </div>
     </header>
+  );
+}
+
+/**
+ * El botón principal, mostrando que el toque registró.
+ *
+ * Es la acción que más se usa y la que más se toca dos veces creyendo que no
+ * anduvo. `useLinkStatus` sólo lee el estado del `<Link>` que lo contiene, así
+ * que esto tiene que ser un componente aparte.
+ */
+function NewOrderLabel() {
+  const { pending } = useLinkStatus();
+
+  return (
+    <>
+      {pending ? (
+        <Loader2 className="h-4 w-4 animate-spin" />
+      ) : (
+        <Plus className="h-4 w-4" />
+      )}
+      Nuevo pedido
+    </>
   );
 }
