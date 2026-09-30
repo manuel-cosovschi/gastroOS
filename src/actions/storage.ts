@@ -57,14 +57,32 @@ export async function uploadImage(
   return { success: true, url: data.publicUrl };
 }
 
+/**
+ * Borra una imagen del storage, si es del negocio que la está pidiendo.
+ *
+ * Esa condición es el punto. Antes bastaba con estar autenticado y saber la
+ * ruta —y la ruta está a la vista en la URL pública de cualquier foto del
+ * catálogo—, así que un negocio podía borrarle los archivos a otro.
+ *
+ * Con la demo por visitante eso además rompía la demo para todos: cada copia
+ * hereda las `image_url` de la plantilla, y el primero que le cambiara la foto
+ * a un producto borraba el archivo original de todos los demás.
+ *
+ * Un archivo de otro negocio no es un error: es una imagen compartida que esta
+ * copia simplemente deja de usar. Se responde que sí, sin borrar nada.
+ */
 export async function deleteImage(imageUrl: string): Promise<{ success: boolean; error?: string }> {
   if (!(await assertAuthenticated())) return { success: false, error: 'No tenés permiso.' };
 
   const parts = imageUrl.split(`/storage/v1/object/public/${MEDIA_BUCKET}/`);
   if (parts.length < 2) return { success: false, error: 'URL de imagen inválida.' };
 
+  const path = parts[1];
+  const businessId = await requireBusinessId();
+  if (!path.startsWith(`${businessId}/`)) return { success: true };
+
   const supabase = await createServerClient();
-  const { error } = await supabase.storage.from(MEDIA_BUCKET).remove([parts[1]]);
+  const { error } = await supabase.storage.from(MEDIA_BUCKET).remove([path]);
 
   if (error) return { success: false, error: 'No se pudo eliminar la imagen.' };
   return { success: true };
