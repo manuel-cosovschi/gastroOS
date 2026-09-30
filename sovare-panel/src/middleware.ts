@@ -52,6 +52,19 @@ export async function middleware(request: NextRequest) {
   return response;
 }
 
+/**
+ * Todo menos los archivos estáticos.
+ *
+ * La lista anterior nombraba `icon.svg` y `favicon.ico` uno por uno, así que
+ * cualquier otro archivo de `public/` caía en el middleware: el pedido del
+ * logo no traía sesión, lo mandaba a `/login` y el navegador recibía HTML
+ * donde esperaba una imagen. De ahí el cuadradito roto arriba del formulario.
+ *
+ * Ahora se excluye por extensión, que es lo que hay que excluir: un archivo
+ * estático nunca necesita pasar por la puerta.
+ */
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|icon.svg).*)'],
+  matcher: [
+    '/((?!_next/static|_next/image|.*\\.(?:svg|png|jpg|jpeg|gif|webp|avif|ico|woff2?|txt|xml|webmanifest)$).*)',
+  ],
 };

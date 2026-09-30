@@ -2,28 +2,29 @@ import { Suspense } from 'react';
 import Link from 'next/link';
 import { Logo } from '@/components/brand/logo';
 import { EnterDemoButton } from '@/components/demo/enter-demo-button';
-import {
-  ClientAccess,
-  ClientAccessClosed,
-  ClientAccessSkeleton,
-} from '@/components/login/client-access';
+import { ClientAccess, ClientAccessSkeleton } from '@/components/login/client-access';
 import { APP_TAGLINE, DEMO_MODE } from '@/lib/constants';
 
 export const metadata = { title: 'Entrar' };
 
 /**
- * La pantalla de entrada.
+ * La pantalla de entrada, que es dos pantallas distintas según el deploy.
+ *
+ * En `gastroos.shop` —el sitio de venta— sólo existe la demo. No hay ningún
+ * formulario de clientes porque no hay ninguna cuenta de cliente que pueda
+ * entrar ahí: cada cliente tiene su propia instalación, con su propia base de
+ * datos, y entra por su propio dominio. Un formulario en esta pantalla no le
+ * serviría a nadie y le restaba a lo único que acá tiene que pasar, que es que
+ * alguien pruebe el sistema.
+ *
+ * En la instalación de un cliente (`DEMO_MODE` en falso) es al revés: no hay
+ * demo y el formulario es toda la pantalla.
  *
  * Es un componente de servidor a propósito. Antes la página entera era cliente
  * y colgaba de un `Suspense` por culpa de `useSearchParams`, así que lo único
  * que llegaba del servidor era un spinner: en un teléfono con mala señal, la
  * primera pantalla de GastroOS estaba en blanco hasta que bajaba todo el
- * JavaScript. Ahora el logo, la demo y las dos puertas vienen pintadas de una,
- * y lo único que espera al JavaScript es el formulario de los clientes.
- *
- * Las dos puertas están separadas y dichas con todas las letras porque son
- * para dos personas distintas: la que viene a probar y la que ya tiene su
- * sistema.
+ * JavaScript.
  */
 export default function LoginPage() {
   return (
@@ -34,7 +35,7 @@ export default function LoginPage() {
           <p className="mt-3 text-sm text-stone-500">{APP_TAGLINE}</p>
         </div>
 
-        {DEMO_MODE && (
+        {DEMO_MODE ? (
           <>
             <div className="surface space-y-3 p-6">
               <div className="text-center">
@@ -47,25 +48,17 @@ export default function LoginPage() {
               <EnterDemoButton />
             </div>
 
-            <div className="my-5 flex items-center gap-3">
-              <span className="h-px flex-1 bg-stone-200" />
-              <span className="text-xs font-medium uppercase tracking-wider text-stone-400">o</span>
-              <span className="h-px flex-1 bg-stone-200" />
-            </div>
+            <p className="mt-6 text-center text-sm text-stone-500">
+              ¿Querés el tuyo?{' '}
+              <Link href="/contratar" className="font-medium text-brand-700 hover:underline">
+                Mirá los planes
+              </Link>
+            </p>
           </>
-        )}
-
-        <Suspense fallback={DEMO_MODE ? <ClientAccessClosed /> : <ClientAccessSkeleton />}>
-          <ClientAccess />
-        </Suspense>
-
-        {DEMO_MODE && (
-          <p className="mt-6 text-center text-sm text-stone-500">
-            ¿Todavía no tenés el tuyo?{' '}
-            <Link href="/contratar" className="font-medium text-brand-700 hover:underline">
-              Mirá los planes
-            </Link>
-          </p>
+        ) : (
+          <Suspense fallback={<ClientAccessSkeleton />}>
+            <ClientAccess />
+          </Suspense>
         )}
       </div>
     </div>
