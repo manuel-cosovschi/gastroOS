@@ -25,9 +25,18 @@ export const MEDIA_BUCKET = 'gastroos-media';
 
 export const ITEMS_PER_PAGE = 20;
 
-/** Modo demo: habilita el banner y las credenciales visibles en el login. */
+/**
+ * Modo demo: este deploy ofrece una demo abierta.
+ *
+ * Habilita el cartel del panel, el botón de entrada de la pantalla de login y
+ * el arranque automático de la guía. En la instalación de un cliente va en
+ * falso y nada de eso existe.
+ *
+ * No hay un usuario de demo fijo: cada visitante entra con una cuenta propia
+ * que se crea en el momento (ver `src/actions/demo.ts`). La plantilla de la
+ * que salen las copias es el negocio marcado con `is_demo_template`.
+ */
 export const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
-export const DEMO_EMAIL = process.env.NEXT_PUBLIC_DEMO_EMAIL || 'demo@gastroos.app';
 
 /** Franjas horarias sugeridas para entregas. */
 export const TIME_SLOTS = [
