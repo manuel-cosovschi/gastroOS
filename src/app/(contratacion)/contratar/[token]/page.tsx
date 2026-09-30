@@ -108,7 +108,12 @@ function Waiting({
 
         <div className="mt-5">
           <CopyField label="Alias" value={transfer.alias} mono />
-          <CopyField label="CBU" value={transfer.cbu} mono />
+          {/*
+            "CBU / CVU" y no "CBU" a secas: una billetera virtual da un CVU, y
+            quien lo copia para pegarlo en su banco necesita reconocer el
+            número que tiene enfrente. Sirve para los dos casos.
+          */}
+          <CopyField label="CBU / CVU" value={transfer.cbu} mono />
           <CopyField label="Titular" value={transfer.holder} />
           {transfer.bank && <CopyField label="Banco" value={transfer.bank} />}
           {transfer.cuit && <CopyField label="CUIT" value={transfer.cuit} mono />}
