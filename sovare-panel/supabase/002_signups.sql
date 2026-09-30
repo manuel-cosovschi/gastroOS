@@ -170,3 +170,23 @@ CREATE POLICY "admins read altas"
 CREATE POLICY "admins delete altas"
   ON storage.objects FOR DELETE
   USING (bucket_id = 'sovare-altas' AND sovare.is_admin());
+
+-- ============================================
+-- Permisos para la service role
+-- ============================================
+-- La landing lee y escribe este esquema con la service role, porque quien
+-- contrata no tiene sesión. La service role saltea RLS, pero los GRANT los
+-- necesita igual: el esquema se creó dándole acceso sólo a `authenticated`,
+-- que es el rol del panel.
+--
+-- Sin esto la contratación queda en 404 sin decir por qué, porque la lectura
+-- de los planes falla y la pantalla concluye que no hay ninguno.
+GRANT USAGE ON SCHEMA sovare TO service_role;
+
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA sovare TO service_role;
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA sovare TO service_role;
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA sovare
+  GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO service_role;
+ALTER DEFAULT PRIVILEGES IN SCHEMA sovare
+  GRANT USAGE, SELECT ON SEQUENCES TO service_role;
