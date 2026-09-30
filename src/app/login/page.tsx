@@ -8,14 +8,15 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Logo } from '@/components/brand/logo';
-import { APP_TAGLINE, DEMO_EMAIL, DEMO_MODE } from '@/lib/constants';
+import { EnterDemoButton } from '@/components/demo/enter-demo-button';
+import { APP_TAGLINE, DEMO_MODE } from '@/lib/constants';
 
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const next = searchParams.get('next') || '/admin';
 
-  const [email, setEmail] = useState(DEMO_MODE ? DEMO_EMAIL : '');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -46,7 +47,34 @@ function LoginForm() {
           <p className="mt-3 text-sm text-stone-500">{APP_TAGLINE}</p>
         </div>
 
+        {/*
+          La demo va primero y con su propio botón. Antes esta pantalla le
+          pedía al visitante "la contraseña configurada en DEMO_PASSWORD": una
+          instrucción para el que programa, en la única pantalla que tiene que
+          convencer a alguien que nunca vio el sistema. El que llega desde
+          "Probar el sistema" entra de un toque; el formulario de abajo es para
+          quien ya es cliente.
+        */}
+        {DEMO_MODE && (
+          <div className="surface mb-4 space-y-3 p-6">
+            <div className="text-center">
+              <p className="text-sm font-semibold text-stone-900">Probá el sistema ahora</p>
+              <p className="mt-1 text-sm leading-relaxed text-stone-600">
+                Entrás con datos de ejemplo de una pastelería. No hace falta registrarse ni dejar
+                ningún dato.
+              </p>
+            </div>
+            <EnterDemoButton />
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="surface space-y-4 p-6">
+          {DEMO_MODE && (
+            <p className="text-center text-sm font-medium text-stone-500">
+              ¿Ya tenés tu sistema? Entrá acá
+            </p>
+          )}
+
           <div>
             <Label htmlFor="email">Email</Label>
             <Input
@@ -80,12 +108,6 @@ function LoginForm() {
             Entrar
           </Button>
 
-          {DEMO_MODE && (
-            <p className="rounded-lg bg-brand-50 px-3 py-2 text-center text-xs text-brand-800">
-              Modo demo: entrá con <span className="font-medium">{DEMO_EMAIL}</span> y la contraseña
-              configurada en <code>DEMO_PASSWORD</code>.
-            </p>
-          )}
         </form>
       </div>
     </div>
