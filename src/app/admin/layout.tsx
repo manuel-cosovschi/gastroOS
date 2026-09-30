@@ -1,3 +1,4 @@
+import { redirect } from 'next/navigation';
 import { getCurrentBusiness } from '@/lib/business';
 import { AdminShell } from '@/components/layout/admin-shell';
 import { BusinessProvider } from '@/components/admin/business-provider';
@@ -17,6 +18,14 @@ import { InstallBanner, ServiceWorkerRegistration } from '@/components/admin/pwa
  */
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const business = await getCurrentBusiness();
+
+  // Sesión válida pero sin negocio: es una demo que venció y se limpió
+  // mientras la cookie seguía viva. No hay panel que mostrar, y cada pantalla
+  // fallaría por su cuenta con un error distinto. Se cierra la sesión y vuelve
+  // al inicio, donde "Entrar a la demo" le arma una nueva. Va por `/salir` y
+  // no directo a `/login` porque el middleware, viendo la sesión todavía
+  // abierta, lo mandaría de vuelta acá en un círculo sin fin.
+  if (!business) redirect('/salir');
 
   return (
     <BusinessProvider business={business}>

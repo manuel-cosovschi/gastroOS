@@ -45,7 +45,7 @@ export const TOUR_STEPS: TourStep[] = [
     route: '/admin',
     kind: 'center',
     title: 'Te muestro el sistema en dos minutos',
-    body: 'Esta es una demo con datos de una pastelería inventada, así que probá todo lo que quieras: cargá un pedido, cambiá un precio, borrá algo. No se rompe nada y no hay datos reales de nadie.',
+    body: 'Es una copia tuya de una pastelería inventada: lo que hagas acá no lo ve nadie más. Probá todo lo que quieras — cargá un pedido, cambiá un precio, borrá algo. No hay datos reales de nadie y si te arrepentís, "Reiniciar la demo" arriba deja todo como estaba.',
     tip: 'Podés salir cuando quieras y volver a esta guía desde el botón "Guía", arriba a la derecha.',
   },
   {

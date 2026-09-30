@@ -40,8 +40,8 @@ export default function LoginPage() {
               <div className="text-center">
                 <p className="text-sm font-semibold text-stone-900">Probá el sistema ahora</p>
                 <p className="mt-1 text-sm leading-relaxed text-stone-600">
-                  Entrás con datos de ejemplo de una pastelería. No hace falta registrarse ni dejar
-                  ningún dato.
+                  Te armamos una copia tuya de una pastelería de ejemplo. Cambiá lo que quieras: no
+                  hay que registrarse, no hace falta dejar ningún dato y nadie más ve lo que hagas.
                 </p>
               </div>
               <EnterDemoButton />
