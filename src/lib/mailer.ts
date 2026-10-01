@@ -73,14 +73,14 @@ export async function sendMail(params: {
 export function mailLayout(params: { title: string; body: string; footer?: string }): string {
   return `<!doctype html>
 <html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"></head>
-<body style="margin:0;padding:24px 12px;background:#fafaf9;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#1c1917;">
-  <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="max-width:560px;margin:0 auto;background:#ffffff;border:1px solid #e7e5e4;border-radius:16px;">
+<body style="margin:0;padding:24px 12px;background:#FBF5EA;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#26302A;">
+  <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="max-width:560px;margin:0 auto;background:#FFFDF9;border:1px solid #E5DAC6;border-radius:16px;">
     <tr><td style="padding:28px 28px 8px;">
-      <p style="margin:0;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#a8a29e;">GastroOS</p>
+      <p style="margin:0;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#9A9080;">GastroOS</p>
       <h1 style="margin:8px 0 0;font-size:22px;line-height:1.3;font-weight:600;">${params.title}</h1>
     </td></tr>
-    <tr><td style="padding:8px 28px 28px;font-size:15px;line-height:1.6;color:#44403c;">${params.body}</td></tr>
-    <tr><td style="padding:16px 28px 24px;border-top:1px solid #f5f5f4;font-size:12px;line-height:1.6;color:#a8a29e;">
+    <tr><td style="padding:8px 28px 28px;font-size:15px;line-height:1.6;color:#45443A;">${params.body}</td></tr>
+    <tr><td style="padding:16px 28px 24px;border-top:1px solid #F3EADA;font-size:12px;line-height:1.6;color:#9A9080;">
       ${params.footer || 'GastroOS es un producto de SOVARE.'}
     </td></tr>
   </table>
@@ -88,5 +88,5 @@ export function mailLayout(params: { title: string; body: string; footer?: strin
 }
 
 export function mailButton(href: string, label: string): string {
-  return `<a href="${href}" style="display:inline-block;background:#047857;color:#ffffff;text-decoration:none;font-weight:600;font-size:15px;padding:12px 22px;border-radius:10px;">${label}</a>`;
+  return `<a href="${href}" style="display:inline-block;background:#A04630;color:#ffffff;text-decoration:none;font-weight:600;font-size:15px;padding:12px 22px;border-radius:10px;">${label}</a>`;
 }

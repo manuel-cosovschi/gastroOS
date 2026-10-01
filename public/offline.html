@@ -12,29 +12,37 @@
         display: grid;
         place-items: center;
         padding: 24px;
-        background: #fafaf9;
-        color: #1c1917;
+        background: #FBF5EA;
+        color: #26302A;
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
       }
       .caja { max-width: 22rem; text-align: center; }
       .icono {
         width: 56px; height: 56px; margin: 0 auto 20px;
-        border-radius: 16px; background: #047857;
+        border-radius: 16px; background: #26302A;
         display: grid; place-items: center;
       }
-      .icono span { color: #fff; font-size: 26px; line-height: 1; }
+      .icono svg { width: 34px; height: 34px; }
       h1 { margin: 0 0 8px; font-size: 20px; font-weight: 600; }
-      p { margin: 0 0 20px; font-size: 15px; line-height: 1.6; color: #57534e; }
+      p { margin: 0 0 20px; font-size: 15px; line-height: 1.6; color: #565042; }
       button {
-        border: 0; border-radius: 10px; background: #047857; color: #fff;
+        border: 0; border-radius: 10px; background: #A04630; color: #fff;
         font: inherit; font-weight: 600; padding: 11px 22px; cursor: pointer;
       }
-      button:hover { background: #065f46; }
+      button:hover { background: #813928; }
     </style>
   </head>
   <body>
     <div class="caja">
-      <div class="icono"><span>⎋</span></div>
+      <div class="icono">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <g stroke="#FBF5EA" stroke-width="2" stroke-linecap="round">
+            <path d="M4.6 17.6a7.4 7.4 0 0 1 14.8 0" />
+            <path d="M2.6 17.6h18.8" />
+          </g>
+          <circle cx="12" cy="8.6" r="2.3" fill="#E08A6B" />
+        </svg>
+      </div>
       <h1>Sin conexión</h1>
       <!--
         No se muestran datos guardados a propósito: un pedido o un stock de hace

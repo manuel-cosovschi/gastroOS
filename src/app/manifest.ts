@@ -29,8 +29,10 @@ export default async function manifest(): Promise<MetadataRoute.Manifest> {
     scope: '/',
     display: 'standalone',
     orientation: 'portrait',
-    background_color: '#ffffff',
-    theme_color: '#047857',
+    // La crema y el oliva de la marca: es lo que se ve en la pantalla de
+    // arranque de la aplicación instalada y en la barra del sistema.
+    background_color: '#FBF5EA',
+    theme_color: '#26302A',
     lang: 'es',
     categories: ['business', 'productivity'],
     icons: [

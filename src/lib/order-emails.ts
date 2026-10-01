@@ -38,8 +38,8 @@ function linesHtml(items: OrderMailLine[], business: MailBusiness): string {
     .map(
       (item) =>
         `<tr>
-          <td style="padding:6px 0;border-bottom:1px solid #f5f5f4;">${item.item_name} <span style="color:#a8a29e;">× ${item.quantity}</span></td>
-          <td style="padding:6px 0;border-bottom:1px solid #f5f5f4;text-align:right;white-space:nowrap;">${money(Number(item.subtotal), business)}</td>
+          <td style="padding:6px 0;border-bottom:1px solid #F3EADA;">${item.item_name} <span style="color:#9A9080;">× ${item.quantity}</span></td>
+          <td style="padding:6px 0;border-bottom:1px solid #F3EADA;text-align:right;white-space:nowrap;">${money(Number(item.subtotal), business)}</td>
         </tr>`
     )
     .join('');
@@ -77,7 +77,7 @@ export async function sendOrderConfirmation(params: {
     <p style="margin:0 0 20px;">Recibimos tu pedido. Te escribimos apenas confirmemos la
     disponibilidad.</p>
 
-    <p style="margin:0 0 6px;color:#a8a29e;font-size:13px;">Tu número de pedido</p>
+    <p style="margin:0 0 6px;color:#9A9080;font-size:13px;">Tu número de pedido</p>
     <p style="margin:0 0 20px;font-size:28px;font-weight:600;">#${order.order_number}</p>
 
     <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="font-size:14px;margin-bottom:16px;">
@@ -88,11 +88,11 @@ export async function sendOrderConfirmation(params: {
       </tr>
     </table>
 
-    <p style="margin:0 0 16px;font-size:14px;color:#57534e;">
+    <p style="margin:0 0 16px;font-size:14px;color:#565042;">
       ${deliveryLabel(order)} · ${fecha}
     </p>
 
-    ${trackingUrl ? `<p style="margin:0;font-size:14px;">Podés ver en qué estado está tu pedido <a href="${trackingUrl}" style="color:#047857;">en este link</a>.</p>` : ''}
+    ${trackingUrl ? `<p style="margin:0;font-size:14px;">Podés ver en qué estado está tu pedido <a href="${trackingUrl}" style="color:#A04630;">en este link</a>.</p>` : ''}
   `;
 
   const text = `${saludo}
@@ -142,7 +142,7 @@ export async function sendNewOrderNotification(params: {
     <p style="margin:0 0 4px;font-size:18px;font-weight:600;">
       #${order.order_number} · ${order.contact_name}
     </p>
-    <p style="margin:0 0 20px;font-size:14px;color:#57534e;">${contacto || 'sin datos de contacto'}</p>
+    <p style="margin:0 0 20px;font-size:14px;color:#565042;">${contacto || 'sin datos de contacto'}</p>
 
     <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="font-size:14px;margin-bottom:16px;">
       ${linesHtml(items, business)}
@@ -152,12 +152,12 @@ export async function sendNewOrderNotification(params: {
       </tr>
     </table>
 
-    <p style="margin:0 0 8px;font-size:14px;color:#57534e;">
+    <p style="margin:0 0 8px;font-size:14px;color:#565042;">
       ${deliveryLabel(order)} · ${formatDateLong(order.delivery_date, business.locale)}
       ${order.address ? `<br>${order.address}` : ''}
     </p>
     ${order.observations ? `<p style="margin:0 0 16px;font-size:14px;"><strong>Observaciones:</strong> ${order.observations}</p>` : ''}
-    ${adminUrl ? `<p style="margin:16px 0 0;"><a href="${adminUrl}" style="color:#047857;font-weight:600;">Abrir el pedido en el panel</a></p>` : ''}
+    ${adminUrl ? `<p style="margin:16px 0 0;"><a href="${adminUrl}" style="color:#A04630;font-weight:600;">Abrir el pedido en el panel</a></p>` : ''}
   `;
 
   const text = `Entró un pedido por la tienda.
@@ -233,8 +233,8 @@ export async function sendOrderStatusUpdate(params: {
     <p style="margin:0 0 16px;">Tu pedido <strong>#${order.order_number}</strong> pasó a
     <strong>${ORDER_STATUS_LABELS[status]}</strong>.</p>
     <p style="margin:0 0 ${notes || trackingUrl ? '16px' : '0'};">${message.body}</p>
-    ${notes ? `<p style="margin:0 0 16px;padding:12px 14px;background:#fafaf9;border-radius:8px;font-size:14px;">${notes}</p>` : ''}
-    ${trackingUrl ? `<p style="margin:0;font-size:14px;">Ver el detalle <a href="${trackingUrl}" style="color:#047857;">acá</a>.</p>` : ''}
+    ${notes ? `<p style="margin:0 0 16px;padding:12px 14px;background:#FBF5EA;border-radius:8px;font-size:14px;">${notes}</p>` : ''}
+    ${trackingUrl ? `<p style="margin:0;font-size:14px;">Ver el detalle <a href="${trackingUrl}" style="color:#A04630;">acá</a>.</p>` : ''}
   `;
 
   const text = `${saludo}

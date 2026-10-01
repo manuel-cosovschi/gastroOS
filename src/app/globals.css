@@ -7,6 +7,22 @@
     @apply bg-stone-50 text-stone-900 antialiased;
   }
 
+  /*
+    Los títulos van en Fraunces, como pide la marca. Se resuelve acá y no
+    clase por clase: hay encabezados en ochenta y pico de archivos, y una
+    regla de base los alcanza a todos sin que haya que acordarse.
+
+    El `text-wrap: balance` es por el serif: con el contraste de Fraunces, un
+    título que deja una palabra huérfana en el último renglón se nota mucho
+    más que con una grotesca.
+  */
+  h1,
+  h2,
+  h3 {
+    @apply font-display;
+    text-wrap: balance;
+  }
+
   /* Tipografía de números tabulares: las columnas de importes quedan alineadas */
   .tabular {
     font-variant-numeric: tabular-nums;
@@ -14,7 +30,16 @@
 }
 
 @layer components {
-  /* Superficie base de todas las tarjetas del panel */
+  /*
+    Superficie base de todas las tarjetas del panel.
+
+    El `bg-white` de acá no es blanco puro: la paleta lo redefine como un
+    blanco tibio, porque sobre la crema de la página el blanco de verdad se ve
+    azulado. La "superficie" #F3EADA del manual es el `stone-100`, y es la que
+    se usa para lo que va hundido —estados de hover, bloques embebidos,
+    esqueletos de carga—, no para la tarjeta en sí: una tabla de pedidos se lee
+    mejor sobre el tono más claro.
+  */
   .surface {
     @apply rounded-xl border border-stone-200 bg-white shadow-card;
   }

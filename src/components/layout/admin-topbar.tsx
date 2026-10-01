@@ -83,7 +83,7 @@ export function AdminTopbar({ onOpenMenu }: { onOpenMenu: () => void }) {
           href="/admin/pedidos/nuevo"
           prefetch
           data-tour="new-order"
-          className="inline-flex h-9 items-center gap-2 rounded-lg bg-stone-900 px-4 text-sm font-medium text-white shadow-sm transition-colors hover:bg-stone-800"
+          className="inline-flex h-9 items-center gap-2 rounded-lg bg-brand-600 px-4 text-sm font-medium text-white shadow-sm transition-colors hover:bg-brand-700"
         >
           <NewOrderLabel />
         </Link>

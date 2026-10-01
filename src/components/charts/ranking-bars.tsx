@@ -12,7 +12,7 @@ import type { RankedItem } from '@/types';
 export function RankingBars({
   items,
   format = 'money',
-  color = '#047857',
+  color = '#C0553A',
   secondaryLabel,
   emptyMessage = 'Sin datos en este período.',
   max: maxItems,

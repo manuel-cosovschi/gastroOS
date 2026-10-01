@@ -114,7 +114,7 @@ function StatusButton({
       disabled={disabled}
       className={cn(
         'inline-flex h-9 items-center gap-2 rounded-lg px-3.5 text-sm font-medium transition-colors disabled:opacity-50',
-        variant === 'primary' && 'bg-stone-900 text-white hover:bg-stone-800',
+        variant === 'primary' && 'bg-brand-600 text-white hover:bg-brand-700',
         variant === 'secondary' &&
           'border border-stone-200 bg-white text-stone-700 hover:border-stone-300 hover:bg-stone-50',
         variant === 'danger' && 'text-rose-600 hover:bg-rose-50'

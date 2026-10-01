@@ -14,10 +14,21 @@ import type { TimeSeriesPoint } from '@/types';
  * propio target de hover con un área táctil cómoda en mobile.
  */
 
-/** Paleta categórica validada para este par (ΔE CVD 8.1, contraste ≥ 3:1). */
+/**
+ * El par de series, en la paleta de la marca.
+ *
+ * Lo que separa las dos barras no es el tono sino la claridad: la terracota es
+ * bastante más clara que el oliva, así que siguen distinguiéndose en escala de
+ * grises y para quien no distingue el rojo del verde — que es justo el par que
+ * había antes (verde y naranja) y el motivo por el que conviene no elegir dos
+ * colores de la misma luminosidad por más que combinen.
+ *
+ * La facturación se queda con la terracota porque es el número que el panel ya
+ * destaca en terracota en las tarjetas de arriba.
+ */
 const SERIES = {
-  revenue: '#047857',
-  expenses: '#eb6834',
+  revenue: '#C0553A',
+  expenses: '#2F4136',
 } as const;
 
 interface TimeBarsProps {
