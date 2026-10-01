@@ -270,25 +270,24 @@ export const CASE_STUDY = {
     { label: 'Trabaja con', value: 'Cafeterías y eventos' },
     { label: 'Qué se personalizó', value: 'Identidad, tienda y flujo de pedidos' },
   ],
-  /** El antes y después no es de versiones: es la misma pantalla en dos marcas. */
-  skins: {
-    title: 'La misma pantalla, dos identidades',
-    body: 'A la izquierda, GastroOS como viene. A la derecha, la misma pantalla con la paleta y la tipografía de COSOV. No es un tema que elegís de una lista de cuatro: es la identidad de tu negocio llevada al sistema.',
-    left: {
-      image: '/casos/gastroos-panel.webp',
-      alt: 'Panel de GastroOS con su identidad por defecto, en verde',
-      caption: 'GastroOS, como viene',
-    },
-    right: {
-      image: '/casos/cosov-panel.webp',
-      alt: 'La misma pantalla del panel con la paleta bordó y las tipografías de COSOV.',
-      caption: 'Con la identidad de COSOV.',
-    },
-    note: 'Capturas del panel con datos de ejemplo. Los números de un cliente no se muestran nunca.',
-  },
+  /**
+   * Una sola imagen, y real.
+   *
+   * Acá había además una comparación "la misma pantalla, dos identidades" con
+   * una captura del panel rotulada "Con la identidad de COSOV.". Esa captura no
+   * era de COSOV.: era el panel de la demo de GastroOS recoloreado, y seguía
+   * diciendo "GastroOS" en el logo y "estás viendo una demo" en el cartel.
+   * Prometía exactamente lo que no mostraba.
+   *
+   * Se sacó en vez de rehacerla. El panel de un cliente no se puede mostrar
+   * —tiene sus clientes, sus pedidos y su facturación— y fabricar una imitación
+   * para ilustrarlo es presentar algo armado como si fuera la instalación de
+   * alguien. La tienda, en cambio, es pública: se puede entrar y verla. Una
+   * captura que el visitante puede ir a verificar vale más que dos que no.
+   */
   storefront: {
-    title: 'Y la tienda, con su marca',
-    body: 'Sus clientes arman el pedido desde un catálogo que es de COSOV., no de un proveedor de software. El pedido cae directo en el panel.',
+    title: 'Su tienda, con su marca',
+    body: 'Esto no es un tema elegido de una lista de cuatro: es la identidad de COSOV. llevada al sistema. Sus clientes arman el pedido desde un catálogo que es de ellos, no de un proveedor de software, y el pedido cae directo en el panel.',
     image: '/casos/cosov-tienda.webp',
     alt: 'Catálogo público de COSOV. con sus productos, en bordó y crema',
     caption: 'Tienda pública de COSOV., en producción',

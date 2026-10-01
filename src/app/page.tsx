@@ -276,38 +276,6 @@ export default function LandingPage() {
             ))}
           </dl>
 
-          {/* La comparación es el argumento: misma estructura, otra marca. */}
-          <div className="mt-16">
-            <SectionHeading
-              title={CASE_STUDY.skins.title}
-              subtitle={CASE_STUDY.skins.body}
-              align="left"
-              className="max-w-3xl"
-            />
-
-            <div className="mt-8 grid gap-6 lg:grid-cols-2">
-              {[CASE_STUDY.skins.left, CASE_STUDY.skins.right].map((skin) => (
-                <figure key={skin.image}>
-                  <BrowserFrame>
-                    <Image
-                      src={skin.image}
-                      alt={skin.alt}
-                      width={1000}
-                      height={626}
-                      className="w-full"
-                      sizes="(min-width: 1024px) 50vw, 100vw"
-                    />
-                  </BrowserFrame>
-                  <figcaption className="mt-3 text-sm font-medium text-stone-700">
-                    {skin.caption}
-                  </figcaption>
-                </figure>
-              ))}
-            </div>
-
-            <p className="mt-4 text-xs text-stone-400">{CASE_STUDY.skins.note}</p>
-          </div>
-
           <div className="mt-16 grid items-center gap-10 lg:grid-cols-2">
             <div>
               <h3 className="text-2xl font-semibold tracking-tight text-stone-900">
