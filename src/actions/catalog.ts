@@ -10,6 +10,7 @@ import {
   sendOrderConfirmation,
 } from '@/lib/order-emails';
 import { SITE_URL } from '@/lib/marketing';
+import { storefrontOrderSchema } from '@/lib/validations/order';
 import type {
   Category,
   CreateOrderInput,
@@ -157,6 +158,18 @@ export async function submitStorefrontOrder(
   if (!business) {
     return { success: false, error: 'La tienda no está disponible en este momento.' };
   }
+
+  // Lo que valida el formulario lo valida el navegador, y el navegador es de
+  // quien está del otro lado. Esta acción es una ruta HTTP como cualquier otra:
+  // se le puede mandar cualquier cosa sin pasar por la pantalla.
+  const revisado = storefrontOrderSchema.safeParse(input);
+  if (!revisado.success) {
+    return {
+      success: false,
+      error: revisado.error.issues[0]?.message || 'Revisá los datos del pedido.',
+    };
+  }
+  input = revisado.data as CreateOrderInput;
 
   const supabase = await createServerClient();
   const { data, error } = await supabase.rpc('create_storefront_order', {

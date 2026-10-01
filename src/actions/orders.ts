@@ -235,10 +235,31 @@ export async function updateOrder(
     patch.subtotal = priced.subtotal;
     patch.production_cost = priced.productionCost > 0 ? priced.productionCost : null;
 
+    // Reemplazar el detalle son dos pasos, y entre uno y otro el pedido queda
+    // sin líneas. Si el segundo falla hay que volver a dejar las de antes: un
+    // pedido con total pero sin nada adentro no se puede ni preparar ni
+    // facturar, y en la pantalla parece un pedido de $0.
+    const { data: anteriores } = await supabase
+      .from('order_items')
+      .select(
+        'product_id, package_id, item_name, unit_price, quantity, subtotal, unit_cost, cost_subtotal, notes'
+      )
+      .eq('order_id', id);
+
     await supabase.from('order_items').delete().eq('order_id', id);
-    await supabase
+    const { error: itemsError } = await supabase
       .from('order_items')
       .insert(priced.items.map((item) => ({ ...item, order_id: id })));
+
+    if (itemsError) {
+      console.error('[updateOrder] no se pudieron reemplazar las líneas:', itemsError);
+      if (anteriores?.length) {
+        await supabase
+          .from('order_items')
+          .insert(anteriores.map((item) => ({ ...item, order_id: id })));
+      }
+      return { success: false, error: 'No se pudo actualizar el detalle del pedido.' };
+    }
   }
 
   const { error } = await supabase.from('orders').update(patch).eq('id', id);

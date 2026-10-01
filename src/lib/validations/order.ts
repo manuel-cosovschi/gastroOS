@@ -5,8 +5,14 @@ export const orderItemSchema = z
   .object({
     product_id: z.string().uuid().optional(),
     package_id: z.string().uuid().optional(),
-    quantity: z.number().int().min(1, 'La cantidad debe ser al menos 1'),
-    notes: z.string().optional(),
+    // El techo no es por desconfianza, es para que un cero de más no entre
+    // callado a la cocina ni al cálculo de stock.
+    quantity: z
+      .number()
+      .int()
+      .min(1, 'La cantidad debe ser al menos 1')
+      .max(9999, 'Para un pedido de ese tamaño, escribinos: lo armamos a mano.'),
+    notes: z.string().max(500, 'La nota del producto es demasiado larga').optional(),
   })
   .refine((data) => data.product_id || data.package_id, {
     message: 'Cada línea debe referenciar un producto o un combo',
@@ -48,12 +54,12 @@ export const adminOrderSchema = z
  * - `storefrontOrderSchema` valida lo que viaja al servidor, ya con las líneas.
  */
 const storefrontOrderFields = z.object({
-  contact_name: z.string().min(1, 'El nombre es obligatorio'),
-  phone: z.string().min(6, 'El teléfono es obligatorio'),
-  email: z.string().email('Email inválido'),
+  contact_name: z.string().min(1, 'El nombre es obligatorio').max(120, 'El nombre es demasiado largo'),
+  phone: z.string().min(6, 'El teléfono es obligatorio').max(40, 'El teléfono es demasiado largo'),
+  email: z.string().email('Email inválido').max(160, 'El email es demasiado largo'),
   delivery_method: z.enum(DELIVERY_METHODS),
-  address: z.string().optional(),
-  city: z.string().optional(),
+  address: z.string().max(300, 'La dirección es demasiado larga').optional(),
+  city: z.string().max(120, 'La ciudad es demasiado larga').optional(),
   delivery_date: z
     .string()
     .min(1, 'La fecha de entrega es obligatoria')
@@ -65,7 +71,7 @@ const storefrontOrderFields = z.object({
       today.setHours(0, 0, 0, 0);
       return picked.getTime() >= today.getTime();
     }, 'La fecha de entrega no puede ser anterior a hoy'),
-  observations: z.string().optional(),
+  observations: z.string().max(2000, 'El comentario es demasiado largo').optional(),
 });
 
 const addressRequired = (data: { delivery_method: string; address?: string }) =>
