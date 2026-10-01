@@ -437,6 +437,7 @@ export const MOVEMENT_TYPES = [
   'production',
   'order_deduction',
   'production_consumption',
+  'order_reversal',
   'adjustment',
   'waste',
 ] as const;
@@ -447,6 +448,7 @@ export const MOVEMENT_TYPE_LABELS: Record<MovementType, string> = {
   production: 'Producción',
   order_deduction: 'Salida por pedido',
   production_consumption: 'Consumo de producción',
+  order_reversal: 'Reposición por pedido',
   adjustment: 'Ajuste manual',
   waste: 'Merma',
 };

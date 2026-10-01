@@ -349,6 +349,102 @@ export async function applyStockForOrder(
   return { success: true, warnings: warnings.length > 0 ? warnings : undefined };
 }
 
+/**
+ * Devuelve al stock lo que un pedido había descontado.
+ *
+ * No recalcula nada a partir de las líneas del pedido: lee los movimientos que
+ * `applyStockForOrder` dejó registrados y los invierte. Eso importa porque las
+ * líneas pueden haber cambiado entre el descuento y la devolución, y porque lo
+ * que hay que devolver es exactamente lo que salió, no lo que debería haber
+ * salido.
+ *
+ * `incluirInsumos` es la única decisión de negocio acá. Los insumos se
+ * descuentan cuando el pedido se confirma, contando la producción que va a
+ * hacer falta; si el pedido se cancela antes de empezar a producir, esa harina
+ * sigue en el depósito y vuelve. Si ya se produjo, no vuelve: la torta está
+ * hecha. El producto terminado vuelve siempre, porque sigue existiendo.
+ *
+ * Es idempotente: cada reposición queda registrada, así que un segundo intento
+ * sobre el mismo pedido no devuelve nada dos veces.
+ */
+export async function reverseStockForOrder(
+  businessId: string,
+  orderId: string,
+  { incluirInsumos }: { incluirInsumos: boolean }
+): Promise<{ success: boolean }> {
+  const supabase = await createServerClient();
+
+  const { data: order } = await supabase
+    .from('orders')
+    .select('id, order_number')
+    .eq('id', orderId)
+    .eq('business_id', businessId)
+    .maybeSingle();
+
+  if (!order) return { success: false };
+
+  const { data: movimientos } = await supabase
+    .from('stock_movements')
+    .select('reference_type, reference_id, movement_type, quantity')
+    .eq('business_id', businessId)
+    .eq('order_id', orderId)
+    .in('movement_type', ['order_deduction', 'production_consumption', 'order_reversal']);
+
+  if (!movimientos?.length) return { success: true };
+
+  // Lo salido menos lo ya devuelto, por cada cosa. Las salidas vienen en
+  // negativo y las reposiciones en positivo, así que la suma es lo que falta
+  // devolver (en negativo) o cero si ya está saldado.
+  const pendiente = new Map<string, { tipo: 'product' | 'ingredient'; saldo: number }>();
+
+  for (const mov of movimientos) {
+    if (mov.movement_type === 'production_consumption' && !incluirInsumos) continue;
+    const clave = `${mov.reference_type}:${mov.reference_id}`;
+    const actual = pendiente.get(clave);
+    const saldo = (actual?.saldo || 0) + Number(mov.quantity);
+    pendiente.set(clave, { tipo: mov.reference_type as 'product' | 'ingredient', saldo });
+  }
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  for (const [clave, { tipo, saldo }] of pendiente) {
+    const devolver = round2(-saldo);
+    if (devolver <= 0) continue;
+
+    const id = clave.split(':')[1];
+    const tabla = tipo === 'product' ? 'products' : 'ingredients';
+
+    const { data: fila } = await supabase
+      .from(tabla)
+      .select('id, name, stock_quantity')
+      .eq('id', id)
+      .eq('business_id', businessId)
+      .maybeSingle();
+
+    if (!fila) continue;
+
+    await supabase
+      .from(tabla)
+      .update({ stock_quantity: round2(Number(fila.stock_quantity) + devolver) })
+      .eq('id', id);
+
+    await supabase.from('stock_movements').insert({
+      business_id: businessId,
+      reference_type: tipo,
+      reference_id: id,
+      movement_type: 'order_reversal',
+      quantity: devolver,
+      order_id: orderId,
+      notes: `Pedido #${order.order_number}: vuelven ${devolver} × ${fila.name}`,
+      created_by: user?.id || null,
+    });
+  }
+
+  return { success: true };
+}
+
 // ============================================
 // Movimientos
 // ============================================

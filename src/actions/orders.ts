@@ -8,7 +8,7 @@ import { round2, todayISO } from '@/lib/utils';
 import { findOrCreateCustomer } from '@/actions/customers';
 import { sendOrderStatusUpdate } from '@/lib/order-emails';
 import { SITE_URL } from '@/lib/marketing';
-import { applyStockForOrder } from '@/actions/inventory';
+import { applyStockForOrder, reverseStockForOrder } from '@/actions/inventory';
 import { VALID_TRANSITIONS, ORDER_STATUS_LABELS } from '@/types';
 import type {
   CreateOrderInput,
@@ -198,18 +198,22 @@ export async function createOrder(
 export async function updateOrder(
   id: string,
   input: UpdateOrderInput
-): Promise<{ success: boolean; error?: string }> {
+): Promise<{ success: boolean; error?: string; warnings?: string[] }> {
   const businessId = await requireBusinessId();
   const supabase = await createServerClient();
 
   const { data: existing } = await supabase
     .from('orders')
-    .select('id')
+    .select('id, status')
     .eq('id', id)
     .eq('business_id', businessId)
     .maybeSingle();
 
   if (!existing) return { success: false, error: 'Pedido no encontrado.' };
+
+  // Un pedido que ya salió de "pendiente" tiene el stock descontado. Si le
+  // cambian las cantidades, el descuento viejo no sirve más.
+  const stockYaDescontado = existing.status !== 'pending' && existing.status !== 'cancelled';
 
   const patch: Record<string, unknown> = {};
   if (input.contact_name !== undefined) patch.contact_name = input.contact_name.trim();
@@ -265,8 +269,20 @@ export async function updateOrder(
   const { error } = await supabase.from('orders').update(patch).eq('id', id);
   if (error) return { success: false, error: 'No se pudo actualizar el pedido.' };
 
+  // El stock se rehace entero en vez de calcular la diferencia: se devuelve lo
+  // que este pedido había sacado y se descuenta de nuevo con las cantidades
+  // nuevas. El neto es la diferencia, y de paso vuelve a decidir qué sale de
+  // producto terminado y qué hay que producir, que con las cantidades nuevas
+  // puede no ser lo mismo.
+  let warnings: string[] | undefined;
+  if (input.items && stockYaDescontado) {
+    await reverseStockForOrder(businessId, id, { incluirInsumos: true });
+    const result = await applyStockForOrder(businessId, id);
+    warnings = result.warnings;
+  }
+
   revalidateOrderViews(id);
-  return { success: true };
+  return { success: true, warnings };
 }
 
 export async function updateOrderStatus(
@@ -311,11 +327,22 @@ export async function updateOrderStatus(
     notes: notes || null,
   });
 
-  // El stock se descuenta una sola vez, al salir de "pendiente".
+  // El stock se descuenta una sola vez, al salir de "pendiente", y vuelve si el
+  // pedido se cancela después de eso.
+  //
+  // Qué vuelve depende de cuándo se cancela. El producto terminado vuelve
+  // siempre: sigue en la heladera. Los insumos se descuentan al confirmar,
+  // contando la producción que va a hacer falta, así que vuelven sólo si el
+  // pedido se cancela antes de empezar a producir. Cancelado desde "en
+  // preparación" o "listo", la torta ya está hecha y la harina no vuelve.
   let warnings: string[] | undefined;
   if (currentStatus === 'pending' && newStatus !== 'cancelled') {
     const result = await applyStockForOrder(businessId, orderId);
     warnings = result.warnings;
+  } else if (newStatus === 'cancelled' && currentStatus !== 'pending') {
+    await reverseStockForOrder(businessId, orderId, {
+      incluirInsumos: currentStatus === 'confirmed',
+    });
   }
 
   // El aviso al cliente. Sin `await`: quien está en el panel cambiando estados
