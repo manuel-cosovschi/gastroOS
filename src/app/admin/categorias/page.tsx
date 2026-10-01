@@ -104,10 +104,10 @@ export default function CategoriasPage() {
                     onKeyDown={(e) => e.key === 'Enter' && handleUpdate(cat.id)}
                     className="h-8"
                   />
-                  <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => handleUpdate(cat.id)}>
+                  <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => handleUpdate(cat.id)} aria-label="Guardar el nombre">
                     <Check className="h-4 w-4 text-green-600" />
                   </Button>
-                  <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => setEditingId(null)}>
+                  <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => setEditingId(null)} aria-label="Cancelar la edición">
                     <X className="h-4 w-4" />
                   </Button>
                 </div>
@@ -127,6 +127,7 @@ export default function CategoriasPage() {
                       variant="ghost"
                       className="h-8 w-8"
                       onClick={() => { setEditingId(cat.id); setEditingName(cat.name); }}
+                      aria-label={`Renombrar ${cat.name}`}
                     >
                       <Pencil className="h-3 w-3" />
                     </Button>
@@ -135,6 +136,7 @@ export default function CategoriasPage() {
                       variant="ghost"
                       className="h-8 w-8 text-red-500 hover:text-red-700"
                       onClick={() => handleDelete(cat.id)}
+                      aria-label={`Borrar ${cat.name}`}
                     >
                       <Trash2 className="h-3 w-3" />
                     </Button>

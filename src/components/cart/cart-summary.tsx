@@ -42,6 +42,7 @@ export function CartSummary() {
                 className="h-8 w-8"
                 onClick={() => updateQuantity(item.id, item.quantity - 1)}
                 disabled={item.quantity <= 1}
+                aria-label={`Restar uno de ${item.name}`}
               >
                 <Minus className="h-3 w-3" />
               </Button>
@@ -51,6 +52,7 @@ export function CartSummary() {
                 variant="outline"
                 className="h-8 w-8"
                 onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                aria-label={`Sumar uno de ${item.name}`}
               >
                 <Plus className="h-3 w-3" />
               </Button>
@@ -65,6 +67,7 @@ export function CartSummary() {
               variant="ghost"
               className="h-8 w-8 text-stone-400 hover:text-red-600"
               onClick={() => removeItem(item.id)}
+              aria-label={`Quitar ${item.name} del pedido`}
             >
               <Trash2 className="h-4 w-4" />
             </Button>

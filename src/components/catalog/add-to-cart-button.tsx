@@ -37,6 +37,7 @@ export function AddToCartButton({ product }: AddToCartButtonProps) {
           size="icon"
           variant="outline"
           onClick={() => setQuantity(Math.max(product.min_quantity || 1, quantity - 1))}
+          aria-label="Restar uno"
         >
           <Minus className="h-4 w-4" />
         </Button>
@@ -51,6 +52,7 @@ export function AddToCartButton({ product }: AddToCartButtonProps) {
           size="icon"
           variant="outline"
           onClick={() => setQuantity(quantity + 1)}
+          aria-label="Sumar uno"
         >
           <Plus className="h-4 w-4" />
         </Button>

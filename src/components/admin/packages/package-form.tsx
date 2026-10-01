@@ -197,6 +197,7 @@ export function PackageForm({ pkg, products }: PackageFormProps) {
               size="icon"
               className="text-stone-400 hover:text-red-600"
               onClick={() => removeItem(index)}
+              aria-label="Quitar este producto del combo"
             >
               <Trash2 className="h-4 w-4" />
             </Button>
