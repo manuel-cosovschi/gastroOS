@@ -7,6 +7,7 @@ import { usePathname } from 'next/navigation';
 import {
   CreditCard,
   FileSignature,
+  Handshake,
   LayoutDashboard,
   LogOut,
   Menu,
@@ -23,11 +24,25 @@ const LINKS = [
   { href: '/', label: 'Resumen', icon: LayoutDashboard },
   { href: '/prospeccion', label: 'Prospección', icon: MessageCircle },
   { href: '/contrataciones', label: 'Contrataciones', icon: FileSignature },
+  { href: '/vendedores', label: 'Mis vendedores', icon: Handshake },
   { href: '/clientes', label: 'Clientes', icon: Users },
   { href: '/cobros', label: 'Cobros', icon: CreditCard },
 ];
 
-export function Shell({ email, children }: { email: string; children: React.ReactNode }) {
+/**
+ * `badges` pone un número al lado de un acceso: lo que está esperando que el
+ * dueño haga algo. Un panel donde hay que entrar a cada sección para enterarse de
+ * que algo espera termina con cosas esperando días.
+ */
+export function Shell({
+  email,
+  badges = {},
+  children,
+}: {
+  email: string;
+  badges?: Record<string, number>;
+  children: React.ReactNode;
+}) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
@@ -83,7 +98,15 @@ export function Shell({ email, children }: { email: string; children: React.Reac
               <link.icon
                 className={cn('h-4 w-4', isActive(link.href) ? 'text-brand-700' : 'text-stone-400')}
               />
-              {link.label}
+              <span className="min-w-0 flex-1 truncate">{link.label}</span>
+              {(badges[link.href] ?? 0) > 0 && (
+                <span
+                  className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-500 px-1.5 text-[11px] font-semibold text-white"
+                  aria-label={`${badges[link.href]} esperando`}
+                >
+                  {badges[link.href]}
+                </span>
+              )}
             </Link>
           ))}
         </nav>

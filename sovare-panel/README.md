@@ -16,6 +16,7 @@ deploy.
 | **Resumen** | Ingreso recurrente, clientes por estado, cobrado y vencido del mes, próximos cobros, próximos pasos del embudo y cobranza de los últimos 6 meses. |
 | **Clientes** | Listado con filtro por estado y búsqueda. Cada ficha tiene contacto, suscripción, datos de su instalación, historial de cobros y seguimiento. |
 | **Cobros** | Todos los cobros con su estado, filtrables. Se marcan pagados de a uno. |
+| **Mis vendedores** | Los vendedores a comisión: cada uno carga sus clientes desde su página, vos los aprobás, y a fin de mes liquidás y transferís. Ver abajo. |
 
 ### El embudo
 
@@ -33,6 +34,50 @@ antigüedad de un cliente queda en la nada.
 El botón crea la mensualidad de cada cliente **activo** con monto cargado,
 usando su día de cobro. Es idempotente: la clave única `(cliente, período,
 concepto)` hace que correrlo dos veces no duplique nada.
+
+---
+
+## Vendedores a comisión
+
+El circuito, de punta a punta:
+
+1. **Agregás al vendedor** en *Mis vendedores*. Te queda su link
+   (`gastroos.shop/vendedor/<token>`) y un botón para mandárselo por WhatsApp ya
+   escrito. No tiene cuenta ni contraseña: el link es todo lo que lo identifica.
+2. **Él carga los clientes que cerró** desde esa página. Cada carga queda
+   *pendiente* y te llega un mail. Hasta que la apruebes no suma a nadie.
+3. **Vos aprobás** (o rechazás, con un motivo que él lee). Al aprobar se acredita
+   la comisión: por defecto el **50% de la cuota mensual del plan** (sin la puesta
+   a punto), y el importe se puede corregir antes de aprobar. Se congelan la cuota,
+   el porcentaje y el importe: un cambio de precios o de porcentaje después no
+   mueve lo ya acreditado.
+4. **El saldo es del mes en que aprobaste** (hora argentina). No es un número
+   guardado: es la suma de lo aprobado y sin liquidar.
+5. **A fin de mes liquidás**: se junta el saldo de ese mes en una cifra. Le
+   transferís, y la marcás *pagada* con el número de operación.
+
+Lo que se puede deshacer, y hasta dónde:
+
+| Acción | Cuándo se puede |
+|---|---|
+| Anular una venta aprobada | Mientras no esté en una liquidación. |
+| Deshacer una liquidación | Mientras no esté pagada. Queda registrada como *deshecha*, no se borra. |
+| Deshacer un pago | Siempre. Vuelve a *a transferir*. |
+| Eliminar un vendedor | Sólo si todavía no cargó nada. Con clientes se lo pausa. |
+
+Dos cosas que conviene saber:
+
+- **Aprobar no mira si el cliente pagó.** La aprobación es tu control. Antes de
+  aprobar, la pantalla muestra si el cliente ya aparece en otra venta, en una
+  contratación o como ficha, comparando mail, teléfono y nombre.
+- **El link se puede cambiar** (*Generar un link nuevo*) si fue a un chat
+  equivocado. El anterior deja de funcionar al instante.
+
+Las funciones que mueven plata (`decide_vendor_sale`, `void_vendor_sale`,
+`settle_vendor_period`, `unsettle_vendor`, `mark_settlement_paid`) viven en la
+base y hacen todas sus escrituras en una transacción. La landing recibe sólo
+permiso de leer y de insertar ventas pendientes: no puede aprobar ni liquidar.
+Está en `supabase/005_vendedores.sql`.
 
 ---
 
@@ -66,6 +111,10 @@ sovare.admins       quién puede entrar
 sovare.clients      la ficha entera: contacto, estado, instalación, suscripción
 sovare.payments     un cobro por cliente, período y concepto
 sovare.activities   seguimiento, con próximo paso y fecha
+sovare.vendors      los vendedores a comisión, su porcentaje y su link
+sovare.vendor_sales        lo que cargó cada vendedor, y qué se decidió
+sovare.vendor_settlements  las liquidaciones mensuales y su pago
+sovare.vendor_period_balances  (vista) el saldo por vendedor y mes
 ```
 
 ### Dar de alta a alguien

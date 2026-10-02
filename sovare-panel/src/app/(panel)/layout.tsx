@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import { requireAdmin } from '@/lib/supabase/server';
+import { createServerClient, requireAdmin } from '@/lib/supabase/server';
 import { Shell } from '@/components/layout/shell';
 
 /**
@@ -13,5 +13,17 @@ export default async function PanelLayout({ children }: { children: React.ReactN
   const admin = await requireAdmin();
   if (!admin) redirect('/login');
 
-  return <Shell email={admin.email}>{children}</Shell>;
+  // Los clientes que cargaron los vendedores y esperan aprobación. Si la consulta
+  // falla el contador queda en cero: un número que falta no puede tumbar el panel.
+  const supabase = await createServerClient();
+  const { count } = await supabase
+    .from('vendor_sales')
+    .select('id', { count: 'exact', head: true })
+    .eq('status', 'pendiente');
+
+  return (
+    <Shell email={admin.email} badges={{ '/vendedores': count ?? 0 }}>
+      {children}
+    </Shell>
+  );
 }

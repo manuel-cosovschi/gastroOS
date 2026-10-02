@@ -221,3 +221,120 @@ export interface Plan {
   sort_order: number;
   is_active: boolean;
 }
+
+// ============================================
+// Vendedores a comisión
+// ============================================
+
+export interface Vendor {
+  id: string;
+  /** Es la llave de su página: quien tiene el link entra como él. */
+  token: string;
+  name: string;
+  whatsapp: string | null;
+  email: string | null;
+  city: string | null;
+  /** Porcentaje de la cuota del primer mes que se le acredita por venta. */
+  commission_pct: number;
+  payout_alias: string | null;
+  payout_holder: string | null;
+  is_active: boolean;
+  notes: string | null;
+  created_at: string;
+}
+
+export const VENDOR_SALE_STATUSES = ['pendiente', 'aprobada', 'rechazada', 'anulada'] as const;
+export type VendorSaleStatus = (typeof VENDOR_SALE_STATUSES)[number];
+
+export const VENDOR_SALE_STATUS_META: Record<
+  VendorSaleStatus,
+  { label: string; badge: string; help: string }
+> = {
+  pendiente: {
+    label: 'Para aprobar',
+    badge: 'bg-amber-50 text-amber-800 border-amber-200',
+    help: 'El vendedor lo cargó y falta que lo revises.',
+  },
+  aprobada: {
+    label: 'Aprobada',
+    badge: 'bg-emerald-50 text-emerald-800 border-emerald-200',
+    help: 'La comisión está acreditada en su saldo.',
+  },
+  rechazada: {
+    label: 'Rechazada',
+    badge: 'bg-rose-50 text-rose-700 border-rose-200',
+    help: 'No se aprobó. El vendedor ve el motivo.',
+  },
+  anulada: {
+    label: 'Anulada',
+    badge: 'bg-stone-100 text-stone-500 border-stone-200',
+    help: 'Estaba aprobada y se dio de baja antes de liquidarla.',
+  },
+};
+
+export interface VendorSale {
+  id: string;
+  vendor_id: string;
+  business_name: string;
+  contact_name: string | null;
+  whatsapp: string | null;
+  email: string | null;
+  city: string | null;
+  industry: string | null;
+  plan: string | null;
+  notes: string | null;
+  status: VendorSaleStatus;
+  submitted_at: string;
+  decided_at: string | null;
+  decision_notes: string | null;
+  /** Lo que se congeló al aprobar: la cuota del plan, el porcentaje y el importe. */
+  plan_monthly: number | null;
+  commission_pct: number | null;
+  commission_amount: number | null;
+  /** Primer día del mes en que se aprobó: es el mes del saldo. */
+  period: string | null;
+  settlement_id: string | null;
+  voided_at: string | null;
+  void_notes: string | null;
+  client_id: string | null;
+}
+
+export type SettlementStatus = 'liquidada' | 'pagada' | 'anulada';
+
+export const SETTLEMENT_STATUS_META: Record<SettlementStatus, { label: string; badge: string }> = {
+  liquidada: { label: 'A transferir', badge: 'bg-amber-50 text-amber-800 border-amber-200' },
+  pagada: { label: 'Pagada', badge: 'bg-emerald-50 text-emerald-800 border-emerald-200' },
+  anulada: { label: 'Deshecha', badge: 'bg-stone-100 text-stone-500 border-stone-200' },
+};
+
+export interface VendorSettlement {
+  id: string;
+  vendor_id: string;
+  period: string;
+  sales_count: number;
+  total: number;
+  currency: string;
+  status: SettlementStatus;
+  settled_at: string;
+  paid_at: string | null;
+  paid_reference: string | null;
+}
+
+/** Una fila de `sovare.vendor_period_balances`: lo aprobado de un vendedor en un mes. */
+export interface VendorBalance {
+  vendor_id: string;
+  period: string;
+  is_current: boolean;
+  sales_count: number;
+  accrued: number;
+  unsettled: number;
+  unsettled_count: number;
+}
+
+export interface SaleMatch {
+  kind: 'venta' | 'contratacion' | 'cliente';
+  ref_id: string;
+  label: string;
+  status: string;
+  detail: string;
+}
