@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Check, Unlock, Wrench } from 'lucide-react';
+import { Check, Info, Unlock, Wrench } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { PRICING } from '@/lib/marketing';
 import { getPlanAmounts, signupsEnabled } from '@/lib/signups';
@@ -153,6 +153,25 @@ export async function Pricing() {
               <p className="mt-1 text-sm text-stone-500">{PRICING.setup.unit}</p>
             </div>
           </div>
+        </div>
+
+        {/* ---------- Lo que no entra ----------
+            Va acá, entre los precios y el cierre, y no escondido en las
+            preguntas frecuentes. Un costo que el cliente descubre después se
+            siente como letra chica aunque nadie se lo haya ocultado. */}
+        <div className="mt-6 rounded-2xl border border-stone-200 bg-stone-50 p-6 sm:p-8">
+          <div className="flex items-center gap-2">
+            <Info className="h-5 w-5 shrink-0 text-stone-400" />
+            <h3 className="text-lg font-semibold text-stone-900">{PRICING.notIncluded.title}</h3>
+          </div>
+          <dl className="mt-4 grid gap-4 sm:grid-cols-2">
+            {PRICING.notIncluded.items.map((item) => (
+              <div key={item.name}>
+                <dt className="text-sm font-semibold text-stone-900">{item.name}</dt>
+                <dd className="mt-1 text-sm leading-relaxed text-stone-600">{item.body}</dd>
+              </div>
+            ))}
+          </dl>
         </div>
 
         <div className="mt-6 flex flex-wrap items-center justify-between gap-3 text-sm">

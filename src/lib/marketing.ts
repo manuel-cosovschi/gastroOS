@@ -328,7 +328,7 @@ export const REASONS = [
   },
   {
     title: 'Lleva tu marca, no la nuestra',
-    body: 'Tu paleta, tus tipografías y tu dominio. Tus clientes ven tu negocio, no el logo de un proveedor de software.',
+    body: 'Tu paleta, tus tipografías y tu dominio, que es tuyo y lo registrás a tu nombre. Tus clientes ven tu negocio, no el logo de un proveedor de software.',
   },
   {
     title: 'Arrancás con tus datos adentro',
@@ -545,7 +545,7 @@ export const PRICING = {
       'Tu instalación con tu paleta y tus tipografías',
       'Carga de catálogo, precios, insumos y clientes',
       'Recetas y costo real de cada producto',
-      'Tu tienda online publicada en tu dominio',
+      'Tu tienda online publicada en tu dominio, que comprás vos aparte',
       'Una sesión de capacitación con tu equipo',
     ],
   },
@@ -578,7 +578,7 @@ export const PRICING = {
         'Cuando ya hay alguien más en la cocina. Es el que toma casi todo el mundo.',
       features: [
         'Todo lo del plan Taller',
-        'Tu dominio propio, no un subdominio nuestro',
+        'Tu dominio propio, no un subdominio nuestro (el dominio lo comprás vos)',
         'Puesta a punto incluida: te lo dejamos cargado',
         'Soporte por WhatsApp, respuesta en el día hábil',
         'Ajustes y cambios chicos incluidos',
@@ -627,6 +627,35 @@ export const PRICING = {
     price: 19000,
   },
 
+  /**
+   * Lo que no entra en ningún plan.
+   *
+   * Está escrito y a la vista a propósito. El dominio es el caso típico de
+   * costo que el cliente descubre después y siente como una letra chica, aunque
+   * nadie se lo haya ocultado: alcanza con no mencionarlo.
+   *
+   * Y no es que no lo queramos incluir: un dominio se registra a nombre del
+   * titular, y si lo compramos nosotros queda a nombre nuestro. Eso es
+   * exactamente lo que no queremos, porque el día que alguien se vaya tiene que
+   * poder llevárselo.
+   *
+   * El arancel no se escribe acá a propósito: lo fija NIC Argentina, cambia con
+   * la inflación, y un número viejo en esta página es peor que ninguno.
+   */
+  notIncluded: {
+    title: 'Qué no está incluido',
+    items: [
+      {
+        name: 'El dominio',
+        body: 'No entra en ningún plan. Se registra a tu nombre en NIC Argentina y se renueva una vez por año, y el arancel lo pagás vos directamente a ellos. Te decimos cuál te conviene y lo configuramos nosotros, pero la titularidad es tuya: si un día te vas, el dominio se va con vos.',
+      },
+      {
+        name: 'La pasarela de pago',
+        body: 'Si querés cobrar online, la comisión la cobra Mercado Pago, no nosotros. No nos quedamos con un porcentaje de tus ventas.',
+      },
+    ],
+  },
+
   /** Cierre de la sección. Sin permanencia es lo único que prometemos acá. */
   closing: {
     title: 'Sin contrato de permanencia',
@@ -654,6 +683,10 @@ export const FAQS = [
   {
     q: '¿Por qué el plan Taller no incluye soporte ni puesta a punto?',
     a: 'Porque queríamos un precio de entrada real y no uno que se cae cuando pedís algo. A $15.000 no entra que alguien te cargue el catálogo ni que te conteste el WhatsApp, y meterlo igual sería mentirte. Lo que sí entra es el sistema entero funcionando, sin funciones recortadas. Si necesitás una mano se cobra por hora y sabés cuánto; si preferís no pensar en eso, el plan Negocio ya lo trae.',
+  },
+  {
+    q: '¿El dominio está incluido en el precio?',
+    a: 'No, y conviene que no lo esté. Un dominio se registra a nombre de su titular: si lo compráramos nosotros quedaría a nombre nuestro, y el día que quieras irte no te lo podrías llevar. Lo registrás vos en NIC Argentina, lo renovás una vez por año y le pagás el arancel directamente a ellos. Nosotros te decimos cuál te conviene y lo dejamos configurado y andando, sin cobrarte por eso. Si todavía no querés comprar uno, arrancás con un subdominio nuestro y lo cambiás cuando quieras.',
   },
   {
     q: '¿Por qué son más baratos que los demás?',

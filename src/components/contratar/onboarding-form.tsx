@@ -222,7 +222,7 @@ export function OnboardingForm({
         <Field
           label="¿Tenés dominio propio?"
           optional
-          hint="Si ya tenés uno lo usamos; si no, te damos uno nuestro y después lo cambiás."
+          hint="El dominio no está incluido: se compra a tu nombre y se paga aparte, una vez por año. Si ya tenés uno lo configuramos; si no, arrancás con un subdominio nuestro y lo cambiás cuando quieras."
         >
           <Input {...register('domain')} placeholder="tunegocio.com.ar" />
         </Field>
