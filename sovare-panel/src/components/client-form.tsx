@@ -180,6 +180,17 @@ export function ClientForm({ client }: { client?: Client }) {
 
       <Block title="Prospección">
         <Field
+          label="Asunto del mail"
+          hint="Corto y concreto de este negocio. Si queda vacío, el botón de mail usa la segunda oración del mensaje recortada, que funciona pero se nota."
+          className="sm:col-span-2"
+        >
+          <input
+            name="outreach_subject"
+            className="field"
+            defaultValue={client?.outreach_subject ?? ''}
+          />
+        </Field>
+        <Field
           label="Mensaje para escribirle"
           hint="Es lo que el botón de WhatsApp precarga. Conviene que arranque con algo cierto y puntual de este negocio: eso es lo que separa un mensaje de una plantilla."
           className="sm:col-span-2"

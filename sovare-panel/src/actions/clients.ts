@@ -34,6 +34,7 @@ const TEXT_FIELDS = [
   'plan',
   'notes',
   'outreach_message',
+  'outreach_subject',
   'source_url',
 ] as const;
 

@@ -23,6 +23,13 @@ ALTER TABLE sovare.clients
 ALTER TABLE sovare.clients
   ADD COLUMN IF NOT EXISTS contacted_at TIMESTAMPTZ;
 
+-- El asunto del mail. Va aparte del mensaje y no se deriva de él: un asunto no
+-- es una oración. Derivarlo obligaba a cortar la segunda frase a los setenta
+-- caracteres, y un asunto que termina en "y que trabajan con…" se lee como un
+-- mail automático, que es exactamente lo que estos mensajes tratan de no parecer.
+ALTER TABLE sovare.clients
+  ADD COLUMN IF NOT EXISTS outreach_subject TEXT;
+
 -- De dónde salió el contacto. Un teléfono sin fuente no se puede verificar, y
 -- medio dato de directorio está viejo: cuando el chat no existe, esto dice
 -- dónde ir a mirar.

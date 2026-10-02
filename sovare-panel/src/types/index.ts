@@ -91,6 +91,8 @@ export interface Client {
 
   /** El mensaje escrito para este negocio, que el botón de WhatsApp precarga. */
   outreach_message: string | null;
+  /** El asunto del mail. Aparte del mensaje, porque un asunto no es una oración. */
+  outreach_subject: string | null;
   /** Cuándo le escribimos por primera vez. NULL es "todavía no". */
   contacted_at: string | null;
   /** De dónde salió el contacto, para poder verificarlo. */

@@ -110,9 +110,7 @@ function Fila({ p, apagado = false }: { p: Client; apagado?: boolean }) {
   const numero = formatearNumero(p.whatsapp);
   const yaFue = Boolean(p.contacted_at);
 
-  // El asunto del mail sale de la primera oración del mensaje: es lo más
-  // específico que tenemos de este negocio y evita inventar un segundo texto.
-  const asunto = mensaje.split(/(?<=[.?])\s/)[1]?.slice(0, 70) || 'Veinte minutos para mostrarte algo';
+  const asunto = p.outreach_subject?.trim() || asuntoDelMensaje(mensaje);
 
   return (
     <li className={cn('px-5 py-4', apagado && 'opacity-60')}>
@@ -223,6 +221,29 @@ function Fila({ p, apagado = false }: { p: Client; apagado?: boolean }) {
       )}
     </li>
   );
+}
+
+/**
+ * El asunto de respaldo, para cuando el prospecto no tiene uno escrito.
+ *
+ * Toma la segunda oración y no la primera, porque la primera es siempre la
+ * presentación ("Hola, soy Manuel, de SOVARE"), que como asunto no dice nada.
+ * El corte es por palabra y nunca por caracter.
+ *
+ * Es un respaldo y no la fuente: lo bueno es escribir el asunto a mano en la
+ * ficha. Una oración recortada sirve para que el botón nunca quede sin asunto,
+ * no para enamorar a nadie.
+ */
+function asuntoDelMensaje(mensaje: string): string {
+  const POR_DEFECTO = 'Veinte minutos para mostrarte algo';
+  const segunda = mensaje.split(/(?<=[.?])\s+/)[1]?.trim();
+  if (!segunda) return POR_DEFECTO;
+
+  const limpia = segunda.replace(/[.?]+$/, '');
+  if (limpia.length <= 72) return limpia;
+
+  const corte = limpia.slice(0, 72).lastIndexOf(' ');
+  return corte > 24 ? `${limpia.slice(0, corte)}…` : POR_DEFECTO;
 }
 
 function Chip({ href, label, active }: { href: string; label: string; active: boolean }) {
