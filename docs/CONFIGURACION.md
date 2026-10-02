@@ -238,7 +238,10 @@ nombres de Vercel:
    | TXT | `resend._domainkey` | la clave que figura hoy en GoDaddy (`p=MIGfMA0G…`) |
    | TXT | `_dmarc` | `v=DMARC1; p=quarantine; adkim=r; aspf=r; rua=mailto:dmarc_rua@onsecureserver.net;` |
 
-   El apex y `www` los resuelve Vercel solo, no hace falta cargarlos.
+   Vercel suele resolver el sitio (`@`) y `www` solo cuando el dominio ya usa sus
+   servidores de nombres. Si en la lista no aparecen, agregalos también:
+   `A` `@` `216.198.79.1` y `CNAME` `www` `7d68012626516b95.vercel-dns-017.com.`
+   (son los valores que hoy tiene GoDaddy).
 2. Comparar con la tabla de DNS de GoDaddy: cualquier otro registro que tenga
    (MX, TXT, CNAME) hay que copiarlo también.
 3. En GoDaddy → el dominio → **Servidores de nombres** → **Cambiar** → «Ingresar
