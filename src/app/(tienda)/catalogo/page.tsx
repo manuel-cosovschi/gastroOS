@@ -52,7 +52,7 @@ function CatalogoContent() {
               <div className="h-8 w-8 animate-spin rounded-full border-4 border-stone-200 border-t-stone-900" />
             </div>
           ) : (
-            <ProductGrid products={products} />
+            <ProductGrid products={products} filtered={Boolean(selectedCategory)} />
           )}
         </div>
       </main>
