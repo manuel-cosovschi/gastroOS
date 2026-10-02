@@ -670,7 +670,7 @@ export const PRICING = {
 export const FAQS = [
   {
     q: '¿Sirve si vendo por WhatsApp e Instagram?',
-    a: 'Sí, es el caso más común. Vos seguís recibiendo el pedido por donde ya lo recibís y lo cargás en GastroOS en menos de un minuto. Si querés, además te damos una tienda online para que el cliente lo cargue solo.',
+    a: 'Sí, es el caso más común. Vos seguís recibiendo el pedido por donde ya lo recibís y lo cargás en GastroOS en menos de un minuto. La tienda online viene en todos los planes y ya arranca publicada, así que el que quiera se carga el pedido solo y te entra al panel igual que los demás. Si no la querés, la apagás desde Configuración y listo: es una decisión tuya, no algo que se paga aparte.',
   },
   {
     q: '¿Puedo ponerle los colores y la tipografía de mi marca?',
@@ -683,6 +683,10 @@ export const FAQS = [
   {
     q: '¿Por qué el plan Taller no incluye soporte ni puesta a punto?',
     a: 'Porque queríamos un precio de entrada real y no uno que se cae cuando pedís algo. A $15.000 no entra que alguien te cargue el catálogo ni que te conteste el WhatsApp, y meterlo igual sería mentirte. Lo que sí entra es el sistema entero funcionando, sin funciones recortadas. Si necesitás una mano se cobra por hora y sabés cuánto; si preferís no pensar en eso, el plan Negocio ya lo trae.',
+  },
+  {
+    q: '¿Estoy obligado a tener la tienda online?',
+    a: 'No. Viene incluida en todos los planes y arranca publicada, pero es un interruptor en Configuración: la apagás cuando quieras y el sistema sigue funcionando igual, cargando vos los pedidos a mano. No cambia lo que pagás. Hay negocios que la apagan porque laburan sólo con clientes de siempre, y otros que la dejan prendida nada más que para dejar de contestar el precio uno por uno.',
   },
   {
     q: '¿El dominio está incluido en el precio?',
