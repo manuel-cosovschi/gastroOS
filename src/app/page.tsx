@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight, Check, Minus, Sparkles } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, Check, Minus, Sparkles } from 'lucide-react';
 import { APP_NAME, APP_TAGLINE } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 import {
@@ -284,6 +284,20 @@ export default function LandingPage() {
               <p className="mt-4 text-lg leading-relaxed text-stone-600">
                 {CASE_STUDY.storefront.body}
               </p>
+              {/*
+                El link a la tienda real, al lado de la captura de la tienda real.
+                Es el único lugar de la página donde el visitante puede ir a
+                comprobar algo por su cuenta, y por eso va acá y no sólo en el pie.
+              */}
+              <a
+                href={CASE_STUDY.storefront.url}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-6 inline-flex items-center gap-2 rounded-xl border border-stone-300 bg-white px-4 py-2.5 text-sm font-medium text-stone-800 transition-colors hover:border-stone-400 hover:bg-stone-50"
+              >
+                {CASE_STUDY.storefront.cta}
+                <ArrowUpRight className="h-4 w-4" />
+              </a>
             </div>
             <figure>
               <BrowserFrame>
@@ -608,10 +622,21 @@ export default function LandingPage() {
                       Cómo funciona
                     </a>
                   </li>
+                  {/*
+                    Antes este link iba a /catalogo, que en este deploy es la
+                    tienda de la demo: "Dulce Estudio", una pastelería inventada
+                    con productos de ejemplo. Mandaba al visitante a mirar datos
+                    de relleno cuando hay una tienda de verdad para mostrar.
+                  */}
                   <li>
-                    <Link href="/catalogo" className="text-stone-500 transition-colors hover:text-stone-900">
-                      Tienda de ejemplo
-                    </Link>
+                    <a
+                      href={CASE_STUDY.storefront.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-stone-500 transition-colors hover:text-stone-900"
+                    >
+                      Tienda de un cliente
+                    </a>
                   </li>
                 </ul>
               </div>

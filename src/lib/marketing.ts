@@ -263,8 +263,17 @@ export const CASE_STUDY = {
   client: 'COSOV.',
   title: 'Caso real: el mismo sistema, con la cara de su negocio',
   lead: 'COSOV. es una pastelería artesanal que produce por encargo para cafeterías y eventos. Los pedidos entraban por WhatsApp e Instagram y se anotaban a mano; el costo real de cada producto era una estimación.',
+  /**
+   * Acá decía además "su dominio".
+   *
+   * No es cierto todavía: COSOV. está en el subdominio que le dio Vercel. Pasaba
+   * desapercibido mientras la tienda era sólo una captura, pero más abajo el plan
+   * Negocio vende "tu dominio propio, no un subdominio nuestro", y ahora el caso
+   * tiene un link: el visitante que lo sigue ve la dirección real. Una frase que
+   * se desarma en el clic siguiente hace más daño que la que nunca se dijo.
+   */
   outcome:
-    'Hoy trabaja sobre su propia instalación de GastroOS: su paleta, sus tipografías, su dominio y su base de datos. No comparte el sistema con nadie y no parece software alquilado. Parece de ellos, porque lo es.',
+    'Hoy trabaja sobre su propia instalación de GastroOS: su paleta, sus tipografías y su base de datos. No comparte el sistema con nadie y no parece software alquilado. Parece de ellos, porque lo es.',
   facts: [
     { label: 'Rubro', value: 'Pastelería artesanal por encargo' },
     { label: 'Trabaja con', value: 'Cafeterías y eventos' },
@@ -291,6 +300,24 @@ export const CASE_STUDY = {
     image: '/casos/cosov-tienda.webp',
     alt: 'Catálogo público de COSOV. con sus productos, en bordó y crema',
     caption: 'Tienda pública de COSOV., en producción',
+    /**
+     * La tienda de COSOV., en vivo.
+     *
+     * El comentario de arriba dice que una captura verificable vale más que dos
+     * que no, y ese era el argumento para dejar sólo ésta. El link es la otra
+     * mitad: sin él la verificación queda enunciada y no ofrecida.
+     *
+     * Es un negocio de verdad y los pedidos que entran son de verdad, así que el
+     * texto dice de quién es la tienda antes de que la abran. Lo que se toca sin
+     * consecuencias es la demo, que es lo que ofrece el botón de arriba.
+     *
+     * Sale de una variable porque la dirección va a cambiar el día que COSOV.
+     * tenga dominio propio.
+     */
+    url:
+      process.env.NEXT_PUBLIC_CASE_STUDY_STOREFRONT_URL ||
+      'https://cosov-pedidos.vercel.app/catalogo',
+    cta: 'Abrir la tienda de COSOV.',
   },
 };
 
