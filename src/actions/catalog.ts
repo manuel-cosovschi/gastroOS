@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { createServerClient } from '@/lib/supabase/server';
-import { getStorefrontBusiness } from '@/lib/business';
+import { getStorefrontBusiness, publicStoreUrl } from '@/lib/business';
 import { notifyBusiness } from '@/lib/push';
 import {
   loadOrderLines,
@@ -309,7 +309,10 @@ async function sendOrderMails(
     subtotal: items.reduce((total, item) => total + Number(item.subtotal), 0),
   };
 
-  const tracking = SITE_URL ? `${SITE_URL}/pedido/seguimiento/${receipt.order_number}` : undefined;
+  // El seguimiento va a la tienda por la que entró el pedido; el panel, en cambio,
+  // siempre vive en el dominio principal.
+  const storeUrl = publicStoreUrl(business.slug);
+  const tracking = storeUrl ? `${storeUrl}/pedido/seguimiento/${receipt.order_number}` : undefined;
   const admin = SITE_URL ? `${SITE_URL}/admin/pedidos/${receipt.id}` : undefined;
 
   await Promise.all([

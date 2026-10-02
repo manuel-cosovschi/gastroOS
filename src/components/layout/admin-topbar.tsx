@@ -2,7 +2,6 @@
 
 import Link, { useLinkStatus } from 'next/link';
 import { HelpCircle, Loader2, Menu, Package, Plus, Receipt, UserPlus } from 'lucide-react';
-import { DEMO_MODE } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 import { useTour } from '@/components/admin/tour/tour-provider';
 import { ResetDemoButton } from '@/components/demo/reset-demo-button';
@@ -21,12 +20,19 @@ const SHORTCUTS = [
   { href: '/admin/productos/nuevo', label: 'Nuevo producto', icon: Package },
 ];
 
-export function AdminTopbar({ onOpenMenu }: { onOpenMenu: () => void }) {
+export function AdminTopbar({
+  demo,
+  onOpenMenu,
+}: {
+  /** Sólo una copia de la demo lleva el cartel y el botón de reiniciar. */
+  demo: boolean;
+  onOpenMenu: () => void;
+}) {
   const { start } = useTour();
 
   return (
     <header className="sticky top-0 z-30 border-b border-stone-200 bg-white/80 backdrop-blur">
-      {DEMO_MODE && (
+      {demo && (
         <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 bg-brand-700 px-4 py-1.5 text-center text-xs font-medium text-white">
           {/* "Esta demo es tuya" no es un detalle de cortesía: es la respuesta
               a la primera duda de cualquiera que va a tocar algo. Cada

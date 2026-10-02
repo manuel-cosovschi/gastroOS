@@ -1,19 +1,24 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { CheckCircle2, Clock, Landmark, MessageCircle, XCircle } from 'lucide-react';
+import { CheckCircle2, Clock, ExternalLink, Landmark, MessageCircle, XCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { getSignup } from '@/actions/signups';
 import { getTransferDetails } from '@/lib/signups';
 import { whatsappUrl } from '@/lib/marketing';
 import { CopyField } from '@/components/contratar/copy-field';
 import { ReceiptUpload } from '@/components/contratar/receipt-upload';
+import { SetPasswordForm } from '@/components/contratar/set-password-form';
 import type { SignupPublicView } from '@/types/signup';
 
 export const metadata: Metadata = { title: 'Tu contratación' };
 
 // El estado cambia con la subida del comprobante; no hay nada que cachear.
 export const dynamic = 'force-dynamic';
+
+// La subida del comprobante corre acá: leerlo con la IA, crear la cuenta y mandar
+// el mail juntos pueden pasar los 10 segundos que da la plataforma por defecto.
+export const maxDuration = 60;
 
 interface Props {
   params: Promise<{ token: string }>;
@@ -53,7 +58,12 @@ export default async function ContratacionPage({ params }: Props) {
           <Waiting signup={signup} transfer={transfer} />
         )}
         {signup.status === 'en_revision' && <UnderReview signup={signup} help={help} />}
-        {signup.status === 'aprobado' && <Approved signup={signup} />}
+        {signup.status === 'aprobado' &&
+          (signup.self_service ? (
+            <ApprovedSelfService signup={signup} help={help} />
+          ) : (
+            <Approved signup={signup} />
+          ))}
         {signup.status === 'rechazado' && <Rejected help={help} />}
 
         <p className="text-center text-xs leading-relaxed text-stone-500">
@@ -102,7 +112,9 @@ function Waiting({
             {money(signup.amount)}
           </p>
           <p className="mt-1 text-xs text-stone-600">
-            Puesta a punto + primer mes del plan {signup.plan_label}
+            {signup.plan_setup > 0
+              ? `Puesta a punto + primer mes del plan ${signup.plan_label}`
+              : `Primer mes del plan ${signup.plan_label}`}
           </p>
         </div>
 
@@ -148,7 +160,7 @@ function UnderReview({ signup, help }: { signup: SignupPublicView; help: string 
             <h2 className="text-lg font-semibold text-stone-900">Recibimos tu comprobante</h2>
             <p className="mt-1.5 text-sm leading-relaxed text-stone-700">
               No pudimos confirmarlo automáticamente, así que lo está mirando una persona. Te
-              escribimos en cuanto esté — normalmente el mismo día.
+              escribimos en cuanto esté, normalmente el mismo día.
             </p>
             {help && (
               <Button asChild variant="outline" className="mt-4 bg-white">
@@ -175,6 +187,7 @@ function UnderReview({ signup, help }: { signup: SignupPublicView; help: string 
   );
 }
 
+/** Pago confirmado en un plan con puesta a punto: lo que sigue es el alta. */
 function Approved({ signup }: { signup: SignupPublicView }) {
   return (
     <section className="rounded-2xl border border-brand-200 bg-white p-6 shadow-card sm:p-8">
@@ -182,7 +195,7 @@ function Approved({ signup }: { signup: SignupPublicView }) {
         <CheckCircle2 className="mt-0.5 h-6 w-6 shrink-0 text-brand-600" />
         <div className="min-w-0">
           <h2 className="text-lg font-semibold text-stone-900">
-            Tu plan {signup.plan_label} está activo
+            Confirmamos tu pago del plan {signup.plan_label}
           </h2>
           <p className="mt-1.5 text-sm leading-relaxed text-stone-600">
             Te mandamos un mail a <strong>{signup.email}</strong> con todo lo que sigue. Si no
@@ -213,6 +226,90 @@ function Approved({ signup }: { signup: SignupPublicView }) {
   );
 }
 
+/**
+ * Pago confirmado en un plan de autoservicio: la cuenta ya existe, o está por
+ * existir. Tres estados, según cuánto falte.
+ */
+function ApprovedSelfService({ signup, help }: { signup: SignupPublicView; help: string }) {
+  if (!signup.provisioned) {
+    return (
+      <section className="rounded-2xl border border-brand-200 bg-white p-6 shadow-card sm:p-8">
+        <div className="flex gap-4">
+          <CheckCircle2 className="mt-0.5 h-6 w-6 shrink-0 text-brand-600" />
+          <div className="min-w-0">
+            <h2 className="text-lg font-semibold text-stone-900">
+              Confirmamos tu pago del plan {signup.plan_label}
+            </h2>
+            <p className="mt-1.5 text-sm leading-relaxed text-stone-600">
+              Estamos terminando de preparar tu cuenta. Te escribimos a{' '}
+              <strong>{signup.email}</strong> en unas horas con el acceso.
+            </p>
+            {help && (
+              <Button asChild variant="outline" className="mt-4 bg-white">
+                <a href={help} target="_blank" rel="noreferrer">
+                  <MessageCircle className="mr-2 h-4 w-4" />
+                  Consultarnos por WhatsApp
+                </a>
+              </Button>
+            )}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section className="rounded-2xl border border-brand-200 bg-white p-6 shadow-card sm:p-8">
+      <div className="flex gap-4">
+        <CheckCircle2 className="mt-0.5 h-6 w-6 shrink-0 text-brand-600" />
+        <div className="min-w-0 flex-1">
+          <h2 className="text-lg font-semibold text-stone-900">Tu cuenta ya está lista</h2>
+          <p className="mt-1.5 text-sm leading-relaxed text-stone-600">
+            Creamos el sistema de <strong>{signup.business_name}</strong> con el plan{' '}
+            {signup.plan_label}. Tu mail de acceso es <strong>{signup.email}</strong>.
+          </p>
+
+          {signup.password_set ? (
+            <>
+              <Button asChild size="lg" className="mt-5">
+                <Link href="/login">Entrar a mi panel</Link>
+              </Button>
+              <p className="mt-3 text-xs leading-relaxed text-stone-500">
+                Entrás con tu mail y la contraseña que elegiste. Si la olvidaste, escribinos por
+                WhatsApp y te mandamos un link para elegir otra.
+              </p>
+            </>
+          ) : (
+            <SetPasswordForm token={signup.token} />
+          )}
+
+          <div className="mt-6 rounded-xl border border-stone-200 bg-stone-50 p-4">
+            <p className="text-sm font-medium text-stone-900">Tu tienda online</p>
+            {signup.store_url ? (
+              <a
+                href={signup.store_url}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-1 inline-flex items-center gap-1.5 break-all text-sm font-medium text-brand-700 hover:underline"
+              >
+                {signup.store_url.replace(/^https?:\/\//, '')}
+                <ExternalLink className="h-3.5 w-3.5 shrink-0" />
+              </a>
+            ) : (
+              <p className="mt-1 text-sm leading-relaxed text-stone-600">
+                Se activa en las próximas horas. Apenas esté lista te escribimos con la dirección.
+              </p>
+            )}
+            <p className="mt-2 text-xs leading-relaxed text-stone-500">
+              Cargá tus productos desde el panel; el sistema trae una guía que te lleva paso a paso.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function Rejected({ help }: { help: string }) {
   return (
     <section className="rounded-2xl border border-rose-200 bg-rose-50 p-6 sm:p-8">
@@ -223,7 +320,7 @@ function Rejected({ help }: { help: string }) {
           <p className="mt-1.5 text-sm leading-relaxed text-stone-700">
             No pudimos confirmar el pago de esta contratación. Puede ser un comprobante que no
             corresponde, un monto distinto o una transferencia que no llegó. Escribinos y lo
-            resolvemos — si el pago salió de tu cuenta, no se pierde.
+            resolvemos. Si el pago salió de tu cuenta, no se pierde.
           </p>
           {help && (
             <Button asChild className="mt-4">

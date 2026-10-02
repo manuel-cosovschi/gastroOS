@@ -16,14 +16,22 @@ import { TourProvider, useTour } from '@/components/admin/tour/tour-provider';
  */
 export function AdminShell({
   business,
+  demo,
+  autoStartTour,
   children,
 }: {
   business: Parameters<typeof AdminSidebar>[0]['business'];
+  /** La sesión es una copia de la demo, no un negocio de verdad. */
+  demo: boolean;
+  /** Abrir la guía sola la primera vez (demo o negocio recién creado). */
+  autoStartTour: boolean;
   children: React.ReactNode;
 }) {
   return (
-    <TourProvider>
-      <AdminShellInner business={business}>{children}</AdminShellInner>
+    <TourProvider demo={demo} autoStart={autoStartTour}>
+      <AdminShellInner business={business} demo={demo}>
+        {children}
+      </AdminShellInner>
       <TourOverlay />
     </TourProvider>
   );
@@ -31,9 +39,11 @@ export function AdminShell({
 
 function AdminShellInner({
   business,
+  demo,
   children,
 }: {
   business: Parameters<typeof AdminSidebar>[0]['business'];
+  demo: boolean;
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
@@ -55,7 +65,7 @@ function AdminShellInner({
     <div className="min-h-screen bg-stone-50">
       <AdminSidebar business={business} open={sidebarOpen} onClose={() => setMenuOpen(false)} />
       <div className="lg:pl-64">
-        <AdminTopbar onOpenMenu={() => setMenuOpen(true)} />
+        <AdminTopbar demo={demo} onOpenMenu={() => setMenuOpen(true)} />
         <main className="mx-auto max-w-7xl p-4 pb-16 sm:p-6 lg:p-8">{children}</main>
       </div>
     </div>

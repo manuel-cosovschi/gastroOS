@@ -11,12 +11,15 @@ import { Label } from '@/components/ui/label';
 /**
  * El ingreso de un cliente a su sistema.
  *
- * Sólo se monta en la instalación de un cliente, donde es toda la pantalla.
- * En `gastroos.shop` no aparece: ahí no hay ninguna cuenta de cliente que
- * pueda entrar, porque cada uno tiene su propia instalación con su propia
- * base de datos, y entra por su propio dominio.
+ * Es toda la pantalla en la instalación propia de un cliente y la segunda mitad
+ * en `gastroos.shop`, donde conviven la demo y las cuentas del plan Taller.
+ *
+ * No hay "olvidé mi contraseña" automático: por ahora quien la pierde nos escribe
+ * y se la reponemos desde el panel de SOVARE, que le manda un link para elegir
+ * una nueva. El enlace de ayuda lo trae la página para no cargar acá todo el
+ * texto comercial del sitio.
  */
-export function ClientAccess() {
+export function ClientAccess({ helpUrl }: { helpUrl?: string }) {
   const router = useRouter();
   const next = useSearchParams().get('next') || '/admin';
 
@@ -77,6 +80,20 @@ export function ClientAccess() {
         {loading && <Loader2 className="h-4 w-4 animate-spin" />}
         Entrar
       </Button>
+
+      {helpUrl && (
+        <p className="text-center text-xs text-stone-500">
+          ¿No podés entrar?{' '}
+          <a
+            href={helpUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="font-medium text-brand-700 hover:underline"
+          >
+            Escribinos por WhatsApp
+          </a>
+        </p>
+      )}
     </form>
   );
 }

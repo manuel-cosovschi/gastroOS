@@ -1,4 +1,5 @@
 import { mailLayout, mailerConfigured, sendMail } from '@/lib/mailer';
+import { escapeHtml, oneLine } from '@/lib/html';
 import { createServiceClient } from '@/lib/supabase/service';
 import { formatDateLong, formatPrice } from '@/lib/utils';
 import { ORDER_STATUS_LABELS } from '@/types';
@@ -28,7 +29,7 @@ export interface OrderMailLine {
 }
 
 /** El negocio, con lo justo para armar un mail. */
-type MailBusiness = Pick<Business, 'name' | 'email' | 'phone' | 'currency' | 'locale'>;
+type MailBusiness = Pick<Business, 'name' | 'slug' | 'email' | 'phone' | 'currency' | 'locale'>;
 
 const money = (value: number, business: MailBusiness) =>
   formatPrice(value, { currency: business.currency, locale: business.locale });
@@ -38,7 +39,7 @@ function linesHtml(items: OrderMailLine[], business: MailBusiness): string {
     .map(
       (item) =>
         `<tr>
-          <td style="padding:6px 0;border-bottom:1px solid #F3EADA;">${item.item_name} <span style="color:#9A9080;">× ${item.quantity}</span></td>
+          <td style="padding:6px 0;border-bottom:1px solid #F3EADA;">${escapeHtml(item.item_name)} <span style="color:#9A9080;">× ${item.quantity}</span></td>
           <td style="padding:6px 0;border-bottom:1px solid #F3EADA;text-align:right;white-space:nowrap;">${money(Number(item.subtotal), business)}</td>
         </tr>`
     )
@@ -73,7 +74,7 @@ export async function sendOrderConfirmation(params: {
   const fecha = formatDateLong(order.delivery_date, business.locale);
 
   const body = `
-    <p style="margin:0 0 16px;">${saludo}</p>
+    <p style="margin:0 0 16px;">${escapeHtml(saludo)}</p>
     <p style="margin:0 0 20px;">Recibimos tu pedido. Te escribimos apenas confirmemos la
     disponibilidad.</p>
 
@@ -92,7 +93,7 @@ export async function sendOrderConfirmation(params: {
       ${deliveryLabel(order)} · ${fecha}
     </p>
 
-    ${trackingUrl ? `<p style="margin:0;font-size:14px;">Podés ver en qué estado está tu pedido <a href="${trackingUrl}" style="color:#A04630;">en este link</a>.</p>` : ''}
+    ${trackingUrl ? `<p style="margin:0;font-size:14px;">Podés ver en qué estado está tu pedido <a href="${escapeHtml(trackingUrl)}" style="color:#A04630;">en este link</a>.</p>` : ''}
   `;
 
   const text = `${saludo}
@@ -109,10 +110,11 @@ ${trackingUrl ? `\nSeguí tu pedido: ${trackingUrl}` : ''}`;
 
   await deliver({
     to: order.email,
-    subject: `Pedido #${order.order_number} recibido — ${business.name}`,
-    html: mailLayout({ title: `Recibimos tu pedido`, body, footer: business.name }),
+    subject: `Pedido #${order.order_number} recibido — ${oneLine(business.name, 60)}`,
+    html: mailLayout({ title: `Recibimos tu pedido`, body, footer: escapeHtml(business.name) }),
     text,
     replyTo: business.email || undefined,
+    fromName: business.name,
     context: 'confirmación al cliente',
   });
 }
@@ -131,7 +133,14 @@ export async function sendNewOrderNotification(params: {
 
   // A dónde avisar. Sin mail del negocio cargado no hay a quién escribirle, y
   // eso no es un error: es una configuración que falta.
-  const to = process.env.ORDER_NOTIFICATION_EMAIL?.trim() || business.email;
+  //
+  // `ORDER_NOTIFICATION_EMAIL` redirige los avisos a otra casilla, y es del
+  // negocio de este deploy. Con varios negocios en el mismo deploy no puede
+  // valer para todos: los pedidos de un cliente le llegarían a la casilla de otro.
+  const pinned = process.env.NEXT_PUBLIC_STOREFRONT_BUSINESS_SLUG;
+  const override =
+    !pinned || pinned === business.slug ? process.env.ORDER_NOTIFICATION_EMAIL?.trim() : undefined;
+  const to = override || business.email;
   if (!to) return;
 
   const contacto = [order.phone, order.email].filter(Boolean).join(' · ');
@@ -140,9 +149,9 @@ export async function sendNewOrderNotification(params: {
     <p style="margin:0 0 16px;">Entró un pedido por la tienda.</p>
 
     <p style="margin:0 0 4px;font-size:18px;font-weight:600;">
-      #${order.order_number} · ${order.contact_name}
+      #${order.order_number} · ${escapeHtml(order.contact_name)}
     </p>
-    <p style="margin:0 0 20px;font-size:14px;color:#565042;">${contacto || 'sin datos de contacto'}</p>
+    <p style="margin:0 0 20px;font-size:14px;color:#565042;">${escapeHtml(contacto) || 'sin datos de contacto'}</p>
 
     <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="font-size:14px;margin-bottom:16px;">
       ${linesHtml(items, business)}
@@ -154,10 +163,10 @@ export async function sendNewOrderNotification(params: {
 
     <p style="margin:0 0 8px;font-size:14px;color:#565042;">
       ${deliveryLabel(order)} · ${formatDateLong(order.delivery_date, business.locale)}
-      ${order.address ? `<br>${order.address}` : ''}
+      ${order.address ? `<br>${escapeHtml(order.address)}` : ''}
     </p>
-    ${order.observations ? `<p style="margin:0 0 16px;font-size:14px;"><strong>Observaciones:</strong> ${order.observations}</p>` : ''}
-    ${adminUrl ? `<p style="margin:16px 0 0;"><a href="${adminUrl}" style="color:#A04630;font-weight:600;">Abrir el pedido en el panel</a></p>` : ''}
+    ${order.observations ? `<p style="margin:0 0 16px;font-size:14px;"><strong>Observaciones:</strong> ${escapeHtml(order.observations)}</p>` : ''}
+    ${adminUrl ? `<p style="margin:16px 0 0;"><a href="${escapeHtml(adminUrl)}" style="color:#A04630;font-weight:600;">Abrir el pedido en el panel</a></p>` : ''}
   `;
 
   const text = `Entró un pedido por la tienda.
@@ -175,8 +184,8 @@ ${adminUrl ? `\nAbrilo en el panel: ${adminUrl}` : ''}`;
 
   await deliver({
     to,
-    subject: `Pedido nuevo #${order.order_number} — ${order.contact_name}`,
-    html: mailLayout({ title: 'Pedido nuevo', body, footer: business.name }),
+    subject: `Pedido nuevo #${order.order_number} — ${oneLine(order.contact_name, 60)}`,
+    html: mailLayout({ title: 'Pedido nuevo', body, footer: escapeHtml(business.name) }),
     text,
     replyTo: order.email || undefined,
     context: 'aviso al negocio',
@@ -229,12 +238,12 @@ export async function sendOrderStatusUpdate(params: {
   const saludo = `Hola ${order.contact_name.split(' ')[0]},`;
 
   const body = `
-    <p style="margin:0 0 16px;">${saludo}</p>
+    <p style="margin:0 0 16px;">${escapeHtml(saludo)}</p>
     <p style="margin:0 0 16px;">Tu pedido <strong>#${order.order_number}</strong> pasó a
     <strong>${ORDER_STATUS_LABELS[status]}</strong>.</p>
     <p style="margin:0 0 ${notes || trackingUrl ? '16px' : '0'};">${message.body}</p>
-    ${notes ? `<p style="margin:0 0 16px;padding:12px 14px;background:#FBF5EA;border-radius:8px;font-size:14px;">${notes}</p>` : ''}
-    ${trackingUrl ? `<p style="margin:0;font-size:14px;">Ver el detalle <a href="${trackingUrl}" style="color:#A04630;">acá</a>.</p>` : ''}
+    ${notes ? `<p style="margin:0 0 16px;padding:12px 14px;background:#FBF5EA;border-radius:8px;font-size:14px;">${escapeHtml(notes)}</p>` : ''}
+    ${trackingUrl ? `<p style="margin:0;font-size:14px;">Ver el detalle <a href="${escapeHtml(trackingUrl)}" style="color:#A04630;">acá</a>.</p>` : ''}
   `;
 
   const text = `${saludo}
@@ -247,10 +256,11 @@ ${trackingUrl ? `\nVer el detalle: ${trackingUrl}` : ''}`;
 
   await deliver({
     to: order.email,
-    subject: `${message.subject} — ${business.name}`,
-    html: mailLayout({ title: message.subject, body, footer: business.name }),
+    subject: `${message.subject} — ${oneLine(business.name, 60)}`,
+    html: mailLayout({ title: message.subject, body, footer: escapeHtml(business.name) }),
     text,
     replyTo: business.email || undefined,
+    fromName: business.name,
     context: `cambio de estado a ${status}`,
   });
 }
@@ -265,6 +275,7 @@ async function deliver(params: {
   html: string;
   text: string;
   replyTo?: string;
+  fromName?: string;
   context: string;
 }) {
   if (!mailerConfigured()) return;

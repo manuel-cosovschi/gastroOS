@@ -10,7 +10,6 @@ import {
   useState,
 } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { DEMO_MODE } from '@/lib/constants';
 import { TOUR_STEPS, TOUR_STORAGE_KEY, TOUR_TOTAL, type TourStep } from '@/lib/tour';
 
 /**
@@ -65,7 +64,17 @@ function writeProgress(progress: StoredProgress) {
   }
 }
 
-export function TourProvider({ children }: { children: React.ReactNode }) {
+export function TourProvider({
+  demo,
+  autoStart,
+  children,
+}: {
+  /** La sesión es una demo: los pasos hablan de "tu copia de ejemplo". */
+  demo: boolean;
+  /** Abrir la guía sola la primera vez que se entra desde este navegador. */
+  autoStart: boolean;
+  children: React.ReactNode;
+}) {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -75,7 +84,13 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
   const autoStarted = useRef(false);
   const navigatedFor = useRef<string | null>(null);
 
-  const step = open ? (TOUR_STEPS[index] ?? null) : null;
+  // En la demo se lee el guion tal cual; con un negocio de verdad, los pasos que
+  // hablan de la demo se reemplazan por su versión real.
+  const base = open ? (TOUR_STEPS[index] ?? null) : null;
+  const step = useMemo(
+    () => (base && !demo && base.real ? { ...base, ...base.real } : base),
+    [base, demo]
+  );
 
   const start = useCallback((from = 0) => {
     setIndex(Math.min(Math.max(from, 0), TOUR_TOTAL - 1));
@@ -107,13 +122,14 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
-  // Arranque automático: sólo en la demo y sólo la primera vez. En una
-  // instalación real el dueño ya sabe usar su sistema; la guía queda a mano
-  // en el botón, pero no se le tira encima cada vez que entra.
+  // Arranque automático: sólo la primera vez, y sólo donde tiene sentido: en la
+  // demo y en un negocio recién creado. Un dueño que lleva meses usando su
+  // sistema ya sabe cómo se usa; la guía le queda a mano en el botón, pero no
+  // se le tira encima cada vez que entra desde un navegador nuevo.
   useEffect(() => {
     if (autoStarted.current) return;
     autoStarted.current = true;
-    if (!DEMO_MODE) return;
+    if (!autoStart) return;
 
     const progress = readProgress();
     if (progress.seen) return;
@@ -122,7 +138,7 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
     // elemento que todavía se está acomodando deja el recuadro corrido.
     const timer = window.setTimeout(() => start(progress.index ?? 0), 900);
     return () => window.clearTimeout(timer);
-  }, [start]);
+  }, [start, autoStart]);
 
   // La guía abre la pantalla de cada paso, pero una sola vez por paso. Si se
   // navegara cada vez que cambia la ruta, en los pasos que dejan tocar la

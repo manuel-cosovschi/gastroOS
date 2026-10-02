@@ -19,11 +19,21 @@ export interface SignupPublicView {
   whatsapp: string | null;
   plan: string;
   plan_label: string;
+  /** Lo que cuesta la puesta a punto del plan. Cero en el plan de autoservicio. */
+  plan_setup: number;
   amount: number;
   currency: string;
   status: SignupStatus;
   has_receipt: boolean;
   onboarding_done: boolean;
+  /** El plan no lleva puesta a punto: la cuenta se crea sola al aprobar el pago. */
+  self_service: boolean;
+  /** Ya se creó el negocio y la cuenta del dueño. */
+  provisioned: boolean;
+  /** El dueño ya eligió su contraseña. */
+  password_set: boolean;
+  /** Dirección pública de su tienda, sólo cuando ya funciona. */
+  store_url: string | null;
   created_at: string;
 }
 

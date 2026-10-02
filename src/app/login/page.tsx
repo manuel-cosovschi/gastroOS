@@ -4,21 +4,21 @@ import { Logo } from '@/components/brand/logo';
 import { EnterDemoButton } from '@/components/demo/enter-demo-button';
 import { ClientAccess, ClientAccessSkeleton } from '@/components/login/client-access';
 import { APP_TAGLINE, DEMO_MODE } from '@/lib/constants';
+import { whatsappUrl } from '@/lib/marketing';
 
 export const metadata = { title: 'Entrar' };
 
 /**
- * La pantalla de entrada, que es dos pantallas distintas según el deploy.
+ * La pantalla de entrada. Sirve a dos tipos de visitante a la vez.
  *
- * En `gastroos.shop` —el sitio de venta— sólo existe la demo. No hay ningún
- * formulario de clientes porque no hay ninguna cuenta de cliente que pueda
- * entrar ahí: cada cliente tiene su propia instalación, con su propia base de
- * datos, y entra por su propio dominio. Un formulario en esta pantalla no le
- * serviría a nadie y le restaba a lo único que acá tiene que pasar, que es que
- * alguien pruebe el sistema.
+ * Quien todavía no es cliente llega para probar el sistema: el botón de la demo
+ * le arma una copia propia de una pastelería de ejemplo, sin registrarse. Quien ya
+ * contrató llega para entrar a su negocio con su mail y su contraseña. Los dos
+ * están en la misma pantalla porque `gastroos.shop` aloja las dos cosas: la demo
+ * y las cuentas de los clientes del plan Taller.
  *
- * En la instalación de un cliente (`DEMO_MODE` en falso) es al revés: no hay
- * demo y el formulario es toda la pantalla.
+ * En la instalación propia de un cliente (`DEMO_MODE` en falso) no hay demo y el
+ * formulario es toda la pantalla.
  *
  * Es un componente de servidor a propósito. Antes la página entera era cliente
  * y colgaba de un `Suspense` por culpa de `useSearchParams`, así que lo único
@@ -27,6 +27,8 @@ export const metadata = { title: 'Entrar' };
  * JavaScript.
  */
 export default function LoginPage() {
+  const help = whatsappUrl('Hola, necesito ayuda para entrar a mi cuenta de GastroOS.');
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-stone-50 px-4 py-12">
       <div className="w-full max-w-sm">
@@ -48,6 +50,15 @@ export default function LoginPage() {
               <EnterDemoButton />
             </div>
 
+            <div className="mt-8">
+              <p className="mb-3 text-center text-sm font-semibold text-stone-900">
+                ¿Ya sos cliente? Entrá a tu cuenta
+              </p>
+              <Suspense fallback={<ClientAccessSkeleton />}>
+                <ClientAccess helpUrl={help} />
+              </Suspense>
+            </div>
+
             <p className="mt-6 text-center text-sm text-stone-500">
               ¿Querés el tuyo?{' '}
               <Link href="/contratar" className="font-medium text-brand-700 hover:underline">
@@ -57,7 +68,7 @@ export default function LoginPage() {
           </>
         ) : (
           <Suspense fallback={<ClientAccessSkeleton />}>
-            <ClientAccess />
+            <ClientAccess helpUrl={help} />
           </Suspense>
         )}
       </div>

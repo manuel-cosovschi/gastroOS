@@ -151,8 +151,10 @@ está vacía: así ninguna instancia queda publicada con una clave conocida.
 
 El panel trae una guía de 16 pasos que recorre el sistema entero: qué hace cada
 módulo, dónde está, cómo funcionan los estados y qué conviene probar. Arranca
-sola la primera vez que se entra **con `NEXT_PUBLIC_DEMO_MODE=true`**, y después
-queda a mano en el botón **Guía** de la barra superior, también fuera de la demo.
+sola la primera vez que se entra a una copia de la demo o a un negocio de menos de
+una semana, y después queda a mano en el botón **Guía** de la barra superior. Los
+dos pasos que hablan de la demo tienen su versión para un negocio real (`real` en
+cada paso de `src/lib/tour.ts`).
 
 El guion vive en `src/lib/tour.ts` y se edita como un texto corrido. Cada paso
 declara cómo se muestra:
@@ -322,21 +324,93 @@ negocios por usuario alcanza con agregar un selector y pasar el id elegido a
 
 ### Cómo se entrega
 
-La base soporta varios negocios conviviendo, pero **el producto se entrega como
-una instalación por cliente**: su repositorio, su proyecto de Supabase, su
-deploy y su dominio. Eso es lo que permite personalizar la identidad, y es lo
-que se vende en la home.
+Hay dos formas, y conviven:
 
-Dos consecuencias prácticas:
-
-- Cada cambio de esquema hay que correrlo en cada instalación. `npm run db:migrate`
-  toma `SUPABASE_PROJECT_REF` del entorno, así que es cambiar esa variable y
-  volver a correrlo, una vez por cliente.
-- El multi-tenant de la base sigue sirviendo: aísla los datos aunque haya un
-  solo negocio, y deja abierta la puerta a una cuenta compartida más adelante
-  sin rehacer el modelo.
+- **Cuenta compartida (plan Taller).** El cliente vive en el mismo deploy y la
+  misma base que el resto, aislado por RLS. Al aprobar su pago se crea solo su
+  negocio, su cuenta y su tienda en `tunegocio.gastroos.shop`. Ver
+  [Tiendas por subdominio](#tiendas-por-subdominio).
+- **Con identidad propia (Negocio en adelante).** Un deploy con su marca, sus
+  colores y su dominio (ver [Personalizar la identidad de un cliente](#personalizar-la-identidad-de-un-cliente)).
+  Sus datos pueden vivir en esta misma base, aislados por RLS. Si el cliente
+  tiene su propio proyecto de Supabase, cada cambio de esquema hay que correrlo
+  en cada uno: `npm run db:migrate` toma `SUPABASE_PROJECT_REF` del entorno, así
+  que es cambiar esa variable y volver a correrlo.
 
 ---
+
+## Tiendas por subdominio
+
+Cada negocio de la cuenta compartida tiene su tienda pública en
+`tunegocio.gastroos.shop`. Estas son las piezas:
+
+| Pieza | Dónde |
+|---|---|
+| Reconoce el subdominio, lo valida y lo pasa en la cabecera `x-tenant-slug` | `src/middleware.ts`, `src/lib/tenant.ts` |
+| Qué tienda se muestra según esa cabecera | `getStorefrontBusiness()` en `src/lib/business.ts` |
+| Crear negocio, cuenta del dueño y ficha de cliente al aprobar el pago | `src/lib/signup-flow.ts` y `sovare.provision_business()` |
+| Mails de la contratación, uno por tipo de plan | `src/lib/signup-mail.ts` |
+| Lo que el panel de SOVARE le pide a la landing | `src/app/api/interno/contratacion/route.ts` |
+
+**Cómo se reconoce una tienda.** El middleware mira el host. `dulce.gastroos.shop`
+sirve la tienda de `dulce` (la raíz `/` muestra su catálogo). Cualquier otra ruta
+de un subdominio (el panel, el login, `/contratar`) redirige al dominio
+principal: la sesión nunca queda atada a una tienda. `www`, `admin`, `demo-…` y el
+resto de la lista reservada también redirigen. El middleware borra la cabecera
+`x-tenant-slug` que llegue de afuera, porque es la que decide qué tienda se lee.
+
+**La tienda del dominio principal.** `gastroos.shop/catalogo` es la tienda de
+ejemplo. Con varios negocios en la base hay que fijarla con
+`NEXT_PUBLIC_STOREFRONT_BUSINESS_SLUG=dulce-estudio`; sin esa variable, el primer
+negocio por orden alfabético se queda con ella.
+
+**Qué pasa al aprobar un pago.** Lo aprueba la IA al leer el comprobante, o una
+persona desde el panel, y las dos terminan en `afterApproval()`:
+
+1. Plan sin puesta a punto (el Taller): se crea el negocio, la cuenta del dueño
+   (con una contraseña que nadie conoce) y su ficha de cliente con el primer cobro
+   pagado, y se le manda el mail. El cliente elige su contraseña desde el link de
+   su contratación y queda con la sesión abierta.
+2. Plan con puesta a punto: se le manda el mail del formulario de alta. La cuenta
+   se arma a mano, o por adelantado con el botón del panel.
+
+Si el mail ya tenía una cuenta, no se la toca ni se le cuelga el negocio: queda
+anotado en la contratación y el panel lo muestra. Todos los pasos se pueden
+repetir y dejan el mismo resultado. El pago nunca se deshace por una falla de
+estos pasos.
+
+**Qué se le avisa al dueño de SOVARE** (a `NEXT_PUBLIC_CONTACT_EMAIL`): pago
+aprobado por la IA, comprobante para revisar, alta completada, y una tienda que no
+se pudo crear.
+
+**Variables.**
+
+| Variable | Para qué |
+|---|---|
+| `NEXT_PUBLIC_SITE_URL` | El dominio raíz (`https://gastroos.shop`). De ahí sale el de las tiendas. |
+| `NEXT_PUBLIC_ROOT_DOMAIN` | Sólo si las tiendas cuelgan de otro dominio que el sitio. |
+| `NEXT_PUBLIC_STOREFRONT_BUSINESS_SLUG` | La tienda de ejemplo del dominio principal. |
+| `TENANT_STORES=on` | Prende las direcciones `tunegocio.gastroos.shop` en mails y pantallas. Se prende cuando el comodín del DNS ya funciona; mientras no, los mails dicen que la tienda se activa en breve en vez de mostrar un link muerto. |
+
+**DNS.** Hace falta un comodín `*.gastroos.shop` con certificado, y Vercel sólo lo
+emite si el dominio usa sus servidores de nombres. Por eso `gastroos.shop` tiene
+que estar en Vercel DNS, con los registros de mail de Resend copiados tal cual.
+El comodín ya está agregado al proyecto `gastroos`.
+
+**Seguridad.** El slug de un negocio no lo puede cambiar quien lo usa
+(`016_slug_inmutable.sql`). `ORDER_NOTIFICATION_EMAIL` sólo vale para la tienda
+fijada, no para las de los clientes. El texto que escriben terceros entra
+escapado a los mails, y el remitente de los mails de un pedido lleva el nombre del
+negocio sin `@`, `:` ni `/`.
+
+**Probarlo en local.** Poné `NEXT_PUBLIC_SITE_URL=http://gastroos.test:3100`,
+resolvé `*.gastroos.test` a 127.0.0.1 y abrí `http://tunegocio.gastroos.test:3100`.
+`RESEND_API_URL` y `OPENAI_API_URL` permiten apuntar los mails y la lectura del
+comprobante a un servidor de prueba. Los chequeos puros están en
+`src/lib/__tests__/*.manual.mts` (`npx tsx …`).
+
+---
+
 
 ## Personalizar la identidad de un cliente
 

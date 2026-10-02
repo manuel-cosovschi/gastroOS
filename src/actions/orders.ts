@@ -2,12 +2,11 @@
 
 import { revalidatePath } from 'next/cache';
 import { createServerClient } from '@/lib/supabase/server';
-import { getCurrentBusiness, requireBusinessId } from '@/lib/business';
+import { getCurrentBusiness, publicStoreUrl, requireBusinessId } from '@/lib/business';
 import { getProductUnitCosts, getPackageUnitCosts } from '@/lib/production-cost';
 import { round2, todayISO } from '@/lib/utils';
 import { findOrCreateCustomer } from '@/actions/customers';
 import { sendOrderStatusUpdate } from '@/lib/order-emails';
-import { SITE_URL } from '@/lib/marketing';
 import { applyStockForOrder, reverseStockForOrder } from '@/actions/inventory';
 import { VALID_TRANSITIONS, ORDER_STATUS_LABELS } from '@/types';
 import type {
@@ -486,12 +485,16 @@ async function notifyStatusChange(
   const business = await getCurrentBusiness();
   if (!business) return;
 
+  // El seguimiento vive en la tienda del negocio, no en el sitio de GastroOS: un
+  // link al dominio principal le mostraría al cliente la tienda equivocada.
+  const storeUrl = publicStoreUrl(business.slug);
+
   await sendOrderStatusUpdate({
     business,
     order,
     status,
     notes: notes || null,
-    trackingUrl: SITE_URL ? `${SITE_URL}/pedido/seguimiento/${order.order_number}` : undefined,
+    trackingUrl: storeUrl ? `${storeUrl}/pedido/seguimiento/${order.order_number}` : undefined,
   });
 }
 

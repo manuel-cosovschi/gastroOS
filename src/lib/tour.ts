@@ -36,6 +36,11 @@ export interface TourStep {
    * abre el menú sola en esos pasos.
    */
   needsSidebar?: boolean;
+  /**
+   * El texto del paso cuando lo lee el dueño de un negocio de verdad y no
+   * alguien en la demo. Sólo hace falta en los pasos que hablan de la demo.
+   */
+  real?: { title?: string; body?: string; tip?: string };
 }
 
 export const TOUR_STEPS: TourStep[] = [
@@ -47,6 +52,9 @@ export const TOUR_STEPS: TourStep[] = [
     title: 'Te muestro el sistema en dos minutos',
     body: 'Es una copia tuya de una pastelería inventada: lo que hagas acá no lo ve nadie más. Probá todo lo que quieras — cargá un pedido, cambiá un precio, borrá algo. No hay datos reales de nadie y si te arrepentís, "Reiniciar la demo" arriba deja todo como estaba.',
     tip: 'Podés salir cuando quieras y volver a esta guía desde el botón "Guía", arriba a la derecha.',
+    real: {
+      body: 'Este es tu sistema, con tu negocio adentro. Lo primero es cargar tus productos y tus precios: con eso tu tienda ya puede recibir pedidos. La guía te lleva por las pantallas principales en unos minutos.',
+    },
   },
   {
     id: 'menu',
@@ -179,6 +187,9 @@ export const TOUR_STEPS: TourStep[] = [
     title: 'El sistema se llama como tu negocio',
     body: 'Nombre, rubro, logo, moneda, zona horaria y datos de contacto. Nada está escrito a fuego en el código: lo que cargues acá es lo que se ve en todo el sistema y en la tienda online.',
     tip: 'En tu instalación esto ya viene cargado: la puesta a punto inicial la hacemos nosotros.',
+    real: {
+      tip: 'Completalo primero: es lo que ven tus clientes en la tienda y en los mails de sus pedidos.',
+    },
   },
   {
     id: 'cierre',

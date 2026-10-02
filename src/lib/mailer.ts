@@ -11,7 +11,9 @@
  * ya entró.
  */
 
-const RESEND_URL = 'https://api.resend.com/emails';
+// `RESEND_API_URL` existe para las pruebas locales, que apuntan a un servidor de
+// juguete en vez de mandar mails de verdad. En producción no se define.
+const RESEND_URL = process.env.RESEND_API_URL || 'https://api.resend.com/emails';
 
 export interface MailResult {
   sent: boolean;
@@ -22,15 +24,44 @@ export function mailerConfigured(): boolean {
   return Boolean(process.env.RESEND_API_KEY && process.env.MAIL_FROM);
 }
 
+/**
+ * El remitente con otro nombre a la vista y la misma dirección.
+ *
+ * Los mails de un pedido salen con el nombre del negocio ("Dulce Estudio (vía
+ * GastroOS)") y no con el de GastroOS: quien encargó una torta no sabe qué
+ * sistema usa la pastelería, y un mail de un remitente desconocido va a spam. La
+ * dirección no cambia, porque es la única que el dominio tiene verificada.
+ *
+ * El nombre lo elige el dueño de cada negocio, así que se limpia: sin comillas,
+ * sin ángulos, sin saltos de línea y de largo acotado. Tampoco puede llevar `@`, `:`
+ * ni `/`: un nombre como "ceo@banco.com" o "https://banco.com" se lee en la bandeja
+ * de entrada como si el mail viniera de ahí.
+ */
+export function fromWithName(from: string, name: string): string {
+  const address = /<([^>]+)>/.exec(from)?.[1]?.trim() || from.trim();
+  const clean = name
+    // eslint-disable-next-line no-control-regex
+    .replace(/[\u0000-\u001f\u007f"<>\\@:/]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 50)
+    .trim();
+  if (!clean) return from;
+  return `"${clean} (vía GastroOS)" <${address}>`;
+}
+
 export async function sendMail(params: {
   to: string;
   subject: string;
   html: string;
   text: string;
   replyTo?: string;
+  /** Nombre a mostrar como remitente, con la dirección de siempre. */
+  fromName?: string;
 }): Promise<MailResult> {
   const key = process.env.RESEND_API_KEY;
-  const from = process.env.MAIL_FROM;
+  const configured = process.env.MAIL_FROM;
+  const from = configured && params.fromName ? fromWithName(configured, params.fromName) : configured;
 
   if (!key || !from) {
     return { sent: false, reason: 'Falta configurar RESEND_API_KEY o MAIL_FROM.' };

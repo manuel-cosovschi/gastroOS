@@ -1,6 +1,8 @@
 'use server';
 
-import { createSovareClient } from '@/lib/supabase/service';
+import { createServiceClient, createSovareClient } from '@/lib/supabase/service';
+import { createServerClient } from '@/lib/supabase/server';
+import { publicStoreUrl } from '@/lib/business';
 import {
   firstPayment,
   getPlanAmount,
@@ -8,9 +10,8 @@ import {
   signupsEnabled,
 } from '@/lib/signups';
 import { judgeReceipt, AI_READABLE_TYPES } from '@/lib/receipt-ai';
-import { mailLayout, mailButton, sendMail } from '@/lib/mailer';
-import { signupFormSchema, onboardingSchema } from '@/lib/validations/signup';
-import { WHATSAPP_URL, SITE_URL } from '@/lib/marketing';
+import { afterApproval, alertOwner, choosePassword, isSelfService } from '@/lib/signup-flow';
+import { signupFormSchema, onboardingSchema, passwordSchema } from '@/lib/validations/signup';
 import type { OnboardingFormValues, SignupFormValues } from '@/lib/validations/signup';
 import type { SignupPublicView } from '@/types/signup';
 
@@ -95,7 +96,7 @@ export async function getSignup(token: string): Promise<SignupPublicView | null>
   const { data, error } = await supabase
     .from('signups')
     .select(
-      'token, business_name, contact_name, email, whatsapp, plan, amount, currency, status, receipt_path, onboarding_at, created_at, plans(label)'
+      'token, business_name, contact_name, email, whatsapp, plan, amount, currency, status, receipt_path, onboarding_at, created_at, business_id, provisioned_at, password_set_at, plans(label, setup)'
     )
     .eq('token', token)
     .maybeSingle();
@@ -106,8 +107,22 @@ export async function getSignup(token: string): Promise<SignupPublicView | null>
   }
   if (!data) return null;
 
-  const plans = data.plans as { label: string } | { label: string }[] | null;
-  const label = Array.isArray(plans) ? plans[0]?.label : plans?.label;
+  const plans = data.plans as
+    | { label: string; setup: number }
+    | { label: string; setup: number }[]
+    | null;
+  const plan = Array.isArray(plans) ? plans[0] : plans;
+  const selfService = isSelfService({ plan_setup: Number(plan?.setup ?? 0) });
+
+  // La dirección de la tienda sólo se muestra cuando ya funciona de verdad.
+  let storeUrl: string | null = null;
+  if (data.provisioned_at && data.business_id) {
+    const service = createServiceClient();
+    const { data: business } = service
+      ? await service.from('businesses').select('slug').eq('id', data.business_id).maybeSingle()
+      : { data: null };
+    storeUrl = business?.slug ? publicStoreUrl(business.slug) : null;
+  }
 
   return {
     token: data.token,
@@ -116,12 +131,17 @@ export async function getSignup(token: string): Promise<SignupPublicView | null>
     email: data.email,
     whatsapp: data.whatsapp,
     plan: data.plan,
-    plan_label: label || data.plan,
+    plan_label: plan?.label || data.plan,
+    plan_setup: Number(plan?.setup ?? 0),
     amount: Number(data.amount),
     currency: data.currency,
     status: data.status,
     has_receipt: Boolean(data.receipt_path),
     onboarding_done: Boolean(data.onboarding_at),
+    self_service: selfService,
+    provisioned: Boolean(data.provisioned_at),
+    password_set: Boolean(data.password_set_at),
+    store_url: storeUrl,
     created_at: data.created_at,
   };
 }
@@ -149,7 +169,7 @@ export async function uploadReceipt(
 
   const { data: signup, error: readError } = await supabase
     .from('signups')
-    .select('id, token, amount, status, business_name, contact_name, email, whatsapp, plan, plans(label)')
+    .select('id, token, amount, status, business_name, contact_name, email, whatsapp, plan, plans(label, setup)')
     .eq('token', token)
     .maybeSingle();
 
@@ -203,27 +223,45 @@ export async function uploadReceipt(
     return fail('Guardamos el comprobante pero algo falló al registrarlo. Escribinos por WhatsApp.');
   }
 
+  const plans = signup.plans as
+    | { label: string; setup: number }
+    | { label: string; setup: number }[]
+    | null;
+  const plan = Array.isArray(plans) ? plans[0] : plans;
+  const selfService = isSelfService({ plan_setup: Number(plan?.setup ?? 0) });
+
   if (approved) {
-    const plans = signup.plans as { label: string } | { label: string }[] | null;
-    await sendApprovalMail({
-      token: signup.token,
-      email: signup.email,
-      contactName: signup.contact_name,
-      businessName: signup.business_name,
-      planLabel: (Array.isArray(plans) ? plans[0]?.label : plans?.label) || signup.plan,
-      amount: Number(signup.amount),
-      supabase,
-      signupId: signup.id,
-    });
+    // Crear la cuenta, mandar el mail y avisar al dueño. Si algo de eso falla, el
+    // pago sigue aprobado y el problema queda anotado; no se le devuelve un error
+    // a quien ya pagó.
+    const outcome = await afterApproval(signup.id, 'ia');
 
     return {
       success: true,
       data: {
         status: 'aprobado',
-        message: 'Comprobante verificado. Ya te mandamos el mail con los próximos pasos.',
+        message: selfService
+          ? outcome.provision?.ok
+            ? 'Comprobante verificado. Tu cuenta ya está lista: elegí tu contraseña y entrá a tu panel.'
+            : 'Comprobante verificado. Estamos terminando de preparar tu cuenta y te escribimos en unas horas.'
+          : 'Comprobante verificado. Ya te mandamos el mail con los próximos pasos.',
       },
     };
   }
+
+  await alertOwner(
+    'pago_a_revisar',
+    {
+      id: signup.id,
+      business_name: signup.business_name,
+      plan_label: plan?.label || signup.plan,
+      amount: Number(signup.amount),
+      contact_name: signup.contact_name,
+      email: signup.email,
+      whatsapp: signup.whatsapp,
+    },
+    verdict.summary || null
+  );
 
   return {
     success: true,
@@ -256,7 +294,7 @@ export async function submitOnboarding(
 
   const { data: signup } = await supabase
     .from('signups')
-    .select('id, status')
+    .select('id, status, business_name, contact_name, email, whatsapp, amount, plans(label)')
     .eq('token', token)
     .maybeSingle();
 
@@ -298,87 +336,57 @@ export async function submitOnboarding(
     return fail('No pudimos guardar las respuestas. Probá de nuevo.');
   }
 
+  const plans = signup.plans as { label: string } | { label: string }[] | null;
+  await alertOwner(
+    'alta_completa',
+    {
+      id: signup.id,
+      business_name: signup.business_name,
+      plan_label: (Array.isArray(plans) ? plans[0]?.label : plans?.label) || '',
+      amount: Number(signup.amount),
+      contact_name: signup.contact_name,
+      email: signup.email,
+      whatsapp: signup.whatsapp,
+    },
+    logoPath ? 'Subió su logo.' : null
+  );
+
   return { success: true, data: { ok: true } };
 }
 
 // ============================================
-// Mail de aprobación
+// Contraseña de la cuenta nueva
 // ============================================
 
-async function sendApprovalMail(params: {
-  token: string;
-  email: string;
-  contactName: string | null;
-  businessName: string;
-  planLabel: string;
-  amount: number;
-  signupId: string;
-  supabase: NonNullable<ReturnType<typeof createSovareClient>>;
-}) {
-  const { token, email, contactName, businessName, planLabel, amount, signupId, supabase } = params;
+/**
+ * Elegir la contraseña de la cuenta que creó la contratación, y entrar.
+ *
+ * Quien tiene el link de la contratación puede hacerlo una sola vez. La sesión se
+ * abre desde acá, en el servidor, para que quien acaba de elegir su contraseña
+ * no tenga que volver a escribirla.
+ */
+export async function setOwnerPassword(
+  token: string,
+  password: string
+): Promise<Result<{ signedIn: boolean }>> {
+  if (!signupsEnabled() || !isToken(token)) return fail('Este link no es válido.');
 
-  const base = SITE_URL || '';
-  const altaUrl = `${base}/alta/${token}`;
-  const estadoUrl = `${base}/contratar/${token}`;
-  const saludo = contactName ? `Hola ${contactName.split(' ')[0]},` : 'Hola,';
+  const parsed = passwordSchema.safeParse(password);
+  if (!parsed.success) {
+    return fail(parsed.error.issues[0]?.message || 'Revisá la contraseña.');
+  }
 
-  const body = `
-    <p style="margin:0 0 16px;">${saludo}</p>
-    <p style="margin:0 0 16px;">Recibimos tu transferencia de <strong>${money(amount)}</strong> y
-    quedó confirmada la contratación del plan <strong>${planLabel}</strong> para
-    <strong>${businessName}</strong>. Gracias por la confianza.</p>
+  const result = await choosePassword(token, parsed.data);
+  if (!result.ok) return fail(result.message);
 
-    <p style="margin:0 0 8px;"><strong>Lo que sigue</strong></p>
-    <ol style="margin:0 0 20px;padding-left:20px;">
-      <li style="margin-bottom:8px;">Completás el formulario de alta: son los datos con los que
-      armamos tu instalación — tu marca, tus colores, tu catálogo, tus horarios.</li>
-      <li style="margin-bottom:8px;">Con eso montamos tu sistema y tu tienda. Te avisamos en cuanto
-      esté para que lo veas.</li>
-      <li style="margin-bottom:8px;">Hacemos una videollamada de capacitación con tu equipo y
-      quedás andando.</li>
-    </ol>
-
-    <p style="margin:0 0 20px;">${mailButton(altaUrl, 'Completar el formulario de alta')}</p>
-
-    <p style="margin:0 0 16px;">Tarda unos diez minutos y se puede completar desde el teléfono. Si
-    preferís pasarnos los datos hablando, escribinos por WhatsApp y lo hacemos juntos:
-    <a href="${WHATSAPP_URL || '#'}" style="color:#047857;">mandar un WhatsApp</a>.</p>
-
-    <p style="margin:0;">El estado de tu contratación lo podés ver siempre en
-    <a href="${estadoUrl}" style="color:#047857;">este link</a>. Guardalo.</p>
-  `;
-
-  const text = `${saludo}
-
-Recibimos tu transferencia de ${money(amount)} y quedó confirmada la contratación del plan ${planLabel} para ${businessName}.
-
-Lo que sigue:
-1. Completás el formulario de alta: ${altaUrl}
-2. Con eso montamos tu sistema y tu tienda, y te avisamos cuando esté.
-3. Hacemos una videollamada de capacitación con tu equipo.
-
-Si preferís pasarnos los datos hablando, escribinos por WhatsApp: ${WHATSAPP_URL || ''}
-
-El estado de tu contratación: ${estadoUrl}`;
-
-  const result = await sendMail({
-    to: email,
-    subject: `Tu contratación de GastroOS está confirmada`,
-    html: mailLayout({ title: '¡Listo! Tu pago está confirmado', body }),
-    text,
-    replyTo: process.env.NEXT_PUBLIC_CONTACT_EMAIL,
+  const supabase = await createServerClient();
+  const { error } = await supabase.auth.signInWithPassword({
+    email: result.email,
+    password: parsed.data,
   });
+  if (error) console.error('[setOwnerPassword] no se pudo abrir la sesión:', error.message);
 
-  // Que el mail no salga no cambia que el pago entró. Queda anotado para que el
-  // panel lo muestre y se pueda mandar a mano.
-  await supabase
-    .from('signups')
-    .update(
-      result.sent
-        ? { notified_at: new Date().toISOString() }
-        : { decision_notes: `No se pudo enviar el mail de aprobación: ${result.reason}` }
-    )
-    .eq('id', signupId);
+  return { success: true, data: { signedIn: !error } };
 }
 
 // ============================================
@@ -404,12 +412,4 @@ function safeName(name: string): string {
       .replace(/^-+|-+$/g, '')
       .slice(-60) || 'comprobante'
   );
-}
-
-function money(value: number): string {
-  return new Intl.NumberFormat('es-AR', {
-    style: 'currency',
-    currency: 'ARS',
-    maximumFractionDigits: 0,
-  }).format(value);
 }

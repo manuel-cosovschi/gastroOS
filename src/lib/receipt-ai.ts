@@ -19,7 +19,8 @@ import type { TransferDetails } from '@/lib/signups';
 /** Formatos que el modelo puede mirar. Un PDF o un HEIC van a revisión manual. */
 export const AI_READABLE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
-const OPENAI_URL = 'https://api.openai.com/v1/chat/completions';
+// `OPENAI_API_URL` existe para las pruebas locales (ver `mailer.ts`); en producción no se define.
+const OPENAI_URL = process.env.OPENAI_API_URL || 'https://api.openai.com/v1/chat/completions';
 const DEFAULT_MODEL = 'gpt-4o';
 const TIMEOUT_MS = 45_000;
 

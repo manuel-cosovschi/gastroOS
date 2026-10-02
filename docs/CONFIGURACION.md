@@ -218,6 +218,44 @@ NEXT_PUBLIC_SITE_URL = https://tudominio.com
 
 Sin barra al final.
 
+## 1.7 · Tiendas por subdominio
+
+Cada cliente del plan Taller tiene su tienda en `tunegocio.gastroos.shop`. Para que
+funcione hacen falta tres cosas.
+
+**1. El DNS de `gastroos.shop` en Vercel.** Vercel sólo emite el certificado de un
+comodín (`*.gastroos.shop`) si maneja el DNS del dominio. El comodín ya está
+agregado al proyecto `gastroos`; falta que el dominio use los servidores de
+nombres de Vercel:
+
+1. En Vercel → **Domains** → `gastroos.shop` → **DNS Records**, cargá los
+   registros del mail antes de cambiar nada (si falta alguno, el mail de COSOV.
+   deja de salir):
+
+   | Tipo | Nombre | Valor |
+   |---|---|---|
+   | CNAME | `send` | `send.forge.rmta.net.` |
+   | TXT | `resend._domainkey` | la clave que figura hoy en GoDaddy (`p=MIGfMA0G…`) |
+   | TXT | `_dmarc` | `v=DMARC1; p=quarantine; adkim=r; aspf=r; rua=mailto:dmarc_rua@onsecureserver.net;` |
+
+   El apex y `www` los resuelve Vercel solo, no hace falta cargarlos.
+2. Comparar con la tabla de DNS de GoDaddy: cualquier otro registro que tenga
+   (MX, TXT, CNAME) hay que copiarlo también.
+3. En GoDaddy → el dominio → **Servidores de nombres** → **Cambiar** → «Ingresar
+   mis propios servidores de nombres» → `ns1.vercel-dns.com` y
+   `ns2.vercel-dns.com`.
+4. Si algo sale mal, volver a poner `ns05.domaincontrol.com` y
+   `ns06.domaincontrol.com`. Los registros de GoDaddy siguen ahí.
+
+**2. La tienda de ejemplo fijada.** `NEXT_PUBLIC_STOREFRONT_BUSINESS_SLUG =
+dulce-estudio`. Sin esto, la primera tienda de un cliente por orden alfabético
+reemplazaría a la de ejemplo en `gastroos.shop/catalogo`.
+
+**3. Prender las direcciones.** Cuando `https://cualquiercosa.gastroos.shop` abra,
+cargá `TENANT_STORES = on` y redeployá. Hasta entonces los mails y las pantallas
+dicen que la tienda «se activa en las próximas horas» en vez de mostrar un link
+muerto.
+
 ---
 
 # PROYECTO 2 — `cosov-pedidos`
@@ -293,6 +331,8 @@ ya está hablando con el cliente por WhatsApp.
 | `OPENAI_API_KEY` | Aprobación automática de comprobantes | Esperan aprobación manual |
 | `NEXT_PUBLIC_VAPID_PUBLIC_KEY` + `VAPID_PRIVATE_KEY` | Notificaciones al celular | Se instala igual, sin avisos |
 | `TRANSFER_*` | Las pantallas de contratación | `/contratar` y `/alta` dan 404 |
+| `NEXT_PUBLIC_STOREFRONT_BUSINESS_SLUG` | Fija la tienda de ejemplo del dominio principal | La primera tienda por orden alfabético la reemplaza |
+| `TENANT_STORES=on` | Las direcciones `tunegocio.gastroos.shop` en mails y pantallas | Dicen que la tienda «se activa en breve» |
 
 ## `cosov-pedidos`
 

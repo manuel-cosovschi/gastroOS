@@ -6,13 +6,18 @@ import { z } from 'zod';
  * quien contrata es cuál plan, y eso se valida contra la tabla.
  */
 export const signupFormSchema = z.object({
-  business_name: z.string().trim().min(2, 'Necesitamos el nombre del negocio'),
-  contact_name: z.string().trim().min(2, '¿Con quién hablamos?'),
-  email: z.string().trim().email('Revisá el email: ahí te mandamos todo'),
+  business_name: z
+    .string()
+    .trim()
+    .min(2, 'Necesitamos el nombre del negocio')
+    .max(120, 'El nombre del negocio es muy largo'),
+  contact_name: z.string().trim().min(2, '¿Con quién hablamos?').max(120, 'Ese nombre es muy largo'),
+  email: z.string().trim().email('Revisá el email: ahí te mandamos todo').max(200),
   whatsapp: z
     .string()
     .trim()
-    .min(8, 'Un WhatsApp con característica, para poder escribirte'),
+    .min(8, 'Un WhatsApp con característica, para poder escribirte')
+    .max(40, 'Revisá el WhatsApp'),
   city: z.string().trim().max(80).optional().or(z.literal('')),
   industry: z.string().trim().max(80).optional().or(z.literal('')),
   plan: z.string().trim().min(1, 'Elegí un plan'),
@@ -57,3 +62,15 @@ export const onboardingSchema = z.object({
 });
 
 export type OnboardingFormValues = z.infer<typeof onboardingSchema>;
+
+/**
+ * La contraseña que elige quien contrató un plan de autoservicio.
+ *
+ * El tope de 72 es el de bcrypt, que es lo que usa Supabase por debajo: pasado
+ * eso los caracteres sobrantes se ignoran en silencio, y quien eligió una frase
+ * larga entraría con cualquier continuación.
+ */
+export const passwordSchema = z
+  .string()
+  .min(8, 'La contraseña tiene que tener al menos 8 caracteres')
+  .max(72, 'La contraseña puede tener hasta 72 caracteres');

@@ -1,8 +1,19 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { signupsEnabled } from '@/lib/signups';
 import { Logo } from '@/components/brand/logo';
 import { SovareCredit } from '@/components/brand/sovare';
+
+/**
+ * El link de una contratación no se indexa ni viaja en el encabezado Referer: el
+ * token está en la dirección y, en el plan de autoservicio, es lo que permite
+ * elegir la contraseña de la cuenta recién creada.
+ */
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+  referrer: 'no-referrer',
+};
 
 /**
  * Shell de la contratación.

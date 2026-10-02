@@ -1,4 +1,5 @@
 import { mailButton, mailLayout } from '@/lib/mailer';
+import { escapeHtml, oneLine } from '@/lib/html';
 
 /**
  * El aviso que recibe el dueño cuando un vendedor carga un cliente.
@@ -71,24 +72,4 @@ export function buildVendorSaleNotice(notice: VendorSaleNotice): {
     html,
     text,
   };
-}
-
-/**
- * Una sola línea y de largo acotado. El nombre del negocio lo escribe un tercero:
- * un salto de línea no tiene lugar en un asunto, y uno de 120 caracteres se corta
- * a la mitad en la bandeja de entrada de todos modos.
- */
-function oneLine(value: string, max: number): string {
-  const flat = value.replace(/\s+/g, ' ').trim();
-  return flat.length > max ? `${flat.slice(0, max - 1).trimEnd()}…` : flat;
-}
-
-/** Lo que carga un vendedor entra al HTML de un mail: se escapa. */
-export function escapeHtml(value: string): string {
-  return value
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
 }
