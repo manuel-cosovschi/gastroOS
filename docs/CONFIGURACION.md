@@ -235,15 +235,24 @@ nombres de Vercel:
    | Tipo | Nombre | Valor |
    |---|---|---|
    | CNAME | `send` | `send.forge.rmta.net` |
+   | CNAME | `rsend` | `rsend-sae1.forge.rmta.net` |
    | TXT | `resend._domainkey` | `p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC4bemktlVeq1yI6Mjyd/YtZpERNB11RicTD7oyP+ZyxUsMWz6+exY632SIxA22zBu7uDqh71zFrlF+P8L09/PpCmHMApLyXHT0pus7DZFSMNlIg8NokAkY8SaDefwg6PPup5SCH+hVB5qLuz/FTzxZVtQbqpNxfWsXfLrBA59UewIDAQAB` |
    | TXT | `_dmarc` | `v=DMARC1; p=quarantine; adkim=r; aspf=r; rua=mailto:dmarc_rua@onsecureserver.net;` |
+
+   Los dos CNAME son de Resend y los dos hacen falta. `send` es por donde salen los
+   mails; `rsend` es el que trae el SPF (`v=spf1 include:amazonses.com`) y el MX de
+   rebotes (`feedback-smtp.sa-east-1.amazonses.com`). Son registros que no se
+   adivinan mirando el dominio: hay que copiarlos de la tabla de GoDaddy.
 
    Vercel suele resolver el sitio (`@`) y `www` solo cuando el dominio ya usa sus
    servidores de nombres. Si en la lista no aparecen, agregalos también:
    `A` `@` `216.198.79.1` y `CNAME` `www` `7d68012626516b95.vercel-dns-017.com.`
    (son los valores que hoy tiene GoDaddy).
-2. Comparar con la tabla de DNS de GoDaddy: cualquier otro registro que tenga
-   (MX, TXT, CNAME) hay que copiarlo también.
+2. Comparar con la tabla de DNS de GoDaddy, registro por registro. En octubre de
+   2026 tenía diez: `A @`, los dos `NS`, el `SOA`, `CNAME send`, `CNAME rsend`,
+   `CNAME www`, `CNAME _domainconnect`, `TXT resend._domainkey` y `TXT _dmarc`.
+   Los `NS` y el `SOA` los pone Vercel solo, y `_domainconnect` es un atajo de
+   GoDaddy que deja de servir. El resto se copia.
 3. En GoDaddy → el dominio → **Servidores de nombres** → **Cambiar** → «Ingresar
    mis propios servidores de nombres» → `ns1.vercel-dns.com` y
    `ns2.vercel-dns.com`.
