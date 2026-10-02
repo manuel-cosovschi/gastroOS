@@ -305,15 +305,15 @@ export const STEPS = [
   },
   {
     title: 'Lo dejamos listo para usar',
-    body: 'Cargamos tu catálogo, tus precios, tus insumos y tus clientes. Arrancás con el sistema lleno, no vacío.',
+    body: 'Del plan Negocio para arriba cargamos tu catálogo, tus precios, tus insumos y tus clientes, y arrancás con el sistema lleno. En el Taller lo cargás vos con una guía, y arrancás el mismo día.',
   },
   {
     title: 'Te enseñamos a usarlo',
-    body: 'Una sesión de capacitación con tu equipo. En una hora están cargando pedidos solos.',
+    body: 'Una sesión de capacitación con tu equipo, incluida en la puesta a punto. En una hora están cargando pedidos solos.',
   },
   {
     title: 'Te acompañamos',
-    body: 'Soporte por WhatsApp y ajustes sobre la marcha. El sistema se adapta a tu negocio, no al revés.',
+    body: 'Soporte por WhatsApp y ajustes sobre la marcha, del plan Negocio para arriba. En el Taller la ayuda se cobra por hora y sabés cuánto antes de pedirla.',
   },
 ];
 
@@ -328,11 +328,11 @@ export const REASONS = [
   },
   {
     title: 'Lleva tu marca, no la nuestra',
-    body: 'Tu paleta, tus tipografías y tu dominio, que es tuyo y lo registrás a tu nombre. Tus clientes ven tu negocio, no el logo de un proveedor de software.',
+    body: 'Del plan Negocio para arriba: tu paleta, tus tipografías y tu dominio, que registrás a tu nombre. Tus clientes ven tu negocio, no el logo de un proveedor de software. En el Taller va tu nombre y tu logo sobre el diseño de GastroOS.',
   },
   {
     title: 'Arrancás con tus datos adentro',
-    body: 'La carga inicial la hacemos nosotros. No te dejamos un sistema vacío para que lo llenes en tus ratos libres.',
+    body: 'Del plan Negocio para arriba la carga inicial la hacemos nosotros: no te dejamos un sistema vacío para que lo llenes en tus ratos libres. En el Taller la hacés vos con una guía, y por eso ese plan no tiene puesta a punto.',
   },
   {
     title: 'Simple de verdad',
@@ -480,7 +480,7 @@ export const NOT_INCLUDED = {
   items: [
     { title: 'No cobra online', body: 'No procesa pagos ni se integra con Mercado Pago. Registrás lo que cobraste, no lo cobrás desde acá.' },
     { title: 'No factura', body: 'No emite comprobantes AFIP/ARCA. Tu facturación electrónica sigue donde está.' },
-    { title: 'No manda WhatsApp solo', body: 'No hay envío automático de mensajes ni de mails al cliente.' },
+    { title: 'No manda WhatsApp solo', body: 'No automatiza WhatsApp: los mensajes los mandás vos. Mail sí manda, cuando el pedido se confirma, queda listo o se entrega.' },
     { title: 'No gestiona delivery', body: 'No se conecta con PedidosYa, Rappi ni apps de reparto.' },
     { title: 'No es un punto de venta', body: 'No está pensado para cobrar en mostrador con caja y ticket. Está pensado para producir contra pedido.' },
     { title: 'No tiene IA', body: 'No predice tu demanda ni te sugiere precios. Te muestra tus números y las decisiones las tomás vos.' },
@@ -561,6 +561,7 @@ export const PRICING = {
         'Para el que cocina solo. Sin puesta a punto: cargás vos tu catálogo con una guía que te damos, y por eso no hay nada que cobrarte al principio.',
       features: [
         'El sistema entero, sin funciones recortadas',
+        'Con tu nombre y tu logo, sobre el diseño de GastroOS',
         'Tu tienda online en tunegocio.gastroos.shop',
         'Pedidos, calendario, stock por receta y costos',
         'Sin puesta a punto y sin permanencia',
@@ -578,6 +579,7 @@ export const PRICING = {
         'Cuando ya hay alguien más en la cocina. Es el que toma casi todo el mundo.',
       features: [
         'Todo lo del plan Taller',
+        'Tu paleta y tus tipografías, no las nuestras',
         'Tu dominio propio, no un subdominio nuestro (el dominio lo comprás vos)',
         'Puesta a punto incluida: te lo dejamos cargado',
         'Soporte por WhatsApp, respuesta en el día hábil',
@@ -650,8 +652,8 @@ export const PRICING = {
         body: 'No entra en ningún plan. Se registra a tu nombre en NIC Argentina y se renueva una vez por año, y el arancel lo pagás vos directamente a ellos. Te decimos cuál te conviene y lo configuramos nosotros, pero la titularidad es tuya: si un día te vas, el dominio se va con vos.',
       },
       {
-        name: 'La pasarela de pago',
-        body: 'Si querés cobrar online, la comisión la cobra Mercado Pago, no nosotros. No nos quedamos con un porcentaje de tus ventas.',
+        name: 'El diseño con tu marca, en el plan Taller',
+        body: 'La paleta y las tipografías propias son parte de la puesta a punto, así que van del plan Negocio para arriba. El Taller corre sobre el diseño de GastroOS, con tu nombre y tu logo arriba. Es la diferencia visible entre los dos, y es a propósito: es trabajo nuestro, y en el Taller no lo hacemos.',
       },
     ],
   },
@@ -674,7 +676,7 @@ export const FAQS = [
   },
   {
     q: '¿Puedo ponerle los colores y la tipografía de mi marca?',
-    a: 'Sí, y no de una lista de temas: tu instalación se arma con tu paleta y tus tipografías, igual que el caso de COSOV. que está más arriba. Si tenés manual de marca lo seguimos; si no, lo sacamos de tu logo y tus redes. Va incluido en la puesta a punto, no es un extra.',
+    a: 'Del plan Negocio para arriba sí, y no de una lista de temas: tu instalación se arma con tu paleta y tus tipografías, igual que el caso de COSOV. que está más arriba. Si tenés manual de marca lo seguimos; si no, lo sacamos de tu logo y tus redes. Va incluido en la puesta a punto y no es un extra, pero es trabajo nuestro: por eso el Taller, que no la lleva, corre sobre el diseño de GastroOS con tu nombre y tu logo. Si arrancaste ahí y después la querés, se pasa de plan y se hace.',
   },
   {
     q: '¿Tengo que cargar todo de cero?',
@@ -698,7 +700,7 @@ export const FAQS = [
   },
   {
     q: '¿Cuánto tarda en estar funcionando?',
-    a: 'Depende del tamaño del catálogo, pero en general una semana desde que nos pasás la información.',
+    a: 'En el plan Taller, el mismo día: entrás y cargás tu catálogo. Del Negocio para arriba lo cargamos nosotros, y depende del tamaño del catálogo, pero en general es una semana desde que nos pasás la información.',
   },
   {
     q: '¿Necesito instalar algo?',
