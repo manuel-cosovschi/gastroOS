@@ -319,6 +319,26 @@ export const CASE_STUDY = {
       'https://cosov-pedidos.vercel.app/catalogo',
     cta: 'Abrir la tienda de COSOV.',
   },
+  /**
+   * Sus redes, para que se vea que es un negocio de verdad y no un ejemplo armado.
+   *
+   * Sólo está la que se pudo comprobar: el Instagram existe, es público y es el
+   * mismo que COSOV. imprime en sus comprobantes. No se agregan redes "por si
+   * acaso": un link a un perfil que no existe es peor que no tener link.
+   *
+   * No se muestran seguidores ni publicaciones: son números que cambian y quedarían
+   * viejos en el código.
+   */
+  social: {
+    note: 'Es un negocio real, con tienda y redes públicas. Entrá y mirá cómo trabaja.',
+    links: [
+      {
+        network: 'Instagram',
+        handle: '@cosov_',
+        url: process.env.NEXT_PUBLIC_CASE_STUDY_INSTAGRAM_URL || 'https://www.instagram.com/cosov_/',
+      },
+    ],
+  },
 };
 
 // ============================================

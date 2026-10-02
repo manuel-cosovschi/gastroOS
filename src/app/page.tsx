@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight, ArrowUpRight, Check, Minus, Sparkles } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, Check, Instagram, Minus, Sparkles } from 'lucide-react';
 import { APP_NAME, APP_TAGLINE } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 import {
@@ -289,15 +289,31 @@ export default function LandingPage() {
                 Es el único lugar de la página donde el visitante puede ir a
                 comprobar algo por su cuenta, y por eso va acá y no sólo en el pie.
               */}
-              <a
-                href={CASE_STUDY.storefront.url}
-                target="_blank"
-                rel="noreferrer"
-                className="mt-6 inline-flex items-center gap-2 rounded-xl border border-stone-300 bg-white px-4 py-2.5 text-sm font-medium text-stone-800 transition-colors hover:border-stone-400 hover:bg-stone-50"
-              >
-                {CASE_STUDY.storefront.cta}
-                <ArrowUpRight className="h-4 w-4" />
-              </a>
+              <div className="mt-6 flex flex-wrap items-center gap-3">
+                <a
+                  href={CASE_STUDY.storefront.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 rounded-xl border border-stone-300 bg-white px-4 py-2.5 text-sm font-medium text-stone-800 transition-colors hover:border-stone-400 hover:bg-stone-50"
+                >
+                  {CASE_STUDY.storefront.cta}
+                  <ArrowUpRight className="h-4 w-4" />
+                </a>
+                {CASE_STUDY.social.links.map((link) => (
+                  <a
+                    key={link.network}
+                    href={link.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={`${link.network} de COSOV.: ${link.handle}`}
+                    className="inline-flex items-center gap-2 rounded-xl border border-stone-300 bg-white px-4 py-2.5 text-sm font-medium text-stone-800 transition-colors hover:border-stone-400 hover:bg-stone-50"
+                  >
+                    <Instagram className="h-4 w-4" />
+                    {link.handle}
+                  </a>
+                ))}
+              </div>
+              <p className="mt-3 text-sm text-stone-500">{CASE_STUDY.social.note}</p>
             </div>
             <figure>
               <BrowserFrame>
