@@ -562,12 +562,22 @@ export const PRICING = {
     body: 'Porque es lo único que mide a la vez cuánto trabajo te saca el sistema y qué tamaño tiene tu negocio. El que hace veinte tortas por mes y la cocina que entrega cuatrocientas viandas por semana no pueden pagar lo mismo, y tampoco les sirve lo mismo. Si un mes te pasás del escalón no se corta nada: el mes siguiente pasás al que te toca, y si bajás, bajás.',
   },
 
+  /**
+   * La puesta a punto.
+   *
+   * Acá había un `price` único de $95.000 y la sección lo mostraba en una caja
+   * aparte. Era el número equivocado de dos maneras: el monto vive en
+   * `sovare.plans` y es distinto por plan, y la caja leía el del primer plan de
+   * la lista, que desde que Taller encabeza vale cero. La página terminó
+   * anunciando "puesta a punto: $0" mientras la contratación cobraba $95.000.
+   *
+   * Por eso ya no hay un número acá. Cada plan muestra el suyo, que es lo único
+   * que el visitante puede comparar sin que le mientan.
+   */
   setup: {
     name: 'Puesta a punto',
-    price: 95000,
-    unit: 'pago único',
     summary:
-      'Se paga una sola vez, al principio, y no la lleva el plan Taller. Es el trabajo de dejarte el sistema andando con tu negocio adentro, no una licencia.',
+      'Se paga una sola vez, al principio, y no la lleva el plan Taller. Es el trabajo de dejarte el sistema andando con tu negocio adentro, no una licencia. Cuesta distinto en cada plan porque el trabajo es distinto: con ciento veinte pedidos por mes hay menos catálogo y menos recetas que cargar que en una cocina que entrega cuatrocientos.',
     features: [
       'Tu instalación con tu paleta y tus tipografías',
       'Carga de catálogo, precios, insumos y clientes',
@@ -582,6 +592,7 @@ export const PRICING = {
       code: 'taller',
       name: 'Taller',
       price: 15000,
+      setup: 0,
       unit: 'por mes',
       limit: 'hasta 30 pedidos por mes',
       summary:
@@ -600,6 +611,20 @@ export const PRICING = {
       code: 'negocio',
       name: 'Negocio',
       price: 32000,
+      /**
+       * Más barata que en los planes de arriba, y a propósito.
+       *
+       * A $95.000 el primer pago del plano que más se vende era de $127.000: casi
+       * cuatro meses de cuota juntos, en el momento en que todavía no vio el
+       * sistema andar con sus cosas adentro. Es la cifra que frena a un negocio
+       * chico, no la mensualidad.
+       *
+       * No es un descuento: con ciento veinte pedidos por mes el catálogo es más
+       * corto y las recetas son menos, así que el trabajo entra en menos horas.
+       * Los planes de arriba, donde el catálogo es grande de verdad, la siguen
+       * pagando entera.
+       */
+      setup: 55000,
       unit: 'por mes',
       limit: 'hasta 120 pedidos por mes',
       summary:
@@ -608,7 +633,10 @@ export const PRICING = {
         'Todo lo del plan Taller',
         'Tu paleta y tus tipografías, no las nuestras',
         'Tu dominio propio, no un subdominio nuestro (el dominio lo comprás vos)',
-        'Puesta a punto incluida: te lo dejamos cargado',
+        // "Incluida" se leía como "no se paga", y arriba de esta misma tarjeta
+        // dice que son $55.000. Lo que el plan trae no es gratis: es que el
+        // trabajo lo hacemos nosotros en lugar de que lo haga él.
+        'La puesta a punto la hacemos nosotros: te lo dejamos cargado',
         'Soporte por WhatsApp, respuesta en el día hábil',
         'Ajustes y cambios chicos incluidos',
       ],
@@ -618,6 +646,7 @@ export const PRICING = {
       code: 'cocina',
       name: 'Cocina grande',
       price: 56000,
+      setup: 95000,
       unit: 'por mes',
       limit: 'hasta 400 pedidos por mes',
       summary:
@@ -635,6 +664,7 @@ export const PRICING = {
       code: 'medida',
       name: 'A medida',
       price: 89000,
+      setup: 95000,
       unit: 'por mes',
       priceFrom: true,
       limit: 'más de 400 pedidos, o varias sucursales',

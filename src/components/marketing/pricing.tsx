@@ -38,6 +38,10 @@ export async function Pricing() {
   const amounts = canSignUp ? await getPlanAmounts() : [];
   const priceFor = (code: string, fallback: number) =>
     amounts.find((plan) => plan.code === code)?.monthly ?? fallback;
+  // Por código, no por posición: la puesta a punto es distinta en cada plan y
+  // leer la del primero de la lista fue lo que puso "$0" en la página.
+  const setupFor = (code: string, fallback: number) =>
+    amounts.find((plan) => plan.code === code)?.setup ?? fallback;
 
   return (
     <section id="precios" className="scroll-mt-20 border-t border-stone-200 bg-stone-50 py-20 sm:py-24">
@@ -103,6 +107,21 @@ export async function Pricing() {
                 <span className="text-sm text-stone-500">{plan.unit}</span>
               </p>
 
+              {/* El pago único, al lado de la mensualidad y no veinte líneas más
+                  abajo. Es el número que decide si alguien sigue leyendo, y
+                  enterarse de él recién en la contratación se siente como una
+                  letra chica aunque esté escrito. */}
+              {/* Alto fijo de dos renglones: "Sin puesta a punto" ocupa uno y
+                  los otros tres ocupan dos, y sin esto las listas de abajo
+                  arrancan a distinta altura en cada tarjeta. Sólo cuando van
+                  una al lado de la otra: apiladas en el teléfono es aire de más,
+                  igual que el hueco del badge. */}
+              <p className="mt-1.5 text-sm text-stone-500 sm:min-h-[2.5rem]">
+                {setupFor(plan.code, plan.setup) > 0
+                  ? `+ ${money(setupFor(plan.code, plan.setup))} de puesta a punto, una sola vez`
+                  : 'Sin puesta a punto'}
+              </p>
+
               <ul className="mt-6 flex-1 space-y-2.5">
                 {plan.features.map((feature) => (
                   <li key={feature} className="flex gap-2.5 text-sm leading-relaxed text-stone-600">
@@ -125,10 +144,13 @@ export async function Pricing() {
           ))}
         </div>
 
-        {/* ---------- Puesta a punto ---------- */}
+        {/* ---------- Puesta a punto ----------
+            Explica qué es, no cuánto sale: el monto ya está en cada tarjeta,
+            que es donde se compara. Acá había una caja con un número único y
+            terminó mostrando el del plan equivocado. */}
         <div className="mt-6 rounded-2xl border border-stone-200 bg-white p-6 shadow-card sm:p-8">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-            <div className="max-w-xl">
+            <div>
               <div className="flex items-center gap-2">
                 <Wrench className="h-5 w-5 shrink-0 text-stone-400" />
                 <h3 className="text-lg font-semibold text-stone-900">{PRICING.setup.name}</h3>
@@ -144,13 +166,6 @@ export async function Pricing() {
                   </li>
                 ))}
               </ul>
-            </div>
-
-            <div className="shrink-0 rounded-xl bg-stone-50 px-6 py-5 text-center lg:text-right">
-              <p className="text-3xl font-semibold tracking-tight text-stone-900">
-                {money(amounts[0]?.setup ?? PRICING.setup.price)}
-              </p>
-              <p className="mt-1 text-sm text-stone-500">{PRICING.setup.unit}</p>
             </div>
           </div>
         </div>
