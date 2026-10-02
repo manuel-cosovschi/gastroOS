@@ -2,8 +2,14 @@
 
 import { revalidatePath } from 'next/cache';
 import { createServerClient, requireAdmin } from '@/lib/supabase/server';
+import { callLanding, type ProvisionSummary } from '@/lib/landing';
 
-type Result = { success: boolean; error?: string };
+/**
+ * `notice` es lo que salió bien y vale la pena contar; `warning`, lo que quedó a
+ * medias y hay que mirar. Una acción puede devolver las dos: aprobar un pago
+ * puede crear la cuenta y no poder mandar el mail.
+ */
+type Result = { success: boolean; error?: string; notice?: string; warning?: string };
 
 const DENIED: Result = { success: false, error: 'No tenés permiso.' };
 
@@ -40,9 +46,133 @@ export async function decideSignup(
     return { success: false, error: 'No se pudo guardar la decisión.' };
   }
 
+  // Aprobar a mano tiene que dejar lo mismo que aprobar con la IA: la cuenta del
+  // cliente (si el plan es de autoservicio) y el mail. Eso lo hace la landing, que
+  // es la que tiene la clave de servicio y la de Resend. Si no responde, el pago
+  // queda aprobado igual y la pantalla ofrece reenviar.
+  const follow = decision === 'aprobado' ? await followApproval(id, 'aprobada') : {};
+
   revalidatePath('/contrataciones');
   revalidatePath(`/contrataciones/${id}`);
-  return { success: true };
+  return { success: true, ...follow };
+}
+
+/** Le pide a la landing lo que sigue a una aprobación y traduce la respuesta. */
+async function followApproval(
+  id: string,
+  accion: 'aprobada' | 'reenviar_mail'
+): Promise<{ notice?: string; warning?: string }> {
+  const reply = await callLanding<{
+    mail: 'sent' | 'failed' | 'already' | 'skipped';
+    mailReason: string | null;
+    provision: ProvisionSummary | null;
+  }>({ accion, signupId: id });
+
+  if (!reply.ok) {
+    return {
+      warning: `Quedó aprobada, pero la landing no respondió (${reply.error}) y no salió el mail ni se creó la cuenta. Probá de nuevo con "Reenviar el mail".`,
+    };
+  }
+
+  const { mail, mailReason, provision } = reply.data;
+  const notice: string[] = [];
+  const warning: string[] = [];
+
+  if (provision?.ok) {
+    notice.push(
+      provision.created
+        ? `Se creó su negocio y su cuenta (${provision.slug}).`
+        : `Su negocio ya estaba creado (${provision.slug}).`
+    );
+  } else if (provision) {
+    warning.push(`No se pudo crear su cuenta: ${provision.message}`);
+  }
+
+  if (mail === 'sent') notice.push('Le mandamos el mail de confirmación.');
+  else if (mail === 'already') notice.push('El mail de confirmación ya se había mandado.');
+  else if (mail === 'failed') warning.push(`El mail no salió${mailReason ? `: ${mailReason}` : '.'}`);
+
+  return {
+    ...(notice.length ? { notice: notice.join(' ') } : {}),
+    ...(warning.length ? { warning: warning.join(' ') } : {}),
+  };
+}
+
+/** Manda de nuevo el mail de confirmación (y completa la cuenta si faltaba). */
+export async function resendApprovalMail(id: string): Promise<Result> {
+  if (!(await requireAdmin())) return DENIED;
+
+  const follow = await followApproval(id, 'reenviar_mail');
+  revalidatePath(`/contrataciones/${id}`);
+  return { success: true, ...follow };
+}
+
+/**
+ * Crea el negocio y la cuenta del cliente ahora. Para el plan de autoservicio es
+ * lo que no salió solo; para los otros planes, un adelanto: el negocio vacío ya
+ * existe y se le puede ir cargando el catálogo antes de avisarle.
+ */
+export async function createStoreNow(id: string): Promise<Result> {
+  if (!(await requireAdmin())) return DENIED;
+
+  const reply = await callLanding<{ ok: boolean; provision: ProvisionSummary | null }>({
+    accion: 'crear_tienda',
+    signupId: id,
+  });
+  revalidatePath(`/contrataciones/${id}`);
+  revalidatePath('/contrataciones');
+  revalidatePath('/clientes');
+
+  if (!reply.ok) return { success: false, error: reply.error };
+  const provision = reply.data.provision;
+  if (!provision?.ok) {
+    return { success: false, error: provision?.message || 'No se pudo crear la cuenta.' };
+  }
+  return {
+    success: true,
+    notice: provision.created
+      ? `Listo: se creó el negocio (${provision.slug}) y la cuenta del dueño.`
+      : `El negocio ya existía (${provision.slug}).`,
+  };
+}
+
+/**
+ * Avisa que el sistema está listo. Hasta ahora esto era un WhatsApp que había que
+ * acordarse de mandar. `entryUrl` y `note` son opcionales.
+ */
+export async function notifyReady(
+  id: string,
+  entryUrl?: string,
+  note?: string
+): Promise<Result> {
+  if (!(await requireAdmin())) return DENIED;
+
+  const reply = await callLanding<{ ok: boolean; message?: string }>({
+    accion: 'lista',
+    signupId: id,
+    ...(entryUrl?.trim() ? { entryUrl: entryUrl.trim() } : {}),
+    ...(note?.trim() ? { note: note.trim() } : {}),
+  });
+  revalidatePath(`/contrataciones/${id}`);
+
+  if (!reply.ok) return { success: false, error: reply.error };
+  if (!reply.data.ok) return { success: false, error: reply.data.message || 'No se pudo avisar.' };
+  return { success: true, notice: 'Le avisamos que su sistema está listo.' };
+}
+
+/** Reabre la elección de contraseña y le manda el link (por si perdió la suya). */
+export async function resendAccess(id: string): Promise<Result> {
+  if (!(await requireAdmin())) return DENIED;
+
+  const reply = await callLanding<{ ok: boolean; message?: string }>({
+    accion: 'reenviar_acceso',
+    signupId: id,
+  });
+  revalidatePath(`/contrataciones/${id}`);
+
+  if (!reply.ok) return { success: false, error: reply.error };
+  if (!reply.data.ok) return { success: false, error: reply.data.message || 'No se pudo reenviar.' };
+  return { success: true, notice: 'Le mandamos el link para elegir una contraseña nueva.' };
 }
 
 /**

@@ -209,6 +209,15 @@ export interface Signup {
   onboarding: Record<string, string | null> | null;
   onboarding_at: string | null;
   notified_at: string | null;
+  /** El negocio y la cuenta que se crearon al aprobar el pago (planes de autoservicio). */
+  business_id: string | null;
+  owner_user_id: string | null;
+  store_slug: string | null;
+  provisioned_at: string | null;
+  provision_error: string | null;
+  password_set_at: string | null;
+  /** Cuándo se le avisó que su sistema está listo (planes con puesta a punto). */
+  ready_notified_at: string | null;
   created_at: string;
 }
 

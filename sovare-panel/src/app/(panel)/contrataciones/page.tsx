@@ -117,6 +117,21 @@ export default async function SignupsPage({
                     </span>
                   )}
 
+                  {signup.status === 'aprobado' && signup.provision_error && !signup.provisioned_at && (
+                    <span
+                      className="shrink-0 text-rose-600"
+                      title={`No se pudo crear la cuenta: ${signup.provision_error}`}
+                    >
+                      <AlertTriangle className="h-4 w-4" />
+                    </span>
+                  )}
+
+                  {signup.provisioned_at && (
+                    <Badge className="hidden border-emerald-200 bg-emerald-50 text-emerald-800 sm:inline-flex">
+                      Con tienda
+                    </Badge>
+                  )}
+
                   {signup.client_id && (
                     <Badge className="hidden border-stone-200 bg-stone-100 text-stone-600 sm:inline-flex">
                       Ya es cliente

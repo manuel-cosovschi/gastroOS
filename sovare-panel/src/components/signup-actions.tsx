@@ -19,19 +19,39 @@ export function SignupDecision({ id, status }: { id: string; status: string }) {
   const [asking, setAsking] = useState(false);
   const [notes, setNotes] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+  const [warning, setWarning] = useState<string | null>(null);
 
   const decide = (decision: 'aprobado' | 'rechazado', motivo?: string) => {
     setError(null);
+    setNotice(null);
+    setWarning(null);
     startTransition(async () => {
       const result = await decideSignup(id, decision, motivo);
       if (!result.success) setError(result.error || 'No se pudo guardar.');
       else {
         setAsking(false);
         setNotes('');
+        // Aprobar también crea la cuenta y manda el mail: lo que salió, y lo que
+        // no, tiene que verse acá y no perderse en un refresco.
+        setNotice(result.notice ?? null);
+        setWarning(result.warning ?? null);
         router.refresh();
       }
     });
   };
+
+  const feedback = (
+    <>
+      {error && <p className="text-sm text-rose-600">{error}</p>}
+      {warning && (
+        <p className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-stone-800">
+          {warning}
+        </p>
+      )}
+      {notice && <p className="text-sm text-emerald-700">{notice}</p>}
+    </>
+  );
 
   if (status === 'aprobado' || status === 'rechazado') {
     return (
@@ -44,7 +64,7 @@ export function SignupDecision({ id, status }: { id: string; status: string }) {
           {pending && <Loader2 className="h-4 w-4 animate-spin" />}
           {status === 'aprobado' ? 'Marcar como rechazada' : 'Marcar como aprobada'}
         </button>
-        {error && <p className="w-full text-sm text-rose-600">{error}</p>}
+        <div className="w-full space-y-2">{feedback}</div>
       </div>
     );
   }
@@ -94,7 +114,7 @@ export function SignupDecision({ id, status }: { id: string; status: string }) {
         </div>
       )}
 
-      {error && <p className="text-sm text-rose-600">{error}</p>}
+      {feedback}
     </div>
   );
 }

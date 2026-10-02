@@ -37,6 +37,38 @@ concepto)` hace que correrlo dos veces no duplique nada.
 
 ---
 
+## Contrataciones: qué pasa al aprobar un pago
+
+Un pago lo aprueba la IA al leer el comprobante o lo aprobás vos desde la
+contratación. En los dos casos pasa lo mismo, según el plan:
+
+| Plan | Qué pasa solo |
+|---|---|
+| **Taller** (sin puesta a punto) | Se crea el negocio con su tienda en `tunegocio.gastroos.shop`, la cuenta del dueño, su ficha de cliente y el cobro del primer mes (ya pagado). Le llega un mail para elegir su contraseña y entrar. |
+| **Negocio en adelante** | Le llega el mail con el formulario de alta. El sistema lo armás vos. |
+
+Qué hace falta saber:
+
+- **Vos no hacés nada más.** Aprobar a mano ejecuta lo mismo que la IA: el panel le
+  pide a la landing que cree la cuenta y mande el mail (la clave de servicio y la
+  de Resend viven allá, no acá). La landing comprueba que el pedido viene de un
+  administrador usando tu propia sesión; no hay una clave compartida entre los dos
+  proyectos.
+- **Te avisan por mail** (a `NEXT_PUBLIC_CONTACT_EMAIL` de la landing) cuando entra
+  un pago que aprobó la IA, cuando hay un comprobante para revisar, cuando
+  completan el alta y cuando una tienda no se pudo crear.
+- **La tarjeta «Tienda y acceso»** de cada contratación aprobada tiene lo que se
+  puede repetir sin riesgo: *Crear su negocio y su cuenta* (también por adelantado
+  en los planes con puesta a punto), *Reenviar el mail*, *Reenviar el acceso* (si
+  alguien perdió su contraseña) y, en los planes con puesta a punto, *Avisarle que
+  está lista*, con la dirección donde entra y un renglón tuyo.
+- **Si el mail del cliente ya tiene una cuenta**, no se la toca: la tienda no se
+  crea y la contratación lo marca en rojo en el listado. Se resuelve a mano.
+- Está en `supabase/006_tiendas.sql` (`sovare.provision_business()`); el código que
+  lo ejecuta es `src/lib/signup-flow.ts` de la landing.
+
+---
+
 ## Vendedores a comisión
 
 El circuito, de punta a punta:

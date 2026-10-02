@@ -8,6 +8,8 @@ import {
   ReceiptLink,
   SignupDecision,
 } from '@/components/signup-actions';
+import { SignupStore } from '@/components/signup-store';
+import { LANDING_URL } from '@/lib/vendedores';
 import {
   AI_VERDICT_META,
   SIGNUP_STATUS_META,
@@ -81,6 +83,19 @@ export default async function SignupDetailPage({
   const status = SIGNUP_STATUS_META[signup.status];
   const wa = signup.whatsapp?.replace(/\D/g, '');
 
+  // Qué plan es decide qué pasa al aprobar: sin puesta a punto (el Taller) la
+  // cuenta se crea sola; con puesta a punto, la armamos nosotros.
+  const { data: plan } = await supabase
+    .from('plans')
+    .select('setup')
+    .eq('code', signup.plan)
+    .maybeSingle();
+  const setup = Number(plan?.setup ?? 0);
+  const selfService = setup <= 0;
+  const storeAddress = signup.store_slug
+    ? `${signup.store_slug}.${new URL(LANDING_URL).host}`
+    : null;
+
   return (
     <div className="space-y-6">
       <Link
@@ -109,8 +124,8 @@ export default async function SignupDetailPage({
           <div className="min-w-0 text-sm text-stone-800">
             <p className="font-medium">El mail de confirmación no salió.</p>
             <p className="mt-0.5 leading-relaxed text-stone-600">
-              El pago está aprobado igual. Escribile a <strong>{signup.email}</strong> con el link
-              del alta, o mandale un WhatsApp.
+              El pago está aprobado igual. Podés reenviarlo desde &quot;Tienda y acceso&quot;, más
+              abajo, o escribirle a <strong>{signup.email}</strong> por WhatsApp.
             </p>
             {signup.decision_notes && (
               <p className="mt-1 text-xs text-stone-500">{signup.decision_notes}</p>
@@ -129,7 +144,11 @@ export default async function SignupDetailPage({
                   {money(Number(signup.amount), signup.currency)}
                 </p>
                 <p className="text-sm text-stone-500">
-                  {signup.includes_setup ? 'puesta a punto + primer mes' : 'mensualidad'}
+                  {signup.includes_setup
+                    ? setup > 0
+                      ? 'puesta a punto + primer mes'
+                      : 'primer mes'
+                    : 'mensualidad'}
                 </p>
               </div>
 
@@ -266,19 +285,39 @@ export default async function SignupDetailPage({
           <SectionCard title="Su pantalla">
             <div className="space-y-3 px-5 py-4">
               <p className="text-sm leading-relaxed text-stone-600">
-                El link con el que sigue su contratación y completa el alta.
+                {selfService
+                  ? 'El link con el que sigue su contratación y elige su contraseña.'
+                  : 'El link con el que sigue su contratación y completa el alta.'}
               </p>
               <p className="break-all rounded-md bg-stone-50 px-3 py-2 font-mono text-xs text-stone-600">
                 /contratar/{signup.token}
               </p>
-              <p className="flex items-center gap-1.5 text-xs text-stone-500">
-                <ClipboardList className="h-3.5 w-3.5 shrink-0" />
-                {signup.onboarding_at
-                  ? `Completó el alta el ${longDate(signup.onboarding_at)}.`
-                  : 'Todavía no completó el alta.'}
-              </p>
+              {!selfService && (
+                <p className="flex items-center gap-1.5 text-xs text-stone-500">
+                  <ClipboardList className="h-3.5 w-3.5 shrink-0" />
+                  {signup.onboarding_at
+                    ? `Completó el alta el ${longDate(signup.onboarding_at)}.`
+                    : 'Todavía no completó el alta.'}
+                </p>
+              )}
             </div>
           </SectionCard>
+
+          {signup.status === 'aprobado' && (
+            <SectionCard title="Tienda y acceso">
+              <SignupStore
+                id={signup.id}
+                selfService={selfService}
+                slug={signup.store_slug}
+                address={storeAddress}
+                provisioned={Boolean(signup.provisioned_at)}
+                provisionError={signup.provision_error}
+                passwordSetAt={signup.password_set_at}
+                notifiedAt={signup.notified_at}
+                readyNotifiedAt={signup.ready_notified_at}
+              />
+            </SectionCard>
+          )}
 
           <SectionCard title="Cliente">
             <div className="px-5 py-4">
