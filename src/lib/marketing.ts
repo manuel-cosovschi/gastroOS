@@ -264,7 +264,7 @@ export const CASE_STUDY = {
   title: 'Caso real: el mismo sistema, con la cara de su negocio',
   lead: 'COSOV. es una pastelería artesanal que produce por encargo para cafeterías y eventos. Los pedidos entraban por WhatsApp e Instagram y se anotaban a mano; el costo real de cada producto era una estimación.',
   outcome:
-    'Hoy trabaja sobre su propia instalación de GastroOS: su paleta, sus tipografías, su dominio y su base de datos. No comparte el sistema con nadie y no parece software alquilado — parece de ellos, porque lo es.',
+    'Hoy trabaja sobre su propia instalación de GastroOS: su paleta, sus tipografías, su dominio y su base de datos. No comparte el sistema con nadie y no parece software alquilado. Parece de ellos, porque lo es.',
   facts: [
     { label: 'Rubro', value: 'Pastelería artesanal por encargo' },
     { label: 'Trabaja con', value: 'Cafeterías y eventos' },
@@ -280,7 +280,7 @@ export const CASE_STUDY = {
    * Prometía exactamente lo que no mostraba.
    *
    * Se sacó en vez de rehacerla. El panel de un cliente no se puede mostrar
-   * —tiene sus clientes, sus pedidos y su facturación— y fabricar una imitación
+   * (tiene sus clientes, sus pedidos y su facturación) y fabricar una imitación
    * para ilustrarlo es presentar algo armado como si fuera la instalación de
    * alguien. La tienda, en cambio, es pública: se puede entrar y verla. Una
    * captura que el visitante puede ir a verificar vale más que dos que no.
@@ -462,7 +462,7 @@ export const CALCULATOR = {
     },
     margin: {
       label: 'Si tu margen real es 5 puntos menor',
-      note: 'No decimos que lo sea. Decimos que sin el costo por receta cargado, no hay forma de saberlo — y que 5 puntos sobre tu facturación es esta plata.',
+      note: 'No decimos que lo sea. Decimos que sin el costo por receta cargado no hay forma de saberlo, y que 5 puntos sobre tu facturación son esta plata.',
     },
   },
   cta: 'Estos números salen de dos datos. El sistema los calcula con los tuyos, todos los días.',
@@ -497,7 +497,7 @@ export const NOT_INCLUDED = {
  * Los números están puestos contra la competencia relevada en septiembre de
  * 2026: los sistemas de gestión gastronómica en Argentina arrancan cerca de
  * $21.000 + IVA por el plan más chico, y los que traen tienda online y control
- * de stock —lo comparable a esto— van de $68.000 a $99.000 + IVA, con los
+ * de stock, que es lo comparable a esto, van de $68.000 a $99.000 + IVA, con los
  * módulos de mesa, cocina y facturación cobrados aparte a $23.000–24.500 cada
  * uno. La implementación en el más conocido son $180.000.
  *
@@ -595,7 +595,7 @@ export const PRICING = {
   /** Cierre de la sección. Sin permanencia es lo único que prometemos acá. */
   closing: {
     title: 'Sin contrato de permanencia',
-    body: 'Se paga mes a mes. Si un mes decidís que no va más, avisás y listo — y te llevás tu información exportada, que es tuya.',
+    body: 'Se paga mes a mes. Si un mes decidís que no va más, avisás y listo. Te llevás tu información exportada, que es tuya.',
   },
 };
 
@@ -622,7 +622,7 @@ export const FAQS = [
   },
   {
     q: '¿Por qué son más baratos que los demás?',
-    a: 'Por dos cosas. Una, no somos un punto de venta: no tenemos que mantener módulos de mesas, comandas ni impresoras fiscales, que es de donde sale buena parte del precio de los otros. Y dos, no cobramos cada función aparte — lo que ves es lo que hay, sin módulos que se suman de a $24.000.',
+    a: 'Por dos cosas. Una, no somos un punto de venta: no tenemos que mantener módulos de mesas, comandas ni impresoras fiscales, que es de donde sale buena parte del precio de los otros. Y dos, no cobramos cada función aparte: lo que ves es lo que hay, sin módulos que se suman de a $24.000.',
   },
   {
     q: '¿Cuánto tarda en estar funcionando?',
