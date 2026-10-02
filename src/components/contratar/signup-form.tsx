@@ -54,7 +54,7 @@ export function SignupForm({ plans, initialPlan }: { plans: PlanAmount[]; initia
     defaultValues: {
       plan: plans.some((plan) => plan.code === initialPlan)
         ? initialPlan
-        : plans.find((plan) => plan.code === 'soporte')?.code || plans[0]?.code || '',
+        : plans.find((plan) => plan.code === 'negocio')?.code || plans[0]?.code || '',
       business_name: '',
       contact_name: '',
       email: '',
@@ -159,7 +159,12 @@ export function SignupForm({ plans, initialPlan }: { plans: PlanAmount[]; initia
         <div className="rounded-xl border border-stone-200 bg-stone-50 p-5">
           <p className="text-sm font-semibold text-stone-900">Tu primer pago</p>
           <dl className="mt-3 space-y-1.5 text-sm">
-            <Row label="Puesta a punto (una sola vez)" value={money(selected.setup)} />
+            {/* El plan Taller no lleva puesta a punto. Mostrar "$0" al lado de
+                un concepto que no existe hace dudar de si falta algo; mejor no
+                mostrar la línea y decir en una frase por qué no está. */}
+            {selected.setup > 0 && (
+              <Row label="Puesta a punto (una sola vez)" value={money(selected.setup)} />
+            )}
             <Row label={`Primer mes · plan ${selected.label}`} value={money(selected.monthly)} />
             <div className="mt-2 flex items-center justify-between border-t border-stone-200 pt-2">
               <dt className="font-semibold text-stone-900">Total a transferir</dt>
@@ -167,8 +172,9 @@ export function SignupForm({ plans, initialPlan }: { plans: PlanAmount[]; initia
             </div>
           </dl>
           <p className="mt-3 text-xs leading-relaxed text-stone-500">
-            Después del primer pago se abona sólo la mensualidad, mes a mes y sin permanencia. En
-            el paso siguiente te damos los datos para transferir.
+            {selected.setup > 0
+              ? 'Después del primer pago se abona sólo la mensualidad, mes a mes y sin permanencia. En el paso siguiente te damos los datos para transferir.'
+              : 'El plan Taller no lleva puesta a punto: el catálogo lo cargás vos con una guía que te damos. Se abona la mensualidad, mes a mes y sin permanencia. En el paso siguiente te damos los datos para transferir.'}
           </p>
         </div>
       )}

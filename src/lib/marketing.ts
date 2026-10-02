@@ -343,8 +343,8 @@ export const REASONS = [
     body: 'Cargar un pedido, cambiar un estado o ver las entregas del día se hace igual de bien desde el celular.',
   },
   {
-    title: 'Tu instalación, no una cuenta compartida',
-    body: 'Cada negocio tiene la suya, con su propia base de datos. Tus números no conviven con los de nadie, y lo que se ajusta para vos no depende de lo que necesiten otros.',
+    title: 'Tu negocio, no una cuenta genérica',
+    body: 'Tus datos son tuyos y nadie más los ve: el aislamiento lo aplica la base de datos en cada consulta, no el código de la pantalla. Y el sistema lleva tu marca, no la nuestra.',
   },
 ];
 
@@ -494,18 +494,27 @@ export const NOT_INCLUDED = {
 /**
  * Planes.
  *
- * Los números están puestos contra la competencia relevada en septiembre de
- * 2026: los sistemas de gestión gastronómica en Argentina arrancan cerca de
- * $21.000 + IVA por el plan más chico, y los que traen tienda online y control
- * de stock, que es lo comparable a esto, van de $68.000 a $99.000 + IVA, con los
- * módulos de mesa, cocina y facturación cobrados aparte a $23.000–24.500 cada
- * uno. La implementación en el más conocido son $180.000.
+ * Se cobra por pedidos al mes y no por funciones. El motivo no es comercial: es
+ * que todos los planes corren el mismo sistema, así que recortarle módulos al
+ * plan chico sería inventar una limitación para poder venderla.
  *
- * El piso de `Base` no es arbitrario: cada instalación tiene su propio proyecto
- * de Supabase, que cuesta unos USD 10 de compute por mes más la parte
- * proporcional de la organización. Con el dólar a ~$1.550 eso es $17.000–19.000
- * por cliente antes de tocar nada. Por eso `Base` no incluye soporte: a ese
- * precio no entra, y meterlo igual sería vender a pérdida.
+ * El piso de $15.000 se pudo bajar porque desapareció el costo que lo sostenía.
+ * Con el modelo viejo, cada cliente tenía su propio proyecto de Supabase: unos
+ * USD 10 de compute por mes, que con el dólar a ~$1.550 son $17.000 por cliente
+ * antes de que nadie toque nada. Ese número obligaba a un plan de entrada de
+ * $26.900 y dejaba afuera a todo el segmento que más lo necesita, el que cocina
+ * desde su casa.
+ *
+ * Hoy el sistema es multi-inquilino: cada tabla tiene `business_id`, las
+ * políticas aíslan por `is_business_member()`, y sumar un negocio chico cuesta
+ * unos megabytes de filas. El plan Taller no es una promoción a pérdida, es lo
+ * que de verdad cuesta.
+ *
+ * Los números se comparan contra la competencia relevada en septiembre de 2026:
+ * los sistemas de gestión gastronómica en Argentina arrancan cerca de $21.000 +
+ * IVA, y los que traen tienda online y control de stock van de $68.000 a
+ * $99.000 + IVA, con los módulos de mesa, cocina y facturación cobrados aparte a
+ * $23.000 a $24.500 cada uno.
  *
  * Son pesos y hay inflación: `asOf` está para que se note cuándo se fijaron.
  */
@@ -514,59 +523,84 @@ export const PRICING = {
   eyebrow: 'Precios',
   title: 'Cuánto cuesta',
   subtitle:
-    'Una instalación propia, con tu marca y tu base de datos. Sin porcentaje sobre tus ventas: lo que vendas es tuyo.',
-  asOf: 'Precios de septiembre de 2026, en pesos y con IVA incluido.',
+    'Se paga por los pedidos que entran, no por una lista de funciones. Todos los planes traen el sistema entero. Sin porcentaje sobre tus ventas: lo que vendas es tuyo.',
+  asOf: 'Precios de octubre de 2026, en pesos y con IVA incluido.',
   /** El ancla: contra qué se compara el número de abajo. */
   context:
-    'Los sistemas de gestión gastronómica con tienda online y control de stock cobran entre $68.000 y $99.000 por mes más IVA, y te cobran aparte cada módulo. Nosotros arrancamos en menos de la mitad.',
+    'Los sistemas de gestión gastronómica con tienda online y control de stock cobran entre $68.000 y $99.000 por mes más IVA, y te cobran aparte cada módulo. Arrancamos en la quinta parte del plan más chico de ellos.',
+
+  /** El medidor, explicado antes de mostrar los números. */
+  meter: {
+    title: 'Por qué se cobra por pedidos',
+    body: 'Porque es lo único que mide a la vez cuánto trabajo te saca el sistema y qué tamaño tiene tu negocio. El que hace veinte tortas por mes y la cocina que entrega cuatrocientas viandas por semana no pueden pagar lo mismo, y tampoco les sirve lo mismo. Si un mes te pasás del escalón no se corta nada: el mes siguiente pasás al que te toca, y si bajás, bajás.',
+  },
 
   setup: {
     name: 'Puesta a punto',
     price: 95000,
     unit: 'pago único',
     summary:
-      'Se paga una sola vez, al principio. Es el trabajo de dejarte el sistema andando con tu negocio adentro, no una licencia.',
+      'Se paga una sola vez, al principio, y no la lleva el plan Taller. Es el trabajo de dejarte el sistema andando con tu negocio adentro, no una licencia.',
     features: [
       'Tu instalación con tu paleta y tus tipografías',
       'Carga de catálogo, precios, insumos y clientes',
       'Recetas y costo real de cada producto',
-      'Tu tienda online publicada',
+      'Tu tienda online publicada en tu dominio',
       'Una sesión de capacitación con tu equipo',
     ],
   },
 
   plans: [
     {
-      code: 'base',
-      name: 'Base',
-      price: 26900,
+      code: 'taller',
+      name: 'Taller',
+      price: 15000,
       unit: 'por mes',
+      limit: 'hasta 30 pedidos por mes',
       summary:
-        'El sistema entero funcionando. Sin soporte ni cambios incluidos: si necesitás algo, se cobra por hora.',
+        'Para el que cocina solo. Sin puesta a punto: cargás vos tu catálogo con una guía que te damos, y por eso no hay nada que cobrarte al principio.',
       features: [
-        'Todos los módulos, sin límite de pedidos',
-        'Tienda online con tu marca',
-        'Tu propia base de datos, con backup diario',
-        'Actualizaciones de seguridad',
-        'Soporte y cambios aparte, por hora',
+        'El sistema entero, sin funciones recortadas',
+        'Tu tienda online en tunegocio.gastroos.shop',
+        'Pedidos, calendario, stock por receta y costos',
+        'Sin puesta a punto y sin permanencia',
+        'Soporte por hora, cuando lo necesites',
       ],
       highlight: false,
     },
     {
-      code: 'soporte',
-      name: 'Con soporte',
-      price: 46900,
+      code: 'negocio',
+      name: 'Negocio',
+      price: 32000,
       unit: 'por mes',
+      limit: 'hasta 120 pedidos por mes',
       summary:
-        'Lo mismo, pero con alguien del otro lado. Es el que toma casi todo el mundo.',
+        'Cuando ya hay alguien más en la cocina. Es el que toma casi todo el mundo.',
       features: [
-        'Todo lo del plan Base',
+        'Todo lo del plan Taller',
+        'Tu dominio propio, no un subdominio nuestro',
+        'Puesta a punto incluida: te lo dejamos cargado',
         'Soporte por WhatsApp, respuesta en el día hábil',
         'Ajustes y cambios chicos incluidos',
-        'Las mejoras del producto, a medida que salen',
-        'Te ayudamos a cargar los cambios de temporada',
       ],
       highlight: true,
+    },
+    {
+      code: 'cocina',
+      name: 'Cocina grande',
+      price: 56000,
+      unit: 'por mes',
+      limit: 'hasta 400 pedidos por mes',
+      summary:
+        'Volumen de verdad: viandas semanales, catering con varios eventos por fin de semana.',
+      features: [
+        'Todo lo del plan Negocio',
+        'Prioridad en los pedidos de cambio',
+        'Usuarios para todo tu equipo',
+        'Revisión de costos y márgenes cada tres meses',
+        'Las mejoras del producto apenas salen',
+      ],
+      highlight: false,
     },
     {
       code: 'medida',
@@ -574,21 +608,22 @@ export const PRICING = {
       price: 89000,
       unit: 'por mes',
       priceFrom: true,
+      limit: 'más de 400 pedidos, o varias sucursales',
       summary:
         'Cuando el sistema tiene que hacer algo que hoy no hace, o el negocio ya no entra en una sola cocina.',
       features: [
-        'Todo lo del plan Con soporte',
+        'Todo lo del plan Cocina grande',
         'Desarrollo de funciones propias',
         'Integraciones con lo que ya uses',
         'Varias sucursales o equipos',
-        'Prioridad en los pedidos de cambio',
+        'Tu propia instalación aparte, si la querés',
       ],
       highlight: false,
     },
   ],
 
   hourly: {
-    label: 'Hora de soporte o cambios, para el plan Base',
+    label: 'Hora de soporte o cambios, para el plan Taller',
     price: 19000,
   },
 
@@ -614,11 +649,11 @@ export const FAQS = [
   },
   {
     q: '¿Tengo que cargar todo de cero?',
-    a: 'No. La carga inicial de productos, precios, insumos y clientes la hacemos nosotros con la información que nos pases, aunque esté en un Excel o en fotos.',
+    a: 'Depende del plan. Del Negocio para arriba la carga inicial de productos, precios, insumos y clientes la hacemos nosotros con lo que nos pases, aunque esté en un Excel o en fotos. En el Taller la cargás vos con una guía: por eso ese plan no tiene puesta a punto, y por eso es el más barato.',
   },
   {
-    q: '¿Por qué el plan Base no incluye soporte?',
-    a: 'Porque queríamos un precio de entrada real y no uno que se cae cuando pedís algo. Cada instalación tiene su propio servidor y su propia base de datos, y eso cuesta plata todos los meses aunque nadie toque nada. El plan Base cubre eso y el sistema funcionando; si necesitás ayuda, se cobra por hora y sabés cuánto. Si preferís tenerlo incluido y no pensar, está el plan Con soporte, que es el que toma casi todo el mundo.',
+    q: '¿Por qué el plan Taller no incluye soporte ni puesta a punto?',
+    a: 'Porque queríamos un precio de entrada real y no uno que se cae cuando pedís algo. A $15.000 no entra que alguien te cargue el catálogo ni que te conteste el WhatsApp, y meterlo igual sería mentirte. Lo que sí entra es el sistema entero funcionando, sin funciones recortadas. Si necesitás una mano se cobra por hora y sabés cuánto; si preferís no pensar en eso, el plan Negocio ya lo trae.',
   },
   {
     q: '¿Por qué son más baratos que los demás?',

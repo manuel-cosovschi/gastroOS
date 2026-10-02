@@ -52,8 +52,16 @@ export async function Pricing() {
           {PRICING.context}
         </p>
 
+        {/* El medidor se explica antes de mostrar los números: si alguien lee
+            "hasta 30 pedidos" sin saber qué pasa cuando se pasa, el primer
+            reflejo es desconfiar. */}
+        <div className="mx-auto mt-8 max-w-2xl rounded-2xl border border-stone-200 bg-stone-50 p-5 sm:p-6">
+          <h3 className="text-sm font-semibold text-stone-900">{PRICING.meter.title}</h3>
+          <p className="mt-2 text-sm leading-relaxed text-stone-600">{PRICING.meter.body}</p>
+        </div>
+
         {/* ---------- Mensualidades ---------- */}
-        <div className="mt-12 grid gap-6 lg:grid-cols-3">
+        <div className="mt-12 grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
           {PRICING.plans.map((plan) => (
             <div
               key={plan.name}
@@ -64,14 +72,24 @@ export async function Pricing() {
                   : 'border-stone-200 shadow-card'
               )}
             >
-              {plan.highlight && (
-                <span className="mb-3 inline-flex w-fit rounded-full bg-brand-50 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-brand-800">
-                  El más elegido
-                </span>
-              )}
+              {/* El espacio del badge se reserva en las cuatro tarjetas: si
+                  sólo lo ocupa la destacada, su título baja y los otros tres
+                  quedan flotando más arriba. */}
+              <span
+                aria-hidden={!plan.highlight}
+                className={cn(
+                  'mb-3 inline-flex w-fit rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider',
+                  // El hueco reservado sólo hace falta cuando las tarjetas van
+                  // una al lado de la otra. Apiladas en el teléfono es aire de más.
+                  plan.highlight ? 'bg-brand-50 text-brand-800' : 'invisible hidden sm:inline-flex'
+                )}
+              >
+                {plan.highlight ? 'El más elegido' : 'placeholder'}
+              </span>
 
               <h3 className="text-lg font-semibold text-stone-900">{plan.name}</h3>
-              <p className="mt-1.5 min-h-[3.5rem] text-sm leading-relaxed text-stone-600">
+              <p className="mt-1 text-xs font-medium text-brand-700">{plan.limit}</p>
+              <p className="mt-2 min-h-[5.5rem] text-sm leading-relaxed text-stone-600">
                 {plan.summary}
               </p>
 

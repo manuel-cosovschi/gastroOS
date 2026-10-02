@@ -28,6 +28,7 @@ import {
 } from '@/types';
 import { cn, longDate, money, monthLabel, shortDate, todayISO } from '@/lib/utils';
 import { formatearNumero, linkWhatsApp } from '@/lib/whatsapp';
+import { VolumenDePedidos } from '@/components/volumen';
 
 export const dynamic = 'force-dynamic';
 
@@ -156,6 +157,9 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
+          {/* ---------- Volumen, que es lo que define el plan ---------- */}
+          <VolumenDePedidos clientId={client.id} planActual={client.plan} />
+
           {/* ---------- Cobros ---------- */}
           <SectionCard title="Cobros" action={<PaymentForm client={client} />}>
             {payments.length === 0 ? (
