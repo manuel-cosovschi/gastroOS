@@ -234,8 +234,8 @@ nombres de Vercel:
 
    | Tipo | Nombre | Valor |
    |---|---|---|
-   | CNAME | `send` | `send.forge.rmta.net.` |
-   | TXT | `resend._domainkey` | la clave que figura hoy en GoDaddy (`p=MIGfMA0G…`) |
+   | CNAME | `send` | `send.forge.rmta.net` |
+   | TXT | `resend._domainkey` | `p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC4bemktlVeq1yI6Mjyd/YtZpERNB11RicTD7oyP+ZyxUsMWz6+exY632SIxA22zBu7uDqh71zFrlF+P8L09/PpCmHMApLyXHT0pus7DZFSMNlIg8NokAkY8SaDefwg6PPup5SCH+hVB5qLuz/FTzxZVtQbqpNxfWsXfLrBA59UewIDAQAB` |
    | TXT | `_dmarc` | `v=DMARC1; p=quarantine; adkim=r; aspf=r; rua=mailto:dmarc_rua@onsecureserver.net;` |
 
    Vercel suele resolver el sitio (`@`) y `www` solo cuando el dominio ya usa sus
