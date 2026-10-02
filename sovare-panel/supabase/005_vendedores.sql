@@ -38,6 +38,7 @@
 CREATE OR REPLACE FUNCTION sovare.current_period()
 RETURNS DATE
 LANGUAGE sql STABLE
+SET search_path = sovare, public
 AS $$
   SELECT date_trunc('month', now() AT TIME ZONE 'America/Argentina/Buenos_Aires')::date;
 $$;
