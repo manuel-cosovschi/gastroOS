@@ -6,6 +6,7 @@ import {
   Mail,
   MessageCircle,
   Pencil,
+  Phone,
   Store,
 } from 'lucide-react';
 import { createServerClient } from '@/lib/supabase/server';
@@ -26,6 +27,7 @@ import {
   type Payment,
 } from '@/types';
 import { cn, longDate, money, monthLabel, shortDate, todayISO } from '@/lib/utils';
+import { formatearNumero, linkWhatsApp } from '@/lib/whatsapp';
 
 export const dynamic = 'force-dynamic';
 
@@ -52,6 +54,10 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
 
   const client = clientResult.data as Client | null;
   if (!client) notFound();
+
+  // El mensaje de prospección viaja precargado en el link: si el cliente todavía
+  // es un prospecto al que no le escribimos, el chat se abre listo.
+  const waHref = linkWhatsApp(client.whatsapp, client.outreach_message);
 
   const payments = (paymentsResult.data ?? []) as Payment[];
   const activities = (activitiesResult.data ?? []) as Activity[];
@@ -104,12 +110,24 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
 
       {/* ---------- Atajos de contacto y accesos ---------- */}
       <div className="flex flex-wrap gap-2">
-        {client.whatsapp && (
+        {/* El link va por `linkWhatsApp` y no por un replace a mano: un número
+            guardado como "2235396261" armaba wa.me/2235396261, que WhatsApp no
+            resuelve porque le falta el 54 y el 9. Y si es un fijo, no hay chat:
+            el botón se convierte en un "llamar". */}
+        {waHref ? (
           <QuickLink
-            href={`https://wa.me/${client.whatsapp.replace(/\D/g, '')}`}
+            href={waHref}
             icon={MessageCircle}
             label={client.contact_name ? `WhatsApp a ${client.contact_name}` : 'WhatsApp'}
           />
+        ) : (
+          client.whatsapp && (
+            <QuickLink
+              href={`tel:+54${client.whatsapp.replace(/\D/g, '')}`}
+              icon={Phone}
+              label={`Llamar al ${formatearNumero(client.whatsapp)}`}
+            />
+          )
         )}
         {client.email && <QuickLink href={`mailto:${client.email}`} icon={Mail} label={client.email} />}
         {client.panel_url && (

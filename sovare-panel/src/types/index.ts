@@ -88,6 +88,14 @@ export interface Client {
   currency: string;
   billing_day: number | null;
   notes: string | null;
+
+  /** El mensaje escrito para este negocio, que el botón de WhatsApp precarga. */
+  outreach_message: string | null;
+  /** Cuándo le escribimos por primera vez. NULL es "todavía no". */
+  contacted_at: string | null;
+  /** De dónde salió el contacto, para poder verificarlo. */
+  source_url: string | null;
+
   created_at: string;
   updated_at: string;
 }

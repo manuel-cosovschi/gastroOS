@@ -10,6 +10,7 @@ import {
   LayoutDashboard,
   LogOut,
   Menu,
+  MessageCircle,
   Plus,
   UserCog,
   Users,
@@ -20,6 +21,7 @@ import { createClient } from '@/lib/supabase/client';
 
 const LINKS = [
   { href: '/', label: 'Resumen', icon: LayoutDashboard },
+  { href: '/prospeccion', label: 'Prospección', icon: MessageCircle },
   { href: '/contrataciones', label: 'Contrataciones', icon: FileSignature },
   { href: '/clientes', label: 'Clientes', icon: Users },
   { href: '/cobros', label: 'Cobros', icon: CreditCard },

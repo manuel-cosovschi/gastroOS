@@ -178,6 +178,28 @@ export function ClientForm({ client }: { client?: Client }) {
         </Field>
       </Block>
 
+      <Block title="Prospección">
+        <Field
+          label="Mensaje para escribirle"
+          hint="Es lo que el botón de WhatsApp precarga. Conviene que arranque con algo cierto y puntual de este negocio: eso es lo que separa un mensaje de una plantilla."
+          className="sm:col-span-2"
+        >
+          <textarea
+            name="outreach_message"
+            rows={6}
+            className="field h-auto py-2"
+            defaultValue={client?.outreach_message ?? ''}
+          />
+        </Field>
+        <Field
+          label="De dónde salió el contacto"
+          hint="La página donde vimos el teléfono. Cuando el chat no existe, es dónde ir a mirar."
+          className="sm:col-span-2"
+        >
+          <input name="source_url" className="field" defaultValue={client?.source_url ?? ''} />
+        </Field>
+      </Block>
+
       <Block title="Notas">
         <Field label="Lo que no entra en ningún campo" className="sm:col-span-2">
           <textarea

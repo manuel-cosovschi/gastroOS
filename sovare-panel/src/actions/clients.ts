@@ -33,6 +33,8 @@ const TEXT_FIELDS = [
   'repo_url',
   'plan',
   'notes',
+  'outreach_message',
+  'source_url',
 ] as const;
 
 const DATE_FIELDS = ['first_contact_at', 'started_at', 'churned_at'] as const;
