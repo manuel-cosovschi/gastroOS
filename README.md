@@ -247,6 +247,7 @@ franja en Calendar, cambiá también esa línea.
 | `npm run demo:seed` | Crea el negocio demo con todos sus datos |
 | `npm run demo:reset` | Borra y recrea los datos de la demo |
 | `npm run demo:sql` | Emite la demo como SQL, para pegar en el SQL Editor |
+| `npm run aislamiento` | Comprueba qué puede leer y escribir un visitante anónimo |
 
 ---
 
@@ -409,6 +410,16 @@ resolvé `*.gastroos.test` a 127.0.0.1 y abrí `http://tunegocio.gastroos.test:3
 `RESEND_API_URL` y `OPENAI_API_URL` permiten apuntar los mails y la lectura del
 comprobante a un servidor de prueba. Los chequeos puros están en
 `src/lib/__tests__/*.manual.mts` (`npx tsx …`).
+
+**Comprobar el aislamiento.** `npm run aislamiento` le pega a la base con la
+clave anónima —la que viaja en el navegador de cualquiera que entre a una
+tienda— y verifica que vea sólo lo que tiene que ver: el catálogo de las tiendas
+abiertas y nada más. Ni los costos, ni los clientes, ni los pedidos de un
+negocio, ni el esquema comercial de SOVARE, ni escribir en ninguna tabla. Con
+varios negocios en la misma base esto es lo más importante que puede fallar, y
+puede fallar solo: una policy nueva de más, un `GRANT` que vuelve con una
+migración, una tabla agregada sin RLS. Conviene correrlo después de cada
+migración.
 
 ---
 
