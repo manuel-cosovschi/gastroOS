@@ -232,11 +232,72 @@ export async function convertSignupToClient(id: string): Promise<Result & { clie
   }
 
   await supabase.from('signups').update({ client_id: client.id }).eq('id', id);
+  await recordFirstPayment(supabase, client.id, signup, plan);
 
   revalidatePath('/contrataciones');
   revalidatePath(`/contrataciones/${id}`);
   revalidatePath('/clientes');
+  revalidatePath('/cobros');
   return { success: true, clientId: client.id };
+}
+
+/**
+ * Anota como cobrado lo que el cliente ya transfirió al contratar.
+ *
+ * Sin esto, una ficha creada desde acá nacía sin ningún cobro: el cliente
+ * figuraba debiendo el mes que ya había pagado, y la generación de cobros del mes
+ * siguiente le sumaba uno de más.
+ *
+ * Es idempotente por la unicidad de (client_id, period, concept), que es la misma
+ * que usa `sovare.provision_business()` cuando crea la tienda. Así los dos caminos
+ * dejan el mismo resultado y no importa cuál se use primero, ni si se usan los dos.
+ *
+ * No corta el alta si falla: la ficha ya está creada y un cobro se puede cargar a
+ * mano, pero perder la conversión obligaría a rehacer todo.
+ */
+async function recordFirstPayment(
+  supabase: Awaited<ReturnType<typeof createServerClient>>,
+  clientId: string,
+  signup: { currency: string; includes_setup: boolean },
+  plan: { monthly: number; setup: number } | null
+) {
+  if (!plan) return;
+
+  const hoy = new Date().toISOString().slice(0, 10);
+  const period = `${hoy.slice(0, 8)}01`;
+  const comun = {
+    client_id: clientId,
+    period,
+    currency: signup.currency,
+    due_date: hoy,
+    paid_at: hoy,
+    status: 'pagado',
+    method: 'Transferencia',
+  };
+
+  const filas: Record<string, unknown>[] = [
+    {
+      ...comun,
+      concept: 'Mensualidad',
+      amount: plan.monthly,
+      notes: 'Primer mes, pagado al contratar desde la página.',
+    },
+  ];
+
+  if (signup.includes_setup && plan.setup > 0) {
+    filas.push({
+      ...comun,
+      concept: 'Puesta a punto',
+      amount: plan.setup,
+      notes: 'Pagada junto con el primer mes al contratar desde la página.',
+    });
+  }
+
+  const { error } = await supabase
+    .from('payments')
+    .upsert(filas, { onConflict: 'client_id,period,concept', ignoreDuplicates: true });
+
+  if (error) console.error('[convertSignupToClient] no se pudieron anotar los cobros:', error);
 }
 
 /**

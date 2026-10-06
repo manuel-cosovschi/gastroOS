@@ -19,12 +19,19 @@ import { TENANT_HEADER, isOtherRootSubdomain, rootOrigin, tenantFromHost } from 
  * la que decide qué tienda se lee, y tiene que ser la que puso este archivo.
  */
 
-/** Rutas públicas de la tienda. Lo demás, en un subdominio, no existe. */
+/**
+ * Rutas públicas de la tienda. Lo demás, en un subdominio, no existe.
+ *
+ * Los íconos y el favicon no están en la lista porque no hacen falta: el
+ * `matcher` de abajo deja fuera del middleware todo lo que termina en una
+ * extensión de archivo, así que Next los sirve derecho. El manifiesto sí entra
+ * (`.webmanifest` no está en esa lista), y tiene que estar acá o la tienda de un
+ * cliente no podría declarar el suyo.
+ */
 const STORE_PREFIXES = ['/catalogo', '/paquetes', '/pedido'];
-const STORE_FILES = ['/manifest.webmanifest', '/icon.svg', '/apple-icon.png', '/favicon.ico'];
 
 function isStorePath(pathname: string): boolean {
-  if (STORE_FILES.includes(pathname)) return true;
+  if (pathname === '/manifest.webmanifest') return true;
   return STORE_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
 }
 

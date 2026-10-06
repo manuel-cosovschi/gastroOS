@@ -165,7 +165,7 @@ BEGIN
   END IF;
 
   IF v_signup.client_id IS NOT NULL THEN
-    -- Ya la habían convertido a mano en una ficha: se la enlaza y no se toca más.
+    -- Ya la habían convertido a mano en una ficha: se la enlaza al negocio.
     v_client := v_signup.client_id;
     UPDATE sovare.clients SET business_id = v_business WHERE id = v_client;
   ELSE
@@ -189,23 +189,36 @@ BEGIN
              v_plan.label)
     )
     RETURNING id INTO v_client;
+  END IF;
 
+  -- Lo que ya transfirió, anotado como cobrado.
+  --
+  -- Va fuera del IF a propósito. Antes vivía sólo en la rama que creaba la ficha,
+  -- así que si en el panel se apretaba "Crear la ficha de cliente" antes que
+  -- "Crear su negocio", el primer mes no quedaba registrado nunca: el cliente
+  -- aparecía debiendo algo que ya había pagado, y la cobranza del mes siguiente
+  -- le generaba un cobro de más.
+  --
+  -- El ON CONFLICT lo hace idempotente —(client_id, period, concept) es único—,
+  -- así que correrlo dos veces no duplica el cobro y el orden de los botones deja
+  -- de importar.
+  INSERT INTO sovare.payments (client_id, period, concept, amount, currency, due_date, paid_at, status, method, notes)
+  VALUES (
+    v_client, date_trunc('month', v_hoy)::date, 'Mensualidad', v_plan.monthly, v_signup.currency,
+    v_hoy, v_hoy, 'pagado', 'Transferencia',
+    'Primer mes, pagado al contratar desde la página.'
+  )
+  ON CONFLICT (client_id, period, concept) DO NOTHING;
+
+  -- La puesta a punto, si el plan la lleva. Lo que transfirió fue la suma.
+  IF v_signup.includes_setup AND v_plan.setup > 0 THEN
     INSERT INTO sovare.payments (client_id, period, concept, amount, currency, due_date, paid_at, status, method, notes)
     VALUES (
-      v_client, date_trunc('month', v_hoy)::date, 'Mensualidad', v_plan.monthly, v_signup.currency,
+      v_client, date_trunc('month', v_hoy)::date, 'Puesta a punto', v_plan.setup, v_signup.currency,
       v_hoy, v_hoy, 'pagado', 'Transferencia',
-      'Primer mes, pagado al contratar desde la página.'
-    );
-
-    -- La puesta a punto, si el plan la lleva. Lo que transfirió fue la suma.
-    IF v_signup.includes_setup AND v_plan.setup > 0 THEN
-      INSERT INTO sovare.payments (client_id, period, concept, amount, currency, due_date, paid_at, status, method, notes)
-      VALUES (
-        v_client, date_trunc('month', v_hoy)::date, 'Puesta a punto', v_plan.setup, v_signup.currency,
-        v_hoy, v_hoy, 'pagado', 'Transferencia',
-        'Pagada junto con el primer mes al contratar desde la página.'
-      );
-    END IF;
+      'Pagada junto con el primer mes al contratar desde la página.'
+    )
+    ON CONFLICT (client_id, period, concept) DO NOTHING;
   END IF;
 
   UPDATE sovare.signups

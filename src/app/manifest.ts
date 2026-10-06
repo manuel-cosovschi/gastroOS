@@ -1,50 +1,75 @@
 import type { MetadataRoute } from 'next';
-import { getCurrentBusiness, getStorefrontBusiness } from '@/lib/business';
+import { getCurrentBusiness, getStorefrontBusiness, getTenantSlug } from '@/lib/business';
 import { APP_NAME } from '@/lib/constants';
 
 /**
- * Manifiesto para instalar el panel en el teléfono.
+ * Manifiesto para instalar la aplicación en el teléfono, que son dos cosas
+ * distintas según desde dónde se lo pida.
  *
- * `start_url` apunta a `/admin` a propósito: quien agrega esto a su pantalla de
- * inicio es el dueño del negocio, que quiere abrir su gestión de un toque, no
- * la tienda. La tienda ya tiene su lugar — es una página web que se comparte
- * por link, no una aplicación que se instala.
+ * En el dominio principal lo pide el dueño desde su panel: lo que quiere instalar
+ * es su gestión, así que `start_url` apunta a `/admin` y los atajos son los de
+ * trabajar (pedidos, calendario).
  *
- * El nombre sale del negocio cuando se puede: en la pantalla de inicio de un
- * teléfono, "Dulce Estudio" dice mucho más que "GastroOS". Se intenta primero
- * con la sesión (el dueño instalando desde su panel) y, si no hay, con el
- * negocio de la tienda pública.
+ * En `tunegocio.gastroos.shop` lo pide un cliente del negocio, mirando la tienda.
+ * Mandarlo a `/admin` sería mandarlo a una pantalla de acceso que no es suya, así
+ * que ahí el manifiesto es el de la tienda: abre el catálogo y los atajos son los
+ * de comprar.
+ *
+ * El nombre sale del negocio en los dos casos: en la pantalla de inicio de un
+ * teléfono, "Dulce Estudio" dice mucho más que "GastroOS".
  */
 export const dynamic = 'force-dynamic';
 
 export default async function manifest(): Promise<MetadataRoute.Manifest> {
-  const business = (await getCurrentBusiness()) || (await getStorefrontBusiness());
+  const tienda = Boolean(await getTenantSlug());
+  const business = tienda
+    ? await getStorefrontBusiness()
+    : (await getCurrentBusiness()) || (await getStorefrontBusiness());
   const name = business?.name || APP_NAME;
 
-  return {
-    name: `${name} · Gestión`,
+  const comun = {
     short_name: shortName(name),
-    description: `Panel de gestión de ${name}`,
-    start_url: '/admin',
     scope: '/',
-    display: 'standalone',
-    orientation: 'portrait',
+    display: 'standalone' as const,
+    orientation: 'portrait' as const,
     // La crema y el oliva de la marca: es lo que se ve en la pantalla de
     // arranque de la aplicación instalada y en la barra del sistema.
     background_color: '#FBF5EA',
     theme_color: '#26302A',
     lang: 'es',
-    categories: ['business', 'productivity'],
     icons: [
-      { src: '/icono-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
-      { src: '/icono-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+      { src: '/icono-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' as const },
+      { src: '/icono-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' as const },
       {
         src: '/icono-maskable-512.png',
         sizes: '512x512',
         type: 'image/png',
-        purpose: 'maskable',
+        purpose: 'maskable' as const,
       },
     ],
+  };
+
+  if (tienda) {
+    return {
+      ...comun,
+      name,
+      description: `Pedidos online de ${name}`,
+      start_url: '/catalogo',
+      categories: ['food', 'shopping'],
+      shortcuts: [
+        { name: 'Catálogo', url: '/catalogo' },
+        { name: 'Combos', url: '/paquetes' },
+        { name: 'Seguir mi pedido', url: '/pedido/seguimiento' },
+      ],
+    };
+  }
+
+  return {
+    ...comun,
+    name: `${name} · Gestión`,
+    description: `Panel de gestión de ${name}`,
+    start_url: '/admin',
+    categories: ['business', 'productivity'],
     shortcuts: [
       { name: 'Pedidos', url: '/admin/pedidos' },
       { name: 'Cargar un pedido', url: '/admin/pedidos/nuevo' },
