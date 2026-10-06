@@ -1,6 +1,6 @@
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import { DEFAULT_CURRENCY, DEFAULT_LOCALE } from './constants';
+import { DEFAULT_CURRENCY, DEFAULT_LOCALE, DEFAULT_TIMEZONE } from './constants';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -105,9 +105,38 @@ export function formatTime(time: string | null): string {
   return time.slice(0, 5);
 }
 
-/** Fecha de hoy en formato YYYY-MM-DD, en hora local. */
+/**
+ * "Ahora" en la zona del negocio, anclado al mediodía.
+ *
+ * `new Date()` en el navegador del dueño ya está en su hora, pero en el servidor
+ * está en UTC, y el servidor es el que arma "los pedidos de mañana", "este mes" y
+ * "los últimos 30 días". Entre las 21 y las 24 de Argentina el UTC ya es el día
+ * siguiente, así que a la tarde —justo cuando se mira la agenda del día
+ * siguiente— esas cuentas salían corridas un día.
+ *
+ * La base ya hacía esto bien: `create_storefront_order` calcula su "hoy" con la
+ * zona del negocio antes de rechazar una fecha pasada. Esto es lo mismo del lado
+ * de Next.
+ *
+ * Al mediodía y no a medianoche por la misma razón que `parseDateOnly`: una hora
+ * de más o de menos no puede cambiar el día.
+ */
+const WALL_CLOCK = new Intl.DateTimeFormat('en-CA', {
+  timeZone: DEFAULT_TIMEZONE,
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+});
+
+export function nowLocal(): Date {
+  const parts = WALL_CLOCK.formatToParts(new Date());
+  const get = (type: string) => Number(parts.find((part) => part.type === type)?.value);
+  return new Date(get('year'), get('month') - 1, get('day'), 12, 0, 0);
+}
+
+/** Fecha de hoy en formato YYYY-MM-DD, en la zona del negocio. */
 export function todayISO(): string {
-  return toISODate(new Date());
+  return toISODate(nowLocal());
 }
 
 export function toISODate(date: Date): string {
@@ -123,11 +152,11 @@ export function addDays(date: Date, days: number): Date {
   return copy;
 }
 
-export function startOfMonth(date = new Date()): Date {
+export function startOfMonth(date = nowLocal()): Date {
   return new Date(date.getFullYear(), date.getMonth(), 1);
 }
 
-export function endOfMonth(date = new Date()): Date {
+export function endOfMonth(date = nowLocal()): Date {
   return new Date(date.getFullYear(), date.getMonth() + 1, 0);
 }
 

@@ -1,5 +1,5 @@
 import { createServerClient } from '@/lib/supabase/server';
-import { monthStart } from '@/lib/utils';
+import { monthStart, todayISO } from '@/lib/utils';
 import type { Activity, Client, Payment } from '@/types';
 
 /**
@@ -51,12 +51,9 @@ const MONTHS_BACK = 6;
 
 export async function getDashboardData(): Promise<DashboardData> {
   const supabase = await createServerClient();
-  const today = new Date().toISOString().slice(0, 10);
+  const today = todayISO();
   const period = monthStart();
-
-  const since = new Date();
-  since.setMonth(since.getMonth() - (MONTHS_BACK - 1));
-  const seriesFrom = monthStart(since);
+  const seriesFrom = monthStart(MONTHS_BACK - 1);
 
   const [clientsResult, paymentsResult, stepsResult, signupsResult] = await Promise.all([
     supabase.from('clients').select('*').order('created_at', { ascending: false }),
@@ -98,13 +95,15 @@ export async function getDashboardData(): Promise<DashboardData> {
   // --- Serie por mes ---
   const series: DashboardData['series'] = [];
   for (let index = MONTHS_BACK - 1; index >= 0; index -= 1) {
-    const date = new Date();
-    date.setMonth(date.getMonth() - index);
-    const key = monthStart(date);
+    const key = monthStart(index);
     const rows = live.filter((payment) => payment.period === key);
     series.push({
       period: key,
-      label: new Intl.DateTimeFormat('es-AR', { month: 'short' }).format(date),
+      // Al mediodía, como el resto del panel: un `YYYY-MM-01` leído a medianoche
+      // UTC cae el mes anterior en Argentina y la etiqueta sale corrida.
+      label: new Intl.DateTimeFormat('es-AR', { month: 'short' }).format(
+        new Date(`${key}T12:00:00`)
+      ),
       collected: sum(rows.filter((payment) => payment.status === 'pagado')),
       charged: sum(rows),
     });

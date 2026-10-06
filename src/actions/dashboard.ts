@@ -10,7 +10,7 @@ import {
   topProducts,
 } from '@/lib/analytics';
 import { generateStockAlerts } from '@/actions/inventory';
-import { addDays, endOfMonth, formatPrice, formatTime, startOfMonth, toISODate, todayISO } from '@/lib/utils';
+import { addDays, endOfMonth, formatPrice, formatTime, nowLocal, startOfMonth, toISODate, todayISO } from '@/lib/utils';
 import { OPEN_ORDER_STATUSES } from '@/types';
 import type { DashboardAlert, DashboardData, UpcomingDelivery } from '@/types';
 
@@ -25,8 +25,8 @@ export async function getDashboardData(): Promise<DashboardData> {
 
   const today = todayISO();
   const monthRange = { from: toISODate(startOfMonth()), to: toISODate(endOfMonth()) };
-  const last30 = { from: toISODate(addDays(new Date(), -29)), to: today };
-  const nextWeek = toISODate(addDays(new Date(), 7));
+  const last30 = { from: toISODate(addDays(nowLocal(), -29)), to: today };
+  const nextWeek = toISODate(addDays(nowLocal(), 7));
 
   const [
     todayOrders,
@@ -87,7 +87,7 @@ export async function getDashboardData(): Promise<DashboardData> {
 
   const deliveriesToday = upcoming.filter((o) => o.delivery_date === today).length;
   const deliveriesTomorrow = upcoming.filter(
-    (o) => o.delivery_date === toISODate(addDays(new Date(), 1))
+    (o) => o.delivery_date === toISODate(addDays(nowLocal(), 1))
   ).length;
 
   // Pedidos abiertos de acá a una semana, para el aviso de carga de trabajo

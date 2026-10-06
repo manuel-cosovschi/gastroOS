@@ -4,6 +4,7 @@ import { randomUUID } from 'node:crypto';
 import { revalidatePath } from 'next/cache';
 import { createServerClient, requireAdmin } from '@/lib/supabase/server';
 import { mensajeDeError } from '@/lib/vendedores';
+import { todayISO } from '@/lib/utils';
 import type { VendorSale } from '@/types';
 
 /**
@@ -214,7 +215,7 @@ export async function createClientFromSale(saleId: string): Promise<Result> {
     .eq('code', sale.plan)
     .maybeSingle();
 
-  const today = new Date().toISOString().slice(0, 10);
+  const today = todayISO();
   const notes = [
     `Lo cargó ${vendorName} el ${new Intl.DateTimeFormat('es-AR', { dateStyle: 'medium' }).format(new Date(sale.submitted_at))}.`,
     sale.notes ? `Nota del vendedor: ${sale.notes}` : null,

@@ -14,7 +14,7 @@ import {
   topProducts,
   type DateRange,
 } from '@/lib/analytics';
-import { addDays, endOfMonth, startOfMonth, toISODate, todayISO } from '@/lib/utils';
+import { addDays, endOfMonth, nowLocal, startOfMonth, toISODate, todayISO } from '@/lib/utils';
 import { ORDER_STATUS_LABELS, ORDER_STATUSES } from '@/types';
 import type { CalendarOrder, RankedItem, StatsData, StatsRange } from '@/types';
 
@@ -29,19 +29,22 @@ export async function resolveRange(
     case 'today':
       return { from: today, to: today };
     case 'last_7':
-      return { from: toISODate(addDays(new Date(), -6)), to: today };
+      return { from: toISODate(addDays(nowLocal(), -6)), to: today };
     case 'last_30':
-      return { from: toISODate(addDays(new Date(), -29)), to: today };
+      return { from: toISODate(addDays(nowLocal(), -29)), to: today };
     case 'this_month':
       return { from: toISODate(startOfMonth()), to: toISODate(endOfMonth()) };
     case 'last_month': {
-      const reference = new Date();
-      reference.setMonth(reference.getMonth() - 1);
+      // Se arma con año y mes, no corriendo un Date: un día 31,
+      // `setMonth(mes - 1)` da un "31 de septiembre" que JavaScript convierte en
+      // el 1 de octubre, y "el mes pasado" terminaba mostrando el mes en curso.
+      const ahora = nowLocal();
+      const reference = new Date(ahora.getFullYear(), ahora.getMonth() - 1, 1, 12, 0, 0);
       return { from: toISODate(startOfMonth(reference)), to: toISODate(endOfMonth(reference)) };
     }
     case 'custom':
       return {
-        from: custom?.from || toISODate(addDays(new Date(), -29)),
+        from: custom?.from || toISODate(addDays(nowLocal(), -29)),
         to: custom?.to || today,
       };
   }

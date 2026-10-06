@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { createServerClient, requireAdmin } from '@/lib/supabase/server';
 import { callLanding, type ProvisionSummary } from '@/lib/landing';
+import { todayISO } from '@/lib/utils';
 
 /**
  * `notice` es lo que salió bien y vale la pena contar; `warning`, lo que quedó a
@@ -31,6 +32,15 @@ export async function decideSignup(
   if (!admin) return DENIED;
 
   const supabase = await createServerClient();
+
+  // Qué había antes de decidir. Importa al rechazar: una contratación que ya
+  // tiene tienda creada no se "desaprueba" sola.
+  const { data: antes } = await supabase
+    .from('signups')
+    .select('provisioned_at, store_slug, business_id')
+    .eq('id', id)
+    .maybeSingle();
+
   const { error } = await supabase
     .from('signups')
     .update({
@@ -52,9 +62,29 @@ export async function decideSignup(
   // queda aprobado igual y la pantalla ofrece reenviar.
   const follow = decision === 'aprobado' ? await followApproval(id, 'aprobada') : {};
 
+  // Rechazar lo que ya tiene tienda cambia una etiqueta y nada más: la cuenta
+  // sigue abierta y la tienda sigue en línea. No la apagamos desde acá a
+  // propósito —un clic no debería dejar sin tienda a un negocio que ya está
+  // vendiendo, y el caso normal de un rechazo es un comprobante que no era—,
+  // pero tampoco puede pasar en silencio.
+  const rechazoConTienda =
+    decision === 'rechazado' && (antes?.provisioned_at || antes?.business_id);
+
   revalidatePath('/contrataciones');
   revalidatePath(`/contrataciones/${id}`);
-  return { success: true, ...follow };
+  return {
+    success: true,
+    ...follow,
+    ...(rechazoConTienda
+      ? {
+          warning:
+            `Ojo: a esta contratación ya se le había creado la tienda` +
+            `${antes?.store_slug ? ` (${antes.store_slug})` : ''}` +
+            `. Queda rechazada, pero la cuenta y la tienda siguen funcionando. ` +
+            `Si hay que darlas de baja, hacelo en la ficha del cliente.`,
+        }
+      : {}),
+  };
 }
 
 /** Le pide a la landing lo que sigue a una aprobación y traduce la respuesta. */
@@ -205,6 +235,8 @@ export async function convertSignupToClient(id: string): Promise<Result & { clie
     .eq('code', signup.plan)
     .maybeSingle();
 
+  const hoy = todayISO();
+
   const { data: client, error: insertError } = await supabase
     .from('clients')
     .insert({
@@ -214,13 +246,25 @@ export async function convertSignupToClient(id: string): Promise<Result & { clie
       email: signup.email,
       industry: signup.industry,
       city: signup.city,
-      status: 'implementacion',
+      // Igual que `sovare.provision_business()`: sin puesta a punto no hay nada
+      // que implementar, el cliente ya está andando. Y el estado no es cosmético
+      // —`generateMonthlyCharges()` sólo le cobra a los activos—, así que un
+      // cliente de autoservicio que quedaba en "implementación" no se le cobraba
+      // nunca.
+      status: (plan?.setup ?? 0) > 0 ? 'implementacion' : 'activo',
       source: 'Contratación desde la página',
-      started_at: new Date().toISOString().slice(0, 10),
+      started_at: hoy,
       plan: plan?.label || signup.plan,
       monthly_amount: plan?.monthly ?? null,
       setup_amount: plan?.setup ?? null,
       currency: signup.currency,
+      // El día que contrató, que es el que le toca pagar todos los meses. Hasta
+      // el 28, que existe en todos. Sin esto quedaba en null y el cobro salía
+      // con la fecha de vencimiento por defecto, que no es la que acordó.
+      billing_day: Math.min(Number(hoy.slice(8, 10)), 28),
+      // Si la tienda ya existe, la ficha nace enlazada: es el mismo enlace que
+      // hace `provision_business()` cuando la ficha llega después.
+      ...(signup.business_id ? { business_id: signup.business_id } : {}),
       notes: buildNotes(signup),
     })
     .select('id')
@@ -263,7 +307,7 @@ async function recordFirstPayment(
 ) {
   if (!plan) return;
 
-  const hoy = new Date().toISOString().slice(0, 10);
+  const hoy = todayISO();
   const period = `${hoy.slice(0, 8)}01`;
   const comun = {
     client_id: clientId,

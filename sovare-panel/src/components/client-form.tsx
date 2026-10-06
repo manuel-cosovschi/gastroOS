@@ -7,6 +7,7 @@ import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { createClientRecord, updateClientRecord } from '@/actions/clients';
 import { Field } from '@/components/ui';
+import { todayISO } from '@/lib/utils';
 import { CLIENT_STATUSES, CLIENT_STATUS_META, type Client } from '@/types';
 
 /**
@@ -92,7 +93,7 @@ export function ClientForm({ client }: { client?: Client }) {
             name="first_contact_at"
             type="date"
             className="field"
-            defaultValue={client?.first_contact_at ?? new Date().toISOString().slice(0, 10)}
+            defaultValue={client?.first_contact_at ?? todayISO()}
           />
         </Field>
         <Field label="Alta como cliente">

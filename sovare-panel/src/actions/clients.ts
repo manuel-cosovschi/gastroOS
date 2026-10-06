@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { createServerClient, requireAdmin } from '@/lib/supabase/server';
-import { addMonths, monthStart } from '@/lib/utils';
+import { monthStart, todayISO } from '@/lib/utils';
 import type { ClientStatus } from '@/types';
 
 /**
@@ -70,7 +70,7 @@ export async function createClientRecord(formData: FormData): Promise<Result> {
 
   const payload = readForm(formData);
   if (!payload.business_name) return { success: false, error: 'El nombre del negocio es obligatorio.' };
-  if (!payload.first_contact_at) payload.first_contact_at = new Date().toISOString().slice(0, 10);
+  if (!payload.first_contact_at) payload.first_contact_at = todayISO();
 
   const supabase = await createServerClient();
   const { data, error } = await supabase.from('clients').insert(payload).select('id').single();
@@ -108,7 +108,7 @@ export async function setClientStatus(id: string, status: ClientStatus): Promise
   // baja sin fecha de baja rompe cualquier cuenta de permanencia. Se completan
   // solas con hoy, que es lo que el usuario haría a mano un segundo después.
   const patch: Record<string, unknown> = { status };
-  const today = new Date().toISOString().slice(0, 10);
+  const today = todayISO();
 
   const { data: current } = await supabase
     .from('clients')
@@ -193,5 +193,3 @@ export async function generateMonthlyCharges(period?: string): Promise<Result & 
   revalidatePath('/cobros');
   return { success: true, created: rows.length };
 }
-
-export { addMonths };

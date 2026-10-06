@@ -1,7 +1,7 @@
 import { listExpenseCategories, listExpenses } from '@/actions/expenses';
 import { getCurrentBusiness } from '@/lib/business';
 import { ExpensesClient } from '@/components/admin/expenses/expenses-client';
-import { addDays, toISODate, todayISO } from '@/lib/utils';
+import { addDays, nowLocal, toISODate, todayISO } from '@/lib/utils';
 
 export const metadata = { title: 'Gastos' };
 
@@ -10,7 +10,7 @@ export const metadata = { title: 'Gastos' };
  * negocio chico realmente revisa lo que gastó.
  */
 export default async function ExpensesPage() {
-  const from = toISODate(addDays(new Date(), -29));
+  const from = toISODate(addDays(nowLocal(), -29));
   const to = todayISO();
 
   const [expenses, categories, business] = await Promise.all([

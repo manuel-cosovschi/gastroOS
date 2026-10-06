@@ -52,18 +52,43 @@ export function monthLabel(value: string) {
   return label.charAt(0).toUpperCase() + label.slice(1);
 }
 
-/** Hoy en ISO, sin la hora. Todas las fechas del panel son días, no instantes. */
+/**
+ * Las fechas del panel son días de Argentina, no instantes en UTC.
+ *
+ * El servidor corre en UTC, así que `new Date().toISOString()` entre las 21 y
+ * las 24 de Argentina ya devuelve el día siguiente. No es un detalle de
+ * presentación: `monthStart()` es el período con el que se guarda un cobro, y la
+ * base lo calcula en `America/Argentina/Buenos_Aires` (ver
+ * `sovare.provision_business()`). Si los dos no coinciden, en las últimas tres
+ * horas de cada día el mismo cobro entra dos veces: la clave única es
+ * (cliente, período, concepto), y con dos períodos distintos no choca con nada.
+ */
+const AR_DAY = new Intl.DateTimeFormat('en-CA', {
+  timeZone: 'America/Argentina/Buenos_Aires',
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+});
+
+/** Hoy en Argentina, en ISO y sin la hora. */
 export function todayISO() {
-  return new Date().toISOString().slice(0, 10);
+  const parts = AR_DAY.formatToParts(new Date());
+  const get = (type: string) => parts.find((part) => part.type === type)?.value ?? '';
+  return `${get('year')}-${get('month')}-${get('day')}`;
 }
 
-/** Primer día del mes de una fecha, que es como se guarda el período de un cobro. */
-export function monthStart(date = new Date()) {
-  return new Date(date.getFullYear(), date.getMonth(), 1).toISOString().slice(0, 10);
-}
-
-export function addMonths(iso: string, months: number) {
-  const d = new Date(`${iso}T12:00:00`);
-  d.setMonth(d.getMonth() + months);
-  return d.toISOString().slice(0, 10);
+/**
+ * El primer día de un mes, que es como se guarda el período de un cobro.
+ * `monthStart()` es el mes en curso; `monthStart(3)`, el de hace tres meses.
+ *
+ * Cuenta meses en vez de correr un `Date` a propósito. La forma obvia,
+ * `d.setMonth(d.getMonth() - n)`, se rompe los días 29, 30 y 31: un 31 de
+ * octubre menos un mes da un "31 de septiembre", que JavaScript convierte en el
+ * 1 de octubre. El gráfico del tablero, armado así, esos días repetía un mes y
+ * se comía otro.
+ */
+export function monthStart(monthsBack = 0) {
+  const [year, month] = todayISO().split('-').map(Number);
+  const total = year * 12 + (month - 1) - monthsBack;
+  return `${Math.floor(total / 12)}-${String((total % 12) + 1).padStart(2, '0')}-01`;
 }

@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { createServerClient, requireAdmin } from '@/lib/supabase/server';
+import { todayISO } from '@/lib/utils';
 import type { PaymentStatus } from '@/types';
 
 type Result = { success: boolean; error?: string };
@@ -54,7 +55,7 @@ export async function markPaid(id: string, clientId: string): Promise<Result> {
   const supabase = await createServerClient();
   const { error } = await supabase
     .from('payments')
-    .update({ status: 'pagado', paid_at: new Date().toISOString().slice(0, 10) })
+    .update({ status: 'pagado', paid_at: todayISO() })
     .eq('id', id);
 
   if (error) return { success: false, error: 'No se pudo marcar como pagado.' };
@@ -79,7 +80,7 @@ export async function setPaymentStatus(
       status,
       // Sacar el "pagado" tiene que limpiar la fecha, o queda un cobro pendiente
       // con fecha de pago que después nadie entiende.
-      paid_at: status === 'pagado' ? new Date().toISOString().slice(0, 10) : null,
+      paid_at: status === 'pagado' ? todayISO() : null,
     })
     .eq('id', id);
 
@@ -114,7 +115,7 @@ export async function createActivity(formData: FormData): Promise<Result> {
   const supabase = await createServerClient();
   const { error } = await supabase.from('activities').insert({
     client_id: clientId,
-    happened_at: (formData.get('happened_at') as string) || new Date().toISOString().slice(0, 10),
+    happened_at: (formData.get('happened_at') as string) || todayISO(),
     kind: ((formData.get('kind') as string) || 'nota').trim(),
     body,
     next_step: ((formData.get('next_step') as string) || '').trim() || null,
