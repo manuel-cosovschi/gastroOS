@@ -2,8 +2,13 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { Check, ExternalLink, Loader2, UserPlus, X } from 'lucide-react';
-import { convertSignupToClient, decideSignup, getReceiptUrl } from '@/actions/signups';
+import { Check, ExternalLink, Image as ImageIcon, Loader2, UserPlus, X } from 'lucide-react';
+import {
+  convertSignupToClient,
+  decideSignup,
+  getOnboardingFileUrl,
+  getReceiptUrl,
+} from '@/actions/signups';
 import { cn } from '@/lib/utils';
 
 /**
@@ -188,6 +193,63 @@ export function ReceiptLink({ path, className }: { path: string; className?: str
         Ver el comprobante
       </button>
       {error && <p className="mt-2 text-sm text-rose-600">No se pudo abrir el archivo.</p>}
+    </div>
+  );
+}
+
+/**
+ * El logo que subió en el alta.
+ *
+ * Va en un `<img>` y no en una pestaña nueva como el comprobante, y la
+ * diferencia importa: el alta acepta SVG —es lo que manda un diseñador y es lo
+ * que escala—, y un SVG puede traer un `<script>` adentro. Abierto como
+ * documento ese script corre; dentro de un `<img>` no corre nunca, en ningún
+ * navegador. Así se puede mirar el logo sin confiar en el archivo.
+ *
+ * La URL se pide al hacer clic y no al cargar la página: dura diez minutos y no
+ * tiene sentido gastarla en una visita que venía a leer otra cosa.
+ */
+export function LogoPreview({ path }: { path: string }) {
+  const [url, setUrl] = useState<string | null>(null);
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState(false);
+
+  const show = async () => {
+    setPending(true);
+    setError(false);
+    const signed = await getOnboardingFileUrl(path);
+    setPending(false);
+    if (!signed) {
+      setError(true);
+      return;
+    }
+    setUrl(signed);
+  };
+
+  if (url) {
+    return (
+      <div className="rounded-xl border border-stone-200 bg-stone-50 p-4">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={url}
+          alt="Logo que subió en el alta"
+          className="mx-auto max-h-40 w-auto object-contain"
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <button
+        onClick={show}
+        disabled={pending}
+        className="inline-flex h-9 items-center gap-2 rounded-lg border border-stone-300 bg-white px-4 text-sm font-medium text-stone-700 transition-colors hover:bg-stone-50 disabled:opacity-50"
+      >
+        {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImageIcon className="h-4 w-4" />}
+        Ver el logo
+      </button>
+      {error && <p className="mt-2 text-sm text-rose-600">No se pudo abrir el logo.</p>}
     </div>
   );
 }

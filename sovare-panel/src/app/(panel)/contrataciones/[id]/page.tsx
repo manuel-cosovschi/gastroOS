@@ -5,6 +5,7 @@ import { createServerClient } from '@/lib/supabase/server';
 import { Badge, SectionCard } from '@/components/ui';
 import {
   ConvertToClient,
+  LogoPreview,
   ReceiptLink,
   SignupDecision,
 } from '@/components/signup-actions';
@@ -248,9 +249,7 @@ export default async function SignupDetailPage({
                 })}
 
                 {signup.onboarding.logo_path && (
-                  <p className="text-sm text-stone-500">
-                    Subió un logo. Está en el bucket <code>sovare-altas</code>.
-                  </p>
+                  <LogoPreview path={signup.onboarding.logo_path} />
                 )}
               </div>
             </SectionCard>
