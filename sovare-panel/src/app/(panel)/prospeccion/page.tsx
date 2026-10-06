@@ -3,6 +3,7 @@ import { ExternalLink, Instagram, Mail, Plus } from 'lucide-react';
 import { createServerClient } from '@/lib/supabase/server';
 import { Badge, EmptyState, SectionCard } from '@/components/ui';
 import { BotonCopiar, BotonLlamar, BotonMail, BotonWhatsApp } from '@/components/contactar';
+import { PegarProspectos } from '@/components/pegar-prospectos';
 import { avisoNumeroDudoso, formatearNumero, linkWhatsApp, motivoSinWhatsApp } from '@/lib/whatsapp';
 import { cn, shortDate } from '@/lib/utils';
 import type { Client } from '@/types';
@@ -60,6 +61,8 @@ export default async function ProspeccionPage({
           Nuevo prospecto
         </Link>
       </div>
+
+      <PegarProspectos />
 
       {ciudades.length > 1 && (
         <div className="flex flex-wrap items-center gap-2">
