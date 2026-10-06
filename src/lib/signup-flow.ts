@@ -270,6 +270,11 @@ export async function provisionStore(signupId: string): Promise<ProvisionResult>
 
   if (closeError) {
     console.error('[provisionStore] no se pudo anotar el cierre:', closeError);
+    // El candado se suelta para que el reintento no tenga que esperar a que
+    // venza. Lo de arriba ya está hecho y es idempotente: el reintento encuentra
+    // el negocio por `business_id` y al dueño por su membresía, así que vuelve a
+    // caer acá sin crear nada de nuevo.
+    await releaseLease(sovare, signup.id);
     return { ok: false, reason: 'failed', message: 'La cuenta quedó creada pero no se pudo anotar.' };
   }
 
