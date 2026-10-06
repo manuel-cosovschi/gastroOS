@@ -220,13 +220,14 @@ Sin barra al final.
 
 ## 1.7 · Tiendas por subdominio
 
-Cada cliente del plan Taller tiene su tienda en `tunegocio.gastroos.shop`. Para que
-funcione hacen falta tres cosas.
+Cada cliente del plan Taller tiene su tienda en `tunegocio.gastroos.shop`.
+
+**Esto ya está hecho y andando desde el 2 de octubre de 2026.** Queda escrito para
+poder repetirlo en otro dominio, o rehacerlo si algo se rompe. Son tres cosas.
 
 **1. El DNS de `gastroos.shop` en Vercel.** Vercel sólo emite el certificado de un
-comodín (`*.gastroos.shop`) si maneja el DNS del dominio. El comodín ya está
-agregado al proyecto `gastroos`; falta que el dominio use los servidores de
-nombres de Vercel:
+comodín (`*.gastroos.shop`) si maneja el DNS del dominio, así que el dominio tiene
+que usar los servidores de nombres de Vercel:
 
 1. En Vercel → **Domains** → `gastroos.shop` → **DNS Records**, cargá los
    registros del mail antes de cambiar nada (si falta alguno, el mail de COSOV.
@@ -263,10 +264,22 @@ nombres de Vercel:
 dulce-estudio`. Sin esto, la primera tienda de un cliente por orden alfabético
 reemplazaría a la de ejemplo en `gastroos.shop/catalogo`.
 
-**3. Prender las direcciones.** Cuando `https://cualquiercosa.gastroos.shop` abra,
-cargá `TENANT_STORES = on` y redeployá. Hasta entonces los mails y las pantallas
-dicen que la tienda «se activa en las próximas horas» en vez de mostrar un link
-muerto.
+**3. Prender las direcciones.** Recién cuando `https://cualquiercosa.gastroos.shop`
+abra con certificado válido: `TENANT_STORES = on` y redeploy. Hasta entonces los
+mails y las pantallas dicen que la tienda «se activa en las próximas horas» en vez
+de mostrar un link muerto, y ese es el estado seguro: si el DNS alguna vez se cae,
+sacar la variable es lo primero.
+
+**Cómo comprobar que quedó bien.** Los servidores de nombres tardan hasta una hora
+en propagarse, y cada resolvedor va por su cuenta. Lo que hay que ver resolviendo:
+`send`, `rsend`, `resend._domainkey` y `_dmarc` (el mail de COSOV.), el dominio,
+`www`, y cualquier nombre inventado bajo el comodín, que tiene que abrir con
+certificado válido y dar 404. El registro del dominio se puede consultar sin
+esperar a ninguna caché:
+
+```
+curl -sL -H 'accept: application/rdap+json' https://rdap.org/domain/gastroos.shop
+```
 
 ---
 

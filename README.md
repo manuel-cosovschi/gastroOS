@@ -392,10 +392,11 @@ se pudo crear.
 | `NEXT_PUBLIC_STOREFRONT_BUSINESS_SLUG` | La tienda de ejemplo del dominio principal. |
 | `TENANT_STORES=on` | Prende las direcciones `tunegocio.gastroos.shop` en mails y pantallas. Se prende cuando el comodín del DNS ya funciona; mientras no, los mails dicen que la tienda se activa en breve en vez de mostrar un link muerto. |
 
-**DNS.** Hace falta un comodín `*.gastroos.shop` con certificado, y Vercel sólo lo
-emite si el dominio usa sus servidores de nombres. Por eso `gastroos.shop` tiene
-que estar en Vercel DNS, con los registros de mail de Resend copiados tal cual.
-El comodín ya está agregado al proyecto `gastroos`.
+**DNS.** Andando desde el 2 de octubre de 2026. Hace falta un comodín
+`*.gastroos.shop` con certificado, y Vercel sólo lo emite si el dominio usa sus
+servidores de nombres, así que `gastroos.shop` está en Vercel DNS con los
+registros de mail de Resend copiados tal cual. Los pasos quedaron en
+`docs/CONFIGURACION.md`, sección 1.7, por si hay que repetirlos en otro dominio.
 
 **Seguridad.** El slug de un negocio no lo puede cambiar quien lo usa
 (`016_slug_inmutable.sql`). `ORDER_NOTIFICATION_EMAIL` sólo vale para la tienda
