@@ -2,7 +2,13 @@ import { cache } from 'react';
 import { headers } from 'next/headers';
 import { createServerClient } from '@/lib/supabase/server';
 import { DEMO_MODE } from '@/lib/constants';
-import { TENANT_HEADER, tenantStoreUrl, tenantStoresLive } from '@/lib/tenant';
+import {
+  TENANT_HEADER,
+  isReservedSlug,
+  isValidSlug,
+  tenantStoreUrl,
+  tenantStoresLive,
+} from '@/lib/tenant';
 import type { Business, StorefrontBusiness } from '@/types';
 
 /**
@@ -151,7 +157,12 @@ export const getStorefrontBusiness = cache(async (): Promise<StorefrontBusiness 
  * link que lleva a la tienda equivocada.
  */
 export function publicStoreUrl(slug: string): string | null {
-  if (tenantStoresLive()) return tenantStoreUrl(slug);
+  // Un negocio cuyo nombre no puede ser un subdominio no tiene dirección propia.
+  // Son las copias de la demo (`demo-…`): su link tiene que faltar y no llevar a
+  // una dirección que el middleware rebota al sitio principal.
+  if (tenantStoresLive() && isValidSlug(slug) && !isReservedSlug(slug)) {
+    return tenantStoreUrl(slug);
+  }
 
   const pinned = process.env.NEXT_PUBLIC_STOREFRONT_BUSINESS_SLUG;
   const site = process.env.NEXT_PUBLIC_SITE_URL?.trim().replace(/\/$/, '') || null;
