@@ -26,7 +26,8 @@ export interface ProvisionSummary {
 }
 
 export async function callLanding<T extends Record<string, unknown>>(
-  body: Record<string, unknown>
+  body: Record<string, unknown>,
+  ruta = '/api/interno/contratacion'
 ): Promise<LandingResult<T>> {
   const supabase = await createServerClient();
   const {
@@ -35,7 +36,7 @@ export async function callLanding<T extends Record<string, unknown>>(
   if (!session) return { ok: false, error: 'Se venció la sesión. Volvé a entrar.' };
 
   try {
-    const response = await fetch(`${LANDING_URL}/api/interno/contratacion`, {
+    const response = await fetch(`${LANDING_URL}${ruta}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
