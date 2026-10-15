@@ -21,11 +21,21 @@ const fraunces = Fraunces({
   subsets: ['latin'],
   variable: '--font-fraunces',
   display: 'swap',
-  // Dos pesos fijos en vez de la variable entera: el manual pide 700 para el
-  // logotipo y los títulos, el 600 es para los títulos chicos. Pedir sólo esos
-  // dos baja bastante lo que hay que descargar, que es lo que se nota en un
-  // teléfono con mala señal.
-  weight: ['600', '700'],
+  // Pesos fijos en vez de la variable entera: pedir sólo los que se usan baja
+  // bastante lo que hay que descargar, que es lo que se nota en un teléfono con
+  // mala señal. El manual pide 700 para el logotipo y los títulos, y el 600 es
+  // para los títulos chicos.
+  //
+  // El 900 y la itálica son de la página comercial, que titula en itálica negra.
+  // No encarecen el panel: `next/font` emite un `@font-face` por combinación y
+  // el navegador baja sólo las que la página que está mirando usa de verdad.
+  //
+  // Y hace falta declararlas. Sin esto el navegador no se queja: falsea. Estira
+  // el 700 para fingir el 900 e inclina la redonda para fingir la cursiva, y el
+  // resultado —trazos de grosor parejo, remates torcidos— es justamente lo que
+  // se lee como "está hecho a las apuradas".
+  weight: ['600', '700', '900'],
+  style: ['normal', 'italic'],
 });
 
 export const metadata: Metadata = {
