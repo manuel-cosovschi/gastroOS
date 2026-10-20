@@ -122,10 +122,13 @@ export function BotonPrincipal({
   href,
   children,
   className,
+  evento,
 }: {
   href: string;
   children: React.ReactNode;
   className?: string;
+  /** El evento de conversión que manda al tocarlo (lo escucha `Rastreo`). */
+  evento?: string;
 }) {
   const afuera = href.startsWith('http');
   return (
@@ -133,6 +136,7 @@ export function BotonPrincipal({
       href={href}
       target={afuera ? '_blank' : undefined}
       rel={afuera ? 'noopener' : undefined}
+      data-conv-evento={evento}
       className={cn(BASE_BOTON, BOTON.principal, className)}
     >
       {children}
@@ -146,10 +150,13 @@ export function BotonSecundario({
   href,
   children,
   className,
+  evento,
 }: {
   href: string;
   children: React.ReactNode;
   className?: string;
+  /** El evento de conversión que manda al tocarlo (lo escucha `Rastreo`). */
+  evento?: string;
 }) {
   const afuera = href.startsWith('http');
   return (
@@ -157,6 +164,7 @@ export function BotonSecundario({
       href={href}
       target={afuera ? '_blank' : undefined}
       rel={afuera ? 'noopener' : undefined}
+      data-conv-evento={evento}
       className={cn(BASE_BOTON, BOTON.secundario, className)}
     >
       {children}

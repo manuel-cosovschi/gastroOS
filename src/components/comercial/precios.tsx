@@ -26,7 +26,7 @@ const plata = (n: number) =>
 /** Las tres primeras de cada plan: la cuarta en adelante es detalle para la charla. */
 const CUANTAS = 4;
 
-export async function Precios() {
+export async function Precios({ id = 'precios' }: { id?: string } = {}) {
   const contratar = signupsEnabled();
   const montos = contratar ? await getPlanAmounts() : [];
   // Por código, no por posición: la puesta a punto es distinta en cada plan y
@@ -35,7 +35,7 @@ export async function Precios() {
   const puesta = (code: string, respaldo: number) => montos.find((p) => p.code === code)?.setup ?? respaldo;
 
   return (
-    <Seccion id="precios">
+    <Seccion id={id}>
       <div data-revelar="pendiente">
         <Rotulo centrado>Precios</Rotulo>
         <div className="mt-4">
@@ -102,6 +102,11 @@ export async function Precios() {
                 {contratar && (
                   <Link
                     href={`/contratar?plan=${plan.code}`}
+                    // Lo lee `Rastreo` en la página de conversión: tocar
+                    // «Contratar» es el inicio del pago.
+                    data-conv-evento="InitiateCheckout"
+                    data-conv-plan={plan.code}
+                    data-conv-valor={mensual(plan.code, plan.price)}
                     className={cn(
                       'mt-6 inline-flex h-11 items-center justify-center rounded-xl text-sm font-bold transition-colors',
                       plan.highlight ? BOTON.principal : BOTON.secundario

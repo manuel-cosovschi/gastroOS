@@ -21,7 +21,8 @@
     "prueba:comercial": "tsx scripts/prueba-comercial.mts",
     "prueba:guarda": "tsx scripts/prueba-guarda.mts",
     "prueba:base": "tsx scripts/prueba-base.mts",
-    "respaldo": "tsx scripts/respaldo.mts"
+    "respaldo": "tsx scripts/respaldo.mts",
+    "prueba:conv": "tsx scripts/prueba-conv.mts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
