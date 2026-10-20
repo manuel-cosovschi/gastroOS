@@ -1,14 +1,3 @@
-import {
-  BarChart3,
-  CalendarDays,
-  ClipboardList,
-  Package,
-  Receipt,
-  Store,
-  Users,
-  Warehouse,
-} from 'lucide-react';
-
 /**
  * Contenido de la home comercial.
  *
@@ -81,170 +70,6 @@ export const EMAIL_URL = CONTACT_EMAIL
   ? `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent('Consulta sobre GastroOS')}`
   : '';
 
-/** Hay al menos una vía de contacto configurada. */
-export const HAS_CONTACT = Boolean(BOOKING_URL || WHATSAPP_URL || EMAIL_URL);
-
-// ============================================
-// Hero
-// ============================================
-
-export const HERO = {
-  eyebrow: 'Software de gestión para negocios gastronómicos',
-  title: 'El sistema operativo de tu negocio gastronómico',
-  subtitle:
-    'Pedidos, clientes, stock y rentabilidad en una sola pantalla. Pensado para pastelerías, panaderías, catering, viandas y todo negocio que trabaja por encargo.',
-  bullets: [
-    'Cargás un pedido en menos de un minuto',
-    'Sabés qué entregás hoy y qué te falta comprar',
-    'Ves cuánto entra, cuánto sale y cuánto queda',
-  ],
-};
-
-/** Rubros a los que apunta el producto. */
-export const INDUSTRIES = [
-  'Pastelerías',
-  'Panaderías',
-  'Tortas por encargo',
-  'Catering',
-  'Viandas',
-  'Repostería',
-  'Dark kitchens',
-  'Comida por encargo',
-];
-
-// ============================================
-// Problema
-// ============================================
-
-export const PROBLEMS = [
-  {
-    title: 'Los pedidos viven en cuatro lugares',
-    body: 'WhatsApp, Instagram, un cuaderno y la memoria. Algo siempre se pierde, y cuando se pierde, se pierde un cliente.',
-  },
-  {
-    title: 'El Excel se abandona a las dos semanas',
-    body: 'Cargar todo a mano no se sostiene. A fin de mes nadie sabe con certeza cuánto se vendió ni cuánto costó producirlo.',
-  },
-  {
-    title: 'No sabés si estás ganando plata',
-    body: 'Facturar mucho no es ganar. Sin costos por producto ni gastos registrados, el margen es una corazonada.',
-  },
-];
-
-// ============================================
-// Módulos
-// ============================================
-
-export const MODULES = [
-  {
-    icon: ClipboardList,
-    title: 'Pedidos',
-    body: 'Alta en menos de un minuto, estados, seña y saldo, búsqueda y filtros. Próximos e históricos separados.',
-  },
-  {
-    icon: CalendarDays,
-    title: 'Calendario',
-    body: 'Qué entregás cada día, de un vistazo. Tocás un pedido y lo abrís.',
-  },
-  {
-    icon: Users,
-    title: 'Clientes',
-    body: 'Historial, total gastado, ticket promedio y notas. Cada pedido da de alta al cliente solo.',
-  },
-  {
-    icon: Package,
-    title: 'Productos',
-    body: 'Precio, costo y margen calculado. Receta por lote para saber cuánto te cuesta de verdad.',
-  },
-  {
-    icon: Warehouse,
-    title: 'Stock',
-    body: 'Insumos con mínimos, aviso de faltantes y lista de compra sugerida. Se descuenta solo al confirmar.',
-  },
-  {
-    icon: Receipt,
-    title: 'Gastos',
-    body: 'Por categoría, proveedor y método de pago. Es lo que hace que el margen sea real.',
-  },
-  {
-    icon: BarChart3,
-    title: 'Estadísticas',
-    body: 'Ventas, ticket promedio, mejores clientes y productos, comparado contra el período anterior.',
-  },
-  {
-    icon: Store,
-    title: 'Tienda online',
-    body: 'Catálogo público opcional. Tu cliente arma el pedido y entra directo al panel.',
-  },
-];
-
-// ============================================
-// Recorrido del producto (capturas reales)
-// ============================================
-
-export interface Showcase {
-  eyebrow: string;
-  title: string;
-  body: string;
-  image: string;
-  alt: string;
-  points: string[];
-}
-
-export const SHOWCASE: Showcase[] = [
-  {
-    eyebrow: 'Dashboard',
-    title: 'Abrís y ya sabés cómo viene el día',
-    body: 'Lo que entra, lo que sale, lo que hay que entregar y lo que está por faltar. Sin buscar en ningún lado.',
-    image: '/producto/dashboard.webp',
-    alt: 'Dashboard de GastroOS con el resumen del día, alertas y próximas entregas',
-    points: [
-      'Facturación, gastos y ganancia del día',
-      'Próximas entregas ordenadas por hora',
-      'Alertas de stock y de señas sin cobrar',
-    ],
-  },
-  {
-    eyebrow: 'Pedidos',
-    title: 'Un pedido nuevo en menos de un minuto',
-    body: 'Buscás el cliente, tocás los productos y listo. El total y el saldo se actualizan mientras armás.',
-    image: '/producto/pedido-nuevo.webp',
-    alt: 'Pantalla de alta de pedido con buscador de clientes y catálogo',
-    points: [
-      'El cliente queda asociado automáticamente',
-      'Seña y saldo calculados solos',
-      'Fecha, hora y forma de entrega',
-    ],
-  },
-  {
-    eyebrow: 'Calendario',
-    title: 'La semana entera, día por día',
-    body: 'Cada punto es un pedido, con el color de su estado. Elegís un día y ves qué sale.',
-    image: '/producto/calendario.webp',
-    alt: 'Vista de calendario mensual con los pedidos de cada día',
-    points: ['Vista mensual de entregas', 'Detalle del día al costado', 'Abrís el pedido de un toque'],
-  },
-  {
-    eyebrow: 'Rentabilidad',
-    title: 'Cuánto ganás, no sólo cuánto vendés',
-    body: 'Facturación contra gastos reales, con el costo de producción medido aparte para no contarlo dos veces.',
-    image: '/producto/estadisticas.webp',
-    alt: 'Estadísticas con facturación, gastos, margen y ranking de productos',
-    points: [
-      'Comparación contra el período anterior',
-      'Productos y clientes que más aportan',
-      'Gastos por categoría',
-    ],
-  },
-  {
-    eyebrow: 'Stock',
-    title: 'Te avisa antes de que te falte',
-    body: 'Cada insumo con su mínimo. Cuando baja, aparece en el dashboard y en la lista de compra.',
-    image: '/producto/stock.webp',
-    alt: 'Pantalla de stock con insumos, mínimos y lista de compra sugerida',
-    points: ['Se descuenta al confirmar el pedido', 'Lista de compra con costo estimado', 'Valorización del inventario'],
-  },
-];
 
 // ============================================
 // Caso de éxito
@@ -342,139 +167,6 @@ export const CASE_STUDY = {
 };
 
 // ============================================
-// Cómo funciona
-// ============================================
-
-export const STEPS = [
-  {
-    title: 'Reservás una reunión de 20 minutos',
-    body: 'Nos contás cómo trabajás hoy: qué vendés, cómo entran los pedidos, qué te duele. Sin compromiso.',
-  },
-  {
-    title: 'Lo dejamos listo para usar',
-    body: 'Del plan Negocio para arriba cargamos tu catálogo, tus precios, tus insumos y tus clientes, y arrancás con el sistema lleno. En el Taller lo cargás vos con una guía, y arrancás el mismo día.',
-  },
-  {
-    title: 'Te enseñamos a usarlo',
-    body: 'Una sesión de capacitación con tu equipo, incluida en la puesta a punto. En una hora están cargando pedidos solos.',
-  },
-  {
-    title: 'Te acompañamos',
-    body: 'Soporte por WhatsApp y ajustes sobre la marcha, del plan Negocio para arriba. En el Taller la ayuda se cobra por hora y sabés cuánto antes de pedirla.',
-  },
-];
-
-// ============================================
-// Diferenciales
-// ============================================
-
-export const REASONS = [
-  {
-    title: 'Hecho para negocios por encargo',
-    body: 'No es un punto de venta adaptado. Está pensado para quien produce contra pedido, con fecha de entrega y seña.',
-  },
-  {
-    title: 'Lleva tu marca, no la nuestra',
-    body: 'Del plan Negocio para arriba: tu paleta, tus tipografías y tu dominio, que registrás a tu nombre. Tus clientes ven tu negocio, no el logo de un proveedor de software. En el Taller va tu nombre y tu logo sobre el diseño de GastroOS.',
-  },
-  {
-    title: 'Arrancás con tus datos adentro',
-    body: 'Del plan Negocio para arriba la carga inicial la hacemos nosotros: no te dejamos un sistema vacío para que lo llenes en tus ratos libres. En el Taller la hacés vos con una guía, y por eso ese plan no tiene puesta a punto.',
-  },
-  {
-    title: 'Simple de verdad',
-    body: 'Si tu equipo necesita un manual, algo hicimos mal. Todo lo importante está a un clic del inicio.',
-  },
-  {
-    title: 'Funciona desde el teléfono',
-    body: 'Cargar un pedido, cambiar un estado o ver las entregas del día se hace igual de bien desde el celular.',
-  },
-  {
-    title: 'Tu negocio, no una cuenta genérica',
-    body: 'Tus datos son tuyos y nadie más los ve: el aislamiento lo aplica la base de datos en cada consulta, no el código de la pantalla. Y el sistema lleva tu marca, no la nuestra.',
-  },
-];
-
-// ============================================
-// Contra qué competimos de verdad
-// ============================================
-
-/**
- * El competidor real no es otro software: es el cuaderno, el Excel y la
- * memoria. Nombrarlos es más honesto que comparar features contra un rival
- * que el visitante no está evaluando.
- */
-export const COMPARISON = {
-  eyebrow: 'Comparación',
-  title: 'Contra qué lo estás comparando',
-  subtitle:
-    'La mayoría no viene de otro sistema: viene del cuaderno, del Excel y de acordarse. Así queda cada uno.',
-  columns: ['El cuaderno y WhatsApp', 'Una planilla de Excel', 'GastroOS'],
-  rows: [
-    {
-      criterion: 'Cargar un pedido',
-      values: ['Rápido, pero se pierde', 'Lento, y hay que acordarse', 'Menos de un minuto, y queda'],
-    },
-    {
-      criterion: 'Saber qué entregás hoy',
-      values: ['Revisando conversaciones', 'Si filtraste bien', 'La pantalla abre con eso'],
-    },
-    {
-      criterion: 'Stock de insumos',
-      values: ['Cuando te falta, te enteraste tarde', 'Otra planilla más', 'Se descuenta solo y avisa antes'],
-    },
-    {
-      criterion: 'Costo real de un producto',
-      values: ['A ojo', 'Si mantenés las fórmulas', 'Sale de la receta, se actualiza solo'],
-    },
-    {
-      criterion: 'Cuánto ganaste este mes',
-      values: ['Una sensación', 'Facturación, no ganancia', 'Facturación menos gastos, con el margen'],
-    },
-    {
-      criterion: 'Si se rompe el teléfono',
-      values: ['Perdiste todo', 'Si lo tenías en la nube', 'Está en la base, no en el aparato'],
-    },
-    {
-      criterion: 'Cuando entra alguien nuevo al equipo',
-      values: ['Le explicás tu sistema', 'Le explicás tu planilla', 'Abre y entiende'],
-    },
-  ],
-  note: 'Si tu Excel funciona y lo mantenés al día, no te hace falta cambiar. Este sistema es para cuando dejó de alcanzar.',
-};
-
-// ============================================
-// Un día antes y después
-// ============================================
-
-export const BEFORE_AFTER = {
-  eyebrow: 'Un día cualquiera',
-  title: 'Lo que cambia no son las funciones, es el día',
-  before: {
-    label: 'Hoy',
-    items: [
-      'Abrís WhatsApp y revisás qué quedó sin contestar de anoche',
-      'Anotás tres pedidos en el cuaderno y uno se te pasa',
-      'Buscás el precio de una torta en una conversación de hace dos meses',
-      'Vas a comprar y te olvidás del chocolate, otra vez',
-      'A la noche sumás con la calculadora para saber cómo te fue',
-      'A fin de mes no sabés si ganaste o sólo facturaste',
-    ],
-  },
-  after: {
-    label: 'Con GastroOS',
-    items: [
-      'Abrís el panel y ves lo que entregás hoy, ordenado por hora',
-      'Cargás el pedido mientras hablás con el cliente, en un minuto',
-      'El precio y el cliente ya están: los tomás del catálogo',
-      'La lista de compra la arma el sistema con lo que está bajo el mínimo',
-      'La facturación del día está calculada antes de que cierres',
-      'A fin de mes ves la ganancia, el margen y contra qué comparar',
-    ],
-  },
-};
-
-// ============================================
 // Calculadora
 // ============================================
 
@@ -513,25 +205,6 @@ export const CALCULATOR = {
     },
   },
   cta: 'Estos números salen de dos datos. El sistema los calcula con los tuyos, todos los días.',
-};
-
-// ============================================
-// Qué no hace
-// ============================================
-
-export const NOT_INCLUDED = {
-  eyebrow: 'Honestidad',
-  title: 'Qué no hace',
-  subtitle:
-    'Preferimos que lo sepas ahora y no en la tercera reunión. Nada de esto está, y si lo necesitás hoy, no somos para vos.',
-  items: [
-    { title: 'No cobra online', body: 'No procesa pagos ni se integra con Mercado Pago. Registrás lo que cobraste, no lo cobrás desde acá.' },
-    { title: 'No factura', body: 'No emite comprobantes AFIP/ARCA. Tu facturación electrónica sigue donde está.' },
-    { title: 'No manda WhatsApp solo', body: 'No automatiza WhatsApp: los mensajes los mandás vos. Mail sí manda, cuando el pedido se confirma, queda listo o se entrega.' },
-    { title: 'No gestiona delivery', body: 'No se conecta con PedidosYa, Rappi ni apps de reparto.' },
-    { title: 'No es un punto de venta', body: 'No está pensado para cobrar en mostrador con caja y ticket. Está pensado para producir contra pedido.' },
-    { title: 'No tiene IA', body: 'No predice tu demanda ni te sugiere precios. Te muestra tus números y las decisiones las tomás vos.' },
-  ],
 };
 
 // ============================================
@@ -648,7 +321,9 @@ export const PRICING = {
       unit: 'por mes',
       limit: 'hasta 120 pedidos por mes',
       summary:
-        'Cuando ya hay alguien más en la cocina. Es el que toma casi todo el mundo.',
+        // Decía además «es el que toma casi todo el mundo»: no lo medimos —hay
+        // un solo cliente— y una afirmación así se cae con una pregunta.
+        'Cuando ya hay alguien más en la cocina.',
       features: [
         'Todo lo del plan Taller',
         'Tu paleta y tus tipografías, no las nuestras',
@@ -706,40 +381,6 @@ export const PRICING = {
     price: 19000,
   },
 
-  /**
-   * Lo que no entra en ningún plan.
-   *
-   * Está escrito y a la vista a propósito. El dominio es el caso típico de
-   * costo que el cliente descubre después y siente como una letra chica, aunque
-   * nadie se lo haya ocultado: alcanza con no mencionarlo.
-   *
-   * Y no es que no lo queramos incluir: un dominio se registra a nombre del
-   * titular, y si lo compramos nosotros queda a nombre nuestro. Eso es
-   * exactamente lo que no queremos, porque el día que alguien se vaya tiene que
-   * poder llevárselo.
-   *
-   * El arancel no se escribe acá a propósito: lo fija NIC Argentina, cambia con
-   * la inflación, y un número viejo en esta página es peor que ninguno.
-   */
-  notIncluded: {
-    title: 'Qué no está incluido',
-    items: [
-      {
-        name: 'El dominio',
-        body: 'No entra en ningún plan. Se registra a tu nombre en NIC Argentina y se renueva una vez por año, y el arancel lo pagás vos directamente a ellos. Te decimos cuál te conviene y lo configuramos nosotros, pero la titularidad es tuya: si un día te vas, el dominio se va con vos.',
-      },
-      {
-        name: 'El diseño con tu marca, en el plan Taller',
-        body: 'La paleta y las tipografías propias son parte de la puesta a punto, así que van del plan Negocio para arriba. El Taller corre sobre el diseño de GastroOS, con tu nombre y tu logo arriba. Es la diferencia visible entre los dos, y es a propósito: es trabajo nuestro, y en el Taller no lo hacemos.',
-      },
-    ],
-  },
-
-  /** Cierre de la sección. Sin permanencia es lo único que prometemos acá. */
-  closing: {
-    title: 'Sin contrato de permanencia',
-    body: 'Se paga mes a mes. Si un mes decidís que no va más, avisás y listo. Te llevás tu información exportada, que es tuya.',
-  },
 };
 
 // ============================================
@@ -750,6 +391,18 @@ export const FAQS = [
   {
     q: '¿Sirve si vendo por WhatsApp e Instagram?',
     a: 'Sí, es el caso más común. Vos seguís recibiendo el pedido por donde ya lo recibís y lo cargás en GastroOS en menos de un minuto. La tienda online viene en todos los planes y ya arranca publicada, así que el que quiera se carga el pedido solo y te entra al panel igual que los demás. Si no la querés, la apagás desde Configuración y listo: es una decisión tuya, no algo que se paga aparte.',
+  },
+  {
+    q: '¿Sirve para un local con mostrador y caja?',
+    a: 'No, y es a propósito. GastroOS está hecho para el negocio que produce contra una fecha de entrega: tomás el pedido el martes y entregás el sábado. No tiene mesas, ni comandas de cocina, ni caja para cobrar al que entra y se lleva algo en el momento. Si lo tuyo es mostrador, lo que necesitás es un punto de venta y hay varios buenos; pedirle eso a este sistema te va a hacer perder tiempo a vos y a nosotros. Si hacés las dos cosas —vendés en el local y además tomás encargos—, esto se ocupa de los encargos y convive sin problema con lo que uses para el mostrador.',
+  },
+  {
+    q: '¿Emite facturas?',
+    a: 'No. GastroOS no emite comprobantes de AFIP/ARCA ni se integra con la facturación electrónica: eso sigue donde lo tengas hoy. Lo que sí lleva es el registro de lo que vendiste y lo que cobraste, que es de donde después sacás lo que tengas que facturar. Lo decimos acá y no en la tercera reunión porque es la pregunta que más temprano conviene contestar.',
+  },
+  {
+    q: '¿Se puede cobrar online, con Mercado Pago?',
+    a: 'No todavía. La tienda toma el pedido y la seña se acuerda por fuera —transferencia, efectivo, como lo venís haciendo—; en el sistema registrás lo que cobraste, no lo cobrás desde acá. Si lo que necesitás es que el cliente pague con tarjeta en el momento de comprar, hoy no lo tenemos y conviene que lo sepas antes.',
   },
   {
     q: '¿Puedo ponerle los colores y la tipografía de mi marca?',

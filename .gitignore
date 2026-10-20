@@ -37,3 +37,6 @@ supabase/.temp/
 # La app del panel interno tiene sus propias dependencias y su propio build
 sovare-panel/node_modules
 sovare-panel/.next
+
+# respaldos de la base: tienen datos de clientes, no van al repositorio
+/respaldos

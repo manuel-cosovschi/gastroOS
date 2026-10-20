@@ -89,6 +89,19 @@ const PARES: { uso: string; texto: string; fondo: string }[] = [
   { uso: 'texto secundario sobre la sección clara', texto: 'stone-600', fondo: 'stone-50' },
   { uso: 'acento sobre la sección clara', texto: 'brand-700', fondo: 'stone-50' },
 
+  // Lo que se lee fuerte sin ser título: las tarjetas, las filas, los rótulos
+  // de los precios. Están acá porque se agregaron con la página y nadie los
+  // había medido.
+  { uso: 'texto de tarjetas y filas sobre el fondo base', texto: 'stone-100', fondo: 'stone-900' },
+  { uso: 'texto de tarjetas y filas sobre el fondo hondo', texto: 'stone-100', fondo: 'stone-950' },
+  { uso: 'límite de pedidos y distintivo de los planes sobre el fondo base', texto: 'brand-300', fondo: 'stone-900' },
+  { uso: 'número de los pasos sobre el fondo hondo', texto: 'brand-300', fondo: 'stone-950' },
+
+  // Las tarjetas blancas de la sección clara (el blanco tibio de la marca)
+  { uso: 'texto fuerte en las tarjetas de la sección clara', texto: 'stone-900', fondo: 'blanco' },
+  { uso: 'texto suave en las tarjetas de la sección clara', texto: 'stone-600', fondo: 'blanco' },
+  { uso: 'rótulo «Con GastroOS» en su tarjeta', texto: 'brand-700', fondo: 'blanco' },
+
   // Los botones
   { uso: 'botón principal', texto: 'stone-950', fondo: 'brand-400' },
   { uso: 'botón principal al pasar el mouse', texto: 'stone-950', fondo: 'brand-300' },

@@ -30,26 +30,44 @@ export function SovareMark({ className }: { className?: string }) {
   );
 }
 
-function CreditBody() {
+/**
+ * `onDark` es para la página comercial, que es oscura: los grises del crédito
+ * están pensados sobre crema, y sobre oliva el `stone-700` del nombre casi no
+ * se ve.
+ */
+function CreditBody({ tone }: { tone: 'default' | 'onDark' }) {
+  const oscuro = tone === 'onDark';
   return (
     <>
-      <SovareMark className="h-9 opacity-85" />
+      <SovareMark className={cn('h-9', oscuro ? 'opacity-90 invert' : 'opacity-85')} />
       <div className="leading-tight">
-        <p className="text-[11px] uppercase tracking-[0.16em] text-stone-400">Un producto de</p>
-        <p className="text-sm font-semibold tracking-[0.28em] text-stone-700">{SOVARE_NAME}</p>
-        <p className="mt-0.5 text-[11px] italic text-stone-400">{SOVARE_TAGLINE}</p>
+        <p className={cn('text-[11px] uppercase tracking-[0.16em]', oscuro ? 'text-stone-300' : 'text-stone-400')}>
+          Un producto de
+        </p>
+        <p className={cn('text-sm font-semibold tracking-[0.28em]', oscuro ? 'text-stone-50' : 'text-stone-700')}>
+          {SOVARE_NAME}
+        </p>
+        <p className={cn('mt-0.5 text-[11px] italic', oscuro ? 'text-stone-300' : 'text-stone-400')}>
+          {SOVARE_TAGLINE}
+        </p>
       </div>
     </>
   );
 }
 
-export function SovareCredit({ className }: { className?: string }) {
+export function SovareCredit({
+  className,
+  tone = 'default',
+}: {
+  className?: string;
+  tone?: 'default' | 'onDark';
+}) {
   const layout = 'flex items-center gap-3';
 
   if (!SOVARE_PANEL_URL) {
     return (
       <div className={cn(layout, className)}>
-        <CreditBody />
+        <CreditBody tone={tone} />
       </div>
     );
   }
@@ -66,7 +84,7 @@ export function SovareCredit({ className }: { className?: string }) {
       aria-hidden
       className={cn(layout, 'cursor-default', className)}
     >
-      <CreditBody />
+      <CreditBody tone={tone} />
     </a>
   );
 }

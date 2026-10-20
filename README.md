@@ -203,10 +203,27 @@ Postgres, así que nunca viaja en texto plano.
 
 ## Home comercial
 
-La raíz (`/`) es la página de venta: rubros, problema, módulos, recorrido con
-capturas reales, cómo funciona, diferenciales, contacto y preguntas frecuentes.
-Todo el texto vive en `src/lib/marketing.ts`, así que se edita sin tocar
-componentes.
+La raíz (`/`) es la página de venta, oscura, en `src/components/comercial/`.
+Por qué tiene la forma que tiene y qué se sacó está escrito arriba de
+`comercial.tsx`. Los datos que comparte con el resto del sistema (planes,
+preguntas, el caso de COSOV.) siguen en `src/lib/marketing.ts`.
+
+Lo que se muestra del producto no se dibuja: se saca del sistema andando.
+
+| Comando | Qué hace |
+|---|---|
+| `npm run capturas` | Entra a la demo como un visitante y saca las capturas. Antes de la primera, la guarda de datos personales mira la lista de clientes y corta con código 3 si hay alguien que no es del sembrado. Escribe `capturas.generado.ts` con la fecha, el tamaño real y la huella de la interfaz. |
+| `npm run videos` | Graba el alta de un pedido desde el celular, contra la demo: mp4, webm y póster. Necesita `ffmpeg` (o `FFMPEG=`). |
+| `npm run og` | La imagen para compartir el enlace. Falla si la itálica 900 de Fraunces no carga. |
+| `npm run prueba:comercial` | 25 pruebas de la página (sin JavaScript, sin React, movimiento reducido, frases prohibidas, huella, encabezados, accesibilidad, peso). Va contra `http://localhost:3000`; `GASTROOS_BASE=https://gastroos.shop` para producción. |
+| `npm run prueba:guarda` | Siembra un cliente ajeno en una copia de la demo y comprueba que `capturas` corte, no deje imágenes y limpie. Contra producción. |
+
+Los scripts de navegador usan el Chromium que trae Playwright; si no es el que
+hay en la máquina, `CHROMIUM=/ruta/al/chrome` y `CHROMIUM_ARGS="--bandera …"`.
+
+**Si tocás una pantalla del panel**, `prueba:comercial` falla (prueba 15) hasta
+que corras `npm run capturas`: las imágenes de la página mostrarían algo que ya
+no existe.
 
 Los botones de contacto salen de variables de entorno y **cada uno se muestra
 sólo si su variable está cargada**: una landing con un botón que no lleva a
@@ -248,6 +265,13 @@ franja en Calendar, cambiá también esa línea.
 | `npm run demo:reset` | Borra y recrea los datos de la demo |
 | `npm run demo:sql` | Emite la demo como SQL, para pegar en el SQL Editor |
 | `npm run aislamiento` | Comprueba qué puede leer y escribir un visitante anónimo |
+| `npm test` | Tipos, lint y las pruebas de reglas (fechas, inquilinos, contraste) |
+| `npm run prueba:base` | `supabase/pruebas/auditoria.sql` como dueño de la base: funciones que un anónimo puede llamar contra la lista escrita, `search_path` de las SECURITY DEFINER, RLS, la plantilla de la demo. No escribe nada. |
+| `npm run respaldo` | `pg_dump` de `public` y `sovare` a `respaldos/`, y falla si al archivo le falta una tabla |
+
+Las dos últimas leen la conexión de `~/.config/gastroos/credenciales` (una
+línea `DATABASE_URL=…`) y se niegan a usarla si el archivo no tiene permisos
+600.
 
 ---
 
