@@ -4,8 +4,12 @@
   "private": true,
   "type": "module",
   "description": "Sovare Marketing Factory: catálogo, creativos, Meta Ads, atribución, optimización y runtime programado.",
-  "engines": { "node": ">=22" },
-  "bin": { "smf": "./bin/smf.mjs" },
+  "engines": {
+    "node": ">=22"
+  },
+  "bin": {
+    "smf": "./bin/smf.mjs"
+  },
   "scripts": {
     "smf": "tsx src/cli.ts",
     "serve": "tsx src/cli.ts serve",
@@ -21,10 +25,10 @@
     "playwright-core": "1.56.1",
     "postgres": "3.4.9",
     "tsx": "4.23.15",
+    "typescript": "5.9.3",
     "zod": "3.25.76"
   },
   "devDependencies": {
-    "@types/node": "22.19.1",
-    "typescript": "5.9.3"
+    "@types/node": "22.19.1"
   }
 }
