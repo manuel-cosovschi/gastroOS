@@ -1,0 +1,30 @@
+{
+  "name": "sovare-marketing-factory",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Sovare Marketing Factory: catálogo, creativos, Meta Ads, atribución, optimización y runtime programado.",
+  "engines": { "node": ">=22" },
+  "bin": { "smf": "./bin/smf.mjs" },
+  "scripts": {
+    "smf": "tsx src/cli.ts",
+    "serve": "tsx src/cli.ts serve",
+    "tick": "tsx src/cli.ts tick",
+    "typecheck": "tsc --noEmit",
+    "test": "node --import tsx --test --test-concurrency=1 tests/*.test.ts",
+    "test:render": "node --import tsx --test tests/render.e2e.ts",
+    "skill:pack": "tsx scripts/pack-skill.ts"
+  },
+  "dependencies": {
+    "@electric-sql/pglite": "0.5.10",
+    "@modelcontextprotocol/sdk": "1.32.1",
+    "playwright-core": "1.56.1",
+    "postgres": "3.4.9",
+    "tsx": "4.23.15",
+    "zod": "3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "22.19.1",
+    "typescript": "5.9.3"
+  }
+}
