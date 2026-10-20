@@ -469,6 +469,15 @@ el cuerpo y Playfair Display para los títulos.
 
 ---
 
+## Región
+
+Las funciones corren en `gru1` (São Paulo), fijado en `vercel.json` y en
+`sovare-panel/vercel.json`. La base está en `sa-east-1`, también São Paulo.
+Hasta octubre de 2026 corrían en `iad1` (Washington), el lugar por defecto de
+Vercel: cada consulta a la base cruzaba el continente ida y vuelta, y una
+pantalla que hace cinco consultas lo pagaba cinco veces. Si algún día la base
+se muda, la región de las funciones se muda con ella.
+
 ## Seguridad
 
 - Ningún secreto vive en el repositorio: todo sale de variables de entorno, y
