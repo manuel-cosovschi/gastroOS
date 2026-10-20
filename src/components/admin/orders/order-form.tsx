@@ -236,9 +236,16 @@ export function OrderForm({ customers, products, packages, order }: OrderFormPro
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 pb-24">
-      <div className="grid gap-6 lg:grid-cols-5">
+      {/*
+        `grid-cols-1` explícito y `min-w-0` en las dos columnas: sin eso, en el
+        teléfono la columna única de la grilla mide lo que mide su contenido más
+        ancho, no la pantalla. Al agregar el primer producto la página pasaba de
+        390 a 414 píxeles, se corría de costado y la barra de «Crear pedido»
+        quedaba medio afuera.
+      */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
         {/* ---------- Cliente y entrega ---------- */}
-        <div className="space-y-6 lg:col-span-2">
+        <div className="min-w-0 space-y-6 lg:col-span-2">
           <section className="surface p-5">
             <h2 className="mb-4 text-sm font-semibold text-stone-900">Cliente</h2>
 
@@ -398,7 +405,7 @@ export function OrderForm({ customers, products, packages, order }: OrderFormPro
         </div>
 
         {/* ---------- Productos y totales ---------- */}
-        <div className="space-y-6 lg:col-span-3">
+        <div className="min-w-0 space-y-6 lg:col-span-3">
           <section className="surface p-5">
             <h2 className="mb-4 text-sm font-semibold text-stone-900">Productos</h2>
 

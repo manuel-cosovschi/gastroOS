@@ -63,3 +63,88 @@
     background: transparent;
   }
 }
+
+@layer components {
+  /*
+    Las apariciones de la página comercial.
+
+    La regla que manda: **el estado escondido existe sólo adentro de
+    `.con-animaciones`**, y esa clase la pone una línea de JavaScript que corre
+    antes de pintar. Sin JavaScript —o si el script falla, o si un bloqueador lo
+    frena— no se esconde nada y la página se lee entera.
+
+    Es al revés de lo que sale solo. Lo natural es escribir `opacity: 0` en el
+    CSS y confiar en que algo después lo vuelva a 1; el día que ese algo no
+    corre, la página de venta queda en blanco y nadie se entera, porque no hay
+    ningún error: hay opacidad cero.
+  */
+  [data-revelar] {
+    transition:
+      opacity 0.5s ease-out,
+      transform 0.5s ease-out;
+  }
+
+  .con-animaciones [data-revelar='pendiente'] {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  /*
+    Quien pidió que no se mueva nada, no ve nada moverse. Y como el escondido
+    también se apaga, tampoco depende de que el observador llegue a tiempo.
+  */
+  @media (prefers-reduced-motion: reduce) {
+    .con-animaciones [data-revelar='pendiente'] {
+      opacity: 1;
+      transform: none;
+    }
+
+    [data-revelar] {
+      transition: none;
+    }
+  }
+
+  /*
+    La cinta del medio: se mueve sola, en bucle. El contenido va dos veces y se
+    corre la mitad, así cuando termina el ciclo el segundo juego está donde
+    arrancó el primero y el salto no se ve.
+  */
+  .cinta {
+    animation: cinta 45s linear infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cinta {
+      animation: none;
+    }
+  }
+}
+
+@keyframes cinta {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/*
+  En el teléfono, los campos van a 16 píxeles.
+
+  Safari de iPhone hace zoom solo cuando alguien toca un campo con letra de menos
+  de 16 px, y no lo deshace: el dueño que carga un pedido desde el celular toca
+  «Nombre», la pantalla se agranda y tiene que achicarla con dos dedos para ver
+  el botón de guardar. Los campos del panel son de 14 px (`text-sm`).
+
+  Va acá, y con `[class]` en el selector, para ganarle a `text-sm` sin tocar
+  cada campo del sistema: un selector de elemento con atributo pesa más que una
+  clase sola. Desde 640 px vuelve lo de siempre.
+
+  Esto no se pudo probar en este entorno: el Chromium de las pruebas no imita
+  ese zoom de Safari. Está documentado por Apple y se ve en cualquier iPhone.
+*/
+@media (max-width: 639px) {
+  input[class]:not([type='checkbox']):not([type='radio']):not([type='range']),
+  select[class],
+  textarea[class] {
+    font-size: 16px;
+  }
+}
