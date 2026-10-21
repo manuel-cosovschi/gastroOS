@@ -63,8 +63,11 @@ async function main() {
       break;
     }
     case 'run':
-      print(await runMarketing({ products: args.slice(1).filter((a) => !a.startsWith('--')), actor: 'agent', renderInline: flag('render'), launch: !flag('no-launch') }).then((r) => (r.products.length ? r : { ...r, nota: 'ningún producto' })));
+      {
+      const pedidos = args.slice(1).filter((a) => !a.startsWith('--'));
+      print(await runMarketing({ products: pedidos.length ? pedidos : undefined, actor: 'agent', renderInline: flag('render'), launch: !flag('no-launch') }));
       break;
+    }
     case 'render': {
       const [concept, ...formats] = args.slice(1).filter((a) => !a.startsWith('--'));
       for (const f of formats.length ? formats : ['reels_9x16']) print(await renderCreative(concept, f as FormatId, { actor: 'agent', duration: Number(val('duration') ?? 15) }));

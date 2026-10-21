@@ -68,8 +68,9 @@ export async function runMarketing(opts: { products?: string[]; actor: Actor; re
   const startedAt = new Date().toISOString();
   const defaults = await campaignDefaults();
   const sync = await syncCatalog({ refresh: true, actor: opts.actor });
-  const productos = loadCatalog().filter((p) => p.marketable && p.status === 'active' && (!opts.products || opts.products.includes(p.id)));
-  if (opts.products?.length && !productos.length) throw new SmfError(`Ninguno de ${opts.products.join(', ')} es un producto anunciable del catálogo.`, 'not_found');
+  const pedidos = opts.products?.length ? opts.products : undefined;
+  const productos = loadCatalog().filter((p) => p.marketable && p.status === 'active' && (!pedidos || pedidos.includes(p.id)));
+  if (pedidos && !productos.length) throw new SmfError(`Ninguno de ${pedidos.join(', ')} es un producto anunciable del catálogo.`, 'not_found');
   const d = await db();
   const out: ProductRun[] = [];
 

@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: sovare-marketing-factory
+      # Los repos de los productos, al lado, para verificar el catálogo contra el código real.
+      - uses: actions/checkout@v4
+        with:
+          repository: manuel-cosovschi/gastroOS
+          ref: claude/gastroos-saas-transformation-x4uz9r
+          path: gastroOS
+      - uses: actions/checkout@v4
+        with:
+          repository: manuel-cosovschi/alojaOS
+          path: alojaOS
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: sovare-marketing-factory/package-lock.json
+      - run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - working-directory: sovare-marketing-factory
+        run: |
+          npm ci
+          npm run typecheck
+          npm test
+          npm run skill:pack

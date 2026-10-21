@@ -1,0 +1,65 @@
+# Ejecutor programado sin servidor: corre `smf tick` contra la base de producción.
+# Sirve como único runtime (sin el servicio Docker) o como respaldo para los
+# trabajos de render. Necesita los secretos del repo: DATABASE_URL y los de .env
+# que usen las tareas (Meta, avisos, Supabase Storage, lectura de productos).
+name: Scheduler
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+    inputs:
+      caps:
+        description: 'Qué trabajos tomar (light, render, any)'
+        default: 'any,light,render'
+
+concurrency:
+  group: smf-scheduler
+  cancel-in-progress: false
+
+jobs:
+  tick:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    # La imagen oficial de Playwright trae Chromium; se le suma FFmpeg.
+    container: mcr.microsoft.com/playwright:v1.56.1-noble
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: sovare-marketing-factory
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: sovare-marketing-factory/package-lock.json
+      - run: apt-get update && apt-get install -y --no-install-recommends ffmpeg git
+      - working-directory: sovare-marketing-factory
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          SMF_PUBLIC_URL: ${{ secrets.SMF_PUBLIC_URL }}
+          SMF_SIGNING_SECRET: ${{ secrets.SMF_SIGNING_SECRET }}
+          META_ACCESS_TOKEN: ${{ secrets.META_ACCESS_TOKEN }}
+          META_AD_ACCOUNT_ID: ${{ secrets.META_AD_ACCOUNT_ID }}
+          META_PAGE_ID: ${{ secrets.META_PAGE_ID }}
+          META_PAGE_ACCESS_TOKEN: ${{ secrets.META_PAGE_ACCESS_TOKEN }}
+          META_IG_USER_ID: ${{ secrets.META_IG_USER_ID }}
+          META_PIXEL_ID_GASTROOS: ${{ secrets.META_PIXEL_ID_GASTROOS }}
+          META_CAPI_TOKEN_GASTROOS: ${{ secrets.META_CAPI_TOKEN_GASTROOS }}
+          META_PIXEL_ID_ALOJAOS: ${{ secrets.META_PIXEL_ID_ALOJAOS }}
+          META_CAPI_TOKEN_ALOJAOS: ${{ secrets.META_CAPI_TOKEN_ALOJAOS }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          SMF_MAIL_FROM: ${{ secrets.SMF_MAIL_FROM }}
+          SMF_NOTIFY_EMAIL: ${{ secrets.SMF_NOTIFY_EMAIL }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          SMF_NOTIFY_WEBHOOK: ${{ secrets.SMF_NOTIFY_WEBHOOK }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          ALOJAOS_DATABASE_URL: ${{ secrets.ALOJAOS_DATABASE_URL }}
+          GASTROOS_DATABASE_URL: ${{ secrets.GASTROOS_DATABASE_URL }}
+          SMF_WORKER_ID: gha-${{ github.run_id }}
+          SMF_REPOS_DIR: ${{ runner.temp }}/repos
+        run: |
+          if [ -z "$DATABASE_URL" ]; then echo "Falta el secreto DATABASE_URL: no hay nada que ejecutar."; exit 0; fi
+          npm ci --omit=dev
+          npx tsx src/cli.ts tick --caps "${{ github.event.inputs.caps || 'any,light,render' }}" --budget 1500

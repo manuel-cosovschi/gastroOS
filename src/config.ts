@@ -7,8 +7,8 @@
  * silencio a mitad de un job.
  */
 
-import { existsSync, readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { join, resolve } from 'node:path';
 
 /** Carga un `.env` simple si existe. No pisa variables ya definidas. */
 function loadDotEnv(file = resolve(process.cwd(), '.env')): void {
@@ -100,12 +100,17 @@ export const config = {
 };
 
 function findChromium(): string {
-  const candidatos = [
-    '/opt/pw-browsers/chromium-1194/chrome-linux/chrome',
-    '/usr/bin/chromium',
-    '/usr/bin/chromium-browser',
-    '/usr/bin/google-chrome',
-  ];
+  // Los navegadores de Playwright (imagen oficial, o PLAYWRIGHT_BROWSERS_PATH) y
+  // los del sistema.
+  const dirs = [process.env.PLAYWRIGHT_BROWSERS_PATH, '/ms-playwright', '/opt/pw-browsers'].filter(Boolean) as string[];
+  const dePlaywright = dirs.flatMap((d) => {
+    try {
+      return readdirSync(d).filter((x) => /^chromium-\d+$/.test(x)).sort().reverse().map((x) => join(d, x, 'chrome-linux', 'chrome'));
+    } catch {
+      return [];
+    }
+  });
+  const candidatos = [...dePlaywright, '/usr/bin/chromium', '/usr/bin/chromium-browser', '/usr/bin/google-chrome'];
   return candidatos.find((c) => existsSync(c)) ?? '';
 }
 
