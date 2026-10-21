@@ -19,8 +19,8 @@
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  // sovare-panel es otra aplicación, con su propio tsconfig y su propio alias
-  // `@/`. Sin excluirla, este `include` se la lleva puesta y resuelve sus
-  // imports contra el `src` de acá.
-  "exclude": ["node_modules", "sovare-panel"]
+  // sovare-panel y sovare-marketing-factory son otras aplicaciones, con su
+  // propio tsconfig y sus propias dependencias. Sin excluirlas, este `include`
+  // se las lleva puestas y el build de Vercel intenta compilarlas.
+  "exclude": ["node_modules", "sovare-panel", "sovare-marketing-factory"]
 }
