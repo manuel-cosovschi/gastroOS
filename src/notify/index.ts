@@ -55,6 +55,11 @@ export interface NotifyInput {
   data?: Record<string, unknown>;
   /** Forzar el envío aunque el tipo no esté en la lista de los que interrumpen. */
   push?: boolean;
+  /**
+   * Texto que va SÓLO por los canales del dueño y no se guarda en la base (por
+   * ejemplo, el link firmado de una autorización: la base la lee el agente).
+   */
+  privateSuffix?: string;
 }
 
 export interface NotifyResult {
@@ -79,7 +84,7 @@ export async function notify(n: NotifyInput): Promise<NotifyResult> {
     const titulo = `${prueba}${n.title}`;
     for (const ch of channels()) {
       try {
-        await ch.send(titulo, n.body ?? '', n);
+        await ch.send(titulo, `${n.body ?? ''}${n.privateSuffix ? `\n\n${n.privateSuffix}` : ''}`, n);
         delivered.push({ channel: ch.name, ok: true });
       } catch (e) {
         delivered.push({ channel: ch.name, ok: false, error: e instanceof Error ? e.message : String(e) });

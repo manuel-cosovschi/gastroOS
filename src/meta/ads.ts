@@ -302,7 +302,7 @@ export async function launchCampaign(id: string, actor: Actor): Promise<Campaign
     newDailyBudget: Number(c.daily_budget_ars),
     requestIfMissing: { summary: `Lanzar «${c.name}» con $${Number(c.daily_budget_ars).toLocaleString('es-AR')} por día`, scope: { daily: Number(c.daily_budget_ars) } },
   });
-  if (!dec.allowed) throw new SmfError(dec.reason, dec.approvalId ? 'needs_approval' : 'denied', { approvalId: dec.approvalId, needs: dec.needs });
+  if (!dec.allowed) throw new SmfError(dec.reason, dec.approvalId ? 'needs_approval' : 'denied', { approvalId: dec.approvalId });
   if (isSimulatedId(c.meta_campaign_id) !== dec.dryRun) throw new SmfError('La campaña y el modo actual no coinciden (simulada vs. real).', 'mode_mismatch');
 
   const d = await db();

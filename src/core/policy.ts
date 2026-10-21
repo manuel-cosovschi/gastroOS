@@ -100,8 +100,6 @@ export interface Decision {
   mode: Mode;
   reason: string;
   approvalId?: string;
-  /** Link firmado para que el dueño decida (sólo se devuelve al que pidió). */
-  needs?: string;
 }
 
 export async function guard(input: GuardInput): Promise<Decision> {
@@ -213,13 +211,13 @@ async function budgetProblem(policy: Policy, input: GuardInput): Promise<string 
 
 async function pedir(input: GuardInput, tier: Tier, base: { dryRun: boolean; mode: Mode }, reason: string): Promise<Decision> {
   if (!input.requestIfMissing) return { allowed: false, tier, ...base, reason };
-  const { id, link } = await requestApproval({
+  const { id } = await requestApproval({
     action: input.action,
     scope: { ...(input.requestIfMissing.scope ?? {}), ...(input.product ? { product: input.product } : {}), ...(input.target ? { target: input.target } : {}) },
     summary: input.requestIfMissing.summary,
     requestedBy: input.actor,
   });
-  return { allowed: false, tier, ...base, reason, approvalId: id, needs: link };
+  return { allowed: false, tier, ...base, reason: `${reason} Se pidió la autorización ${id}: le llega al dueño por sus canales de aviso.`, approvalId: id };
 }
 
 // ============================================================
@@ -238,7 +236,12 @@ export interface Approval {
   expires_at: string;
 }
 
-export async function requestApproval(a: { action: string; scope: Record<string, unknown>; summary: string; requestedBy: string; hours?: number }): Promise<{ id: string; link?: string; existing: boolean }> {
+/**
+ * Pide una autorización. El link firmado va SÓLO a los canales del dueño (mail,
+ * Telegram, webhook): nunca se devuelve a quien la pidió, porque con el link se
+ * puede aprobar y el que pide suele ser el agente.
+ */
+export async function requestApproval(a: { action: string; scope: Record<string, unknown>; summary: string; requestedBy: string; hours?: number }): Promise<{ id: string; existing: boolean }> {
   const d = await db();
   // Si ya hay una pendiente para lo mismo, no se duplica: el dueño recibiría
   // diez avisos por un job que reintenta.
@@ -262,11 +265,12 @@ export async function requestApproval(a: { action: string; scope: Record<string,
     kind: 'approval_needed',
     severity: 'action',
     title: `Autorización pendiente: ${ACTIONS[a.action]?.label ?? a.action}`,
-    body: `${a.summary}\n\nPedido por: ${a.requestedBy}. Vence en ${a.hours ?? 72} h.${link ? `\nDecidir: ${link}` : '\nDecidir en el panel → Autorizaciones.'}`,
+    body: `${a.summary}\n\nPedido por: ${a.requestedBy}. Vence en ${a.hours ?? 72} h. Se decide en el panel → Autorizaciones o con el link que llega por mail/Telegram.`,
+    privateSuffix: link ? `Decidir: ${link}` : undefined,
     dedupKey: `approval:${id}`,
     data: { approvalId: id },
   });
-  return { id, link, existing: false };
+  return { id, existing: false };
 }
 
 /** Busca una autorización aprobada que cubra esta acción y la marca usada. */
