@@ -26,7 +26,7 @@ Lista exacta de lo que falta para que cada parte funcione de verdad. Nada de est
 | `META_ACCESS_TOKEN` | token del usuario del sistema |
 | `META_AD_ACCOUNT_ID` | id de la cuenta (sin `act_`) |
 | `META_PAGE_ID` | id de la página |
-| `META_PAGE_ACCESS_TOKEN` | sólo si la página exige su propio token para publicar |
+| `META_PAGE_ACCESS_TOKEN` | token de la página (lo devuelve `GET /{page-id}?fields=access_token` con el token del usuario del sistema). Hace falta para publicar en Facebook |
 | `META_IG_USER_ID` | id de la cuenta de Instagram profesional |
 | `META_PIXEL_ID_GASTROOS`, `META_CAPI_TOKEN_GASTROOS` | píxel y token CAPI de GastroOS |
 | `META_PIXEL_ID_ALOJAOS`, `META_CAPI_TOKEN_ALOJAOS` | ídem AlojaOS |
@@ -47,26 +47,32 @@ Lista exacta de lo que falta para que cada parte funcione de verdad. Nada de est
 
 ## Lectura de leads y ventas (sólo lectura)
 
-En la base de **AlojaOS** (proyecto `rlejzukedyzfnlatyjfk`):
+En la base de **AlojaOS** (proyecto `rlejzukedyzfnlatyjfk`), SQL Editor:
 
 ```sql
-CREATE ROLE smf_lector LOGIN PASSWORD '…' NOINHERIT;
+CREATE ROLE smf_lector LOGIN PASSWORD 'una-clave-larga' NOINHERIT;
 GRANT USAGE ON SCHEMA public TO smf_lector;
 GRANT SELECT (id, creada, origen, estado) ON public.consultas TO smf_lector;
+-- La tabla tiene RLS: sin una policy para este rol, lee 0 filas.
+CREATE POLICY smf_lector_lee ON public.consultas FOR SELECT TO smf_lector USING (true);
 ALTER ROLE smf_lector SET default_transaction_read_only = on;
 ```
 
 En la base de **GastroOS/SOVARE**:
 
 ```sql
-CREATE ROLE smf_lector LOGIN PASSWORD '…' NOINHERIT;
+CREATE ROLE smf_lector LOGIN PASSWORD 'otra-clave-larga' NOINHERIT;
 GRANT USAGE ON SCHEMA sovare TO smf_lector;
 GRANT SELECT (id, created_at, source) ON sovare.clients TO smf_lector;
 GRANT SELECT (id, created_at, decided_at, plan, amount, currency, status) ON sovare.signups TO smf_lector;
+CREATE POLICY smf_lector_lee ON sovare.clients FOR SELECT TO smf_lector USING (true);
+CREATE POLICY smf_lector_lee ON sovare.signups FOR SELECT TO smf_lector USING (true);
 ALTER ROLE smf_lector SET default_transaction_read_only = on;
 ```
 
-(Permisos por columna: el rol no puede leer nombres, mails ni teléfonos aunque quisiera. Ojo con RLS: si las tablas tienen RLS forzado, agregar `BYPASSRLS` al rol o una policy de SELECT para él.)
+Los permisos van por columna: el rol no puede leer nombres, mails ni teléfonos aunque quisiera. La policy sólo habilita filas; las columnas siguen limitadas por el GRANT.
+
+La cadena de conexión sale de Supabase → **Connect** → *Session pooler*. El usuario va como `smf_lector.<ref-del-proyecto>`: el pooler necesita el ref pegado al usuario.
 
 Cadenas: `ALOJAOS_DATABASE_URL`, `GASTROOS_DATABASE_URL`.
 
