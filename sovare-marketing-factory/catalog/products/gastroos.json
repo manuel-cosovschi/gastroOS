@@ -1,0 +1,364 @@
+{
+  "id": "gastroos",
+  "name": "GastroOS",
+  "brand_owner": "SOVARE",
+  "status": "active",
+  "marketable": true,
+  "category": "SaaS de gestión para negocios gastronómicos que trabajan por encargo",
+  "tagline": "El sistema operativo de tu negocio gastronómico.",
+  "country": "AR",
+  "currency": "ARS",
+  "language": "es-AR",
+  "urls": {
+    "home": "https://gastroos.shop/",
+    "conv": "https://gastroos.shop/conv",
+    "demo": "https://gastroos.shop/login"
+  },
+  "repo": {
+    "github": "manuel-cosovschi/gastroOS",
+    "git": "https://github.com/manuel-cosovschi/gastroOS",
+    "branch": "claude/gastroos-saas-transformation-x4uz9r",
+    "local": "gastroOS"
+  },
+  "stack": [
+    "Next.js 15",
+    "React 19",
+    "TypeScript",
+    "Tailwind",
+    "Supabase (Postgres + RLS)",
+    "Vercel"
+  ],
+  "sales_path": "direct_checkout",
+  "conv": {
+    "path": "/conv",
+    "primary_action": "Planes → /contratar (transferencia + comprobante)",
+    "secondary_actions": [
+      "Demo",
+      "Formulario «que me escriban»",
+      "WhatsApp"
+    ],
+    "variants": [
+      "base",
+      "stock",
+      "costos",
+      "pedidos"
+    ],
+    "events": [
+      "PageView",
+      "ViewContent",
+      "Demo",
+      "Contact",
+      "InitiateCheckout",
+      "Lead"
+    ],
+    "purchase_event": "no implementado: falta enviar Purchase por CAPI al aprobar el pago (sovare-panel/src/actions/signups.ts, decideSignup)",
+    "pixel_env": "NEXT_PUBLIC_META_PIXEL_ID",
+    "capi_env": "META_CAPI_TOKEN",
+    "lead_store": "sovare.clients (estado prospecto, campo source con la atribución) en el Supabase de GastroOS",
+    "purchase_store": "sovare.signups (status = aprobado, amount) en el Supabase de GastroOS"
+  },
+  "audiences": [
+    {
+      "id": "encargo",
+      "label": "Negocios gastronómicos chicos que trabajan por pedidos",
+      "detail": "Pastelerías, panaderías, tortas, catering, viandas, repostería, comida por encargo, dark kitchens y pequeños productores.",
+      "evidence": {
+        "file": "gastroOS/README.md",
+        "contains": "pastelerías, panaderías, emprendimientos de\ntortas, catering, viandas, repostería, comida por encargo, dark kitchens y\npequeños productores"
+      }
+    },
+    {
+      "id": "whatsapp",
+      "label": "Los que toman pedidos por WhatsApp",
+      "evidence": {
+        "file": "gastroOS/src/app/conv/variantes.ts",
+        "contains": "Para los que toman pedidos por WhatsApp"
+      }
+    },
+    {
+      "id": "cocina_sola",
+      "label": "El que cocina solo, desde su casa",
+      "evidence": {
+        "file": "gastroOS/src/lib/marketing.ts",
+        "contains": "Para el que cocina solo."
+      }
+    }
+  ],
+  "angles": [
+    {
+      "id": "base",
+      "conv_variant": "base",
+      "audience": "encargo",
+      "eyebrow": "Para pastelerías, viandas, catering y todo lo que se hace por encargo",
+      "headline": "Tus pedidos por encargo, en una sola pantalla",
+      "body": "Cargás el pedido con su fecha y su seña, y el sistema te dice qué entregás cada día, qué te falta comprar y cuánto ganaste.",
+      "evidence": {
+        "file": "gastroOS/src/app/conv/variantes.ts",
+        "contains": "Cargás el pedido con su fecha y su seña, y el sistema te dice qué entregás cada día, qué te falta comprar y cuánto ganaste."
+      },
+      "assets": [
+        "panel-inicio",
+        "pedido-video",
+        "telefono-inicio"
+      ]
+    },
+    {
+      "id": "stock",
+      "conv_variant": "stock",
+      "audience": "encargo",
+      "eyebrow": "Para negocios que producen por encargo",
+      "headline": "Que no te falte un insumo la semana de más pedidos",
+      "body": "Cada producto con su receta: al confirmar un pedido se descuenta el stock y te avisa qué está bajo el mínimo antes de que te quedes sin.",
+      "evidence": {
+        "file": "gastroOS/src/app/conv/variantes.ts",
+        "contains": "al confirmar un pedido se descuenta el stock y te avisa qué está bajo el mínimo antes de que te quedes sin."
+      },
+      "assets": [
+        "stock",
+        "panel-inicio"
+      ]
+    },
+    {
+      "id": "costos",
+      "conv_variant": "costos",
+      "audience": "encargo",
+      "eyebrow": "Para pastelerías, viandas y catering",
+      "headline": "Sabé cuánto te cuesta cada cosa que vendés",
+      "body": "El costo sale de la receta de cada producto. Con tus gastos cargados ves la ganancia y el margen del mes, no sólo lo que facturaste.",
+      "evidence": {
+        "file": "gastroOS/src/app/conv/variantes.ts",
+        "contains": "El costo sale de la receta de cada producto."
+      },
+      "assets": [
+        "estadisticas",
+        "panel-inicio"
+      ]
+    },
+    {
+      "id": "pedidos",
+      "conv_variant": "pedidos",
+      "audience": "whatsapp",
+      "eyebrow": "Para los que toman pedidos por WhatsApp",
+      "headline": "Ningún pedido más perdido en un chat",
+      "body": "Cada encargo queda con su fecha, su seña y su saldo. Abrís el sistema y ves lo que sale hoy, ordenado por hora.",
+      "evidence": {
+        "file": "gastroOS/src/app/conv/variantes.ts",
+        "contains": "Cada encargo queda con su fecha, su seña y su saldo."
+      },
+      "assets": [
+        "pedido-video",
+        "pedido-nuevo"
+      ]
+    }
+  ],
+  "claims": [
+    {
+      "id": "pedido-un-minuto",
+      "text": "Los pedidos se cargan en menos de un minuto",
+      "kind": "feature",
+      "evidence": {
+        "file": "gastroOS/README.md",
+        "contains": "Los pedidos se cargan en menos de un minuto"
+      }
+    },
+    {
+      "id": "una-pantalla",
+      "text": "Qué se entrega hoy, cuánto entró, cuánto salió y qué insumo está por faltar, en una sola pantalla",
+      "kind": "feature",
+      "evidence": {
+        "file": "gastroOS/README.md",
+        "contains": "En una sola pantalla muestra qué se entrega hoy, cuánto entró, cuánto salió y\nqué insumo está por faltar."
+      }
+    },
+    {
+      "id": "stock-receta",
+      "text": "Al confirmar un pedido descuenta stock según la receta",
+      "kind": "feature",
+      "evidence": {
+        "file": "gastroOS/README.md",
+        "contains": "Al salir de *Pendiente* el sistema descuenta stock"
+      }
+    },
+    {
+      "id": "tienda-online",
+      "text": "Tienda online incluida en todos los planes",
+      "kind": "feature",
+      "evidence": {
+        "file": "gastroOS/src/lib/marketing.ts",
+        "contains": "La tienda online viene en todos los planes"
+      }
+    },
+    {
+      "id": "sin-porcentaje",
+      "text": "Sin porcentaje sobre tus ventas",
+      "kind": "pricing",
+      "evidence": {
+        "file": "gastroOS/src/lib/marketing.ts",
+        "contains": "Sin porcentaje sobre tus ventas"
+      }
+    },
+    {
+      "id": "sistema-entero",
+      "text": "Todos los planes traen el sistema entero",
+      "kind": "pricing",
+      "evidence": {
+        "file": "gastroOS/src/lib/marketing.ts",
+        "contains": "Todos los planes traen el sistema entero."
+      }
+    },
+    {
+      "id": "sin-permanencia",
+      "text": "Plan Taller sin puesta a punto y sin permanencia",
+      "kind": "pricing",
+      "evidence": {
+        "file": "gastroOS/src/lib/marketing.ts",
+        "contains": "Sin puesta a punto y sin permanencia"
+      }
+    },
+    {
+      "id": "demo-libre",
+      "text": "Demo para probar el sistema con datos de ejemplo",
+      "kind": "offer",
+      "evidence": {
+        "file": "gastroOS/src/lib/marketing.ts",
+        "contains": "DEMO_URL"
+      }
+    }
+  ],
+  "pricing": {
+    "currency": "ARS",
+    "tax": "IVA incluido",
+    "as_of_evidence": {
+      "file": "gastroOS/src/lib/marketing.ts",
+      "contains": "Precios de octubre de 2026, en pesos y con IVA incluido."
+    },
+    "extract": {
+      "type": "ts-const",
+      "file": "gastroOS/src/lib/marketing.ts",
+      "name": "PRICING",
+      "path": "plans",
+      "map": {
+        "id": "code",
+        "name": "name",
+        "monthly": "price",
+        "setup": "setup",
+        "limit": "limit",
+        "from": "priceFrom"
+      }
+    },
+    "price_note": "Precios de octubre de 2026, en pesos y con IVA incluido."
+  },
+  "features_extract": {
+    "type": "md-table",
+    "file": "gastroOS/README.md",
+    "section": "Qué incluye"
+  },
+  "assets": [
+    {
+      "id": "panel-inicio",
+      "kind": "screenshot",
+      "file": "gastroOS/public/capturas/panel-inicio.webp",
+      "what": "El inicio del panel: resumen del día, alertas de stock y próximas entregas",
+      "data": "demo (Dulce Estudio)",
+      "device": "desktop"
+    },
+    {
+      "id": "pedido-nuevo",
+      "kind": "screenshot",
+      "file": "gastroOS/public/capturas/pedido-nuevo.webp",
+      "what": "Alta de un pedido nuevo",
+      "data": "demo",
+      "device": "desktop"
+    },
+    {
+      "id": "stock",
+      "kind": "screenshot",
+      "file": "gastroOS/public/capturas/stock.webp",
+      "what": "Stock de insumos con mínimos y faltantes",
+      "data": "demo",
+      "device": "desktop"
+    },
+    {
+      "id": "estadisticas",
+      "kind": "screenshot",
+      "file": "gastroOS/public/capturas/estadisticas.webp",
+      "what": "Estadísticas: ventas, ticket promedio, gastos y margen",
+      "data": "demo",
+      "device": "desktop"
+    },
+    {
+      "id": "telefono-inicio",
+      "kind": "screenshot",
+      "file": "gastroOS/public/capturas/telefono-inicio.webp",
+      "what": "El inicio del panel en el celular",
+      "data": "demo",
+      "device": "phone"
+    },
+    {
+      "id": "pedido-video",
+      "kind": "recording",
+      "file": "gastroOS/public/videos/pedido.mp4",
+      "what": "Grabación real: un pedido cargado desde el celular, del panel al pedido creado",
+      "data": "demo",
+      "device": "phone"
+    }
+  ],
+  "brand": {
+    "logo": "gastroOS/public/icono-512.png",
+    "colors": {
+      "bg": "#26302A",
+      "bgDeep": "#18201A",
+      "surface": "rgba(255,255,255,.06)",
+      "text": "#FBF5EA",
+      "textSoft": "#CFC3AC",
+      "accent": "#E08A6B",
+      "accentStrong": "#C0553A",
+      "onAccent": "#18201A"
+    },
+    "fonts": {
+      "display": "Fraunces",
+      "body": "Karla"
+    },
+    "evidence": {
+      "file": "gastroOS/tailwind.config.ts",
+      "contains": "#C0553A"
+    }
+  },
+  "cta": {
+    "default": "Probá la demo",
+    "meta_cta_type": "LEARN_MORE",
+    "options": [
+      "Ver planes",
+      "Probá la demo",
+      "Contratar"
+    ]
+  },
+  "rules": [
+    "No mostrar paneles de clientes reales: sólo la demo (Dulce Estudio) o capturas generadas por los scripts con guarda de datos.",
+    "No decir cuántos clientes hay ni «el que toma casi todo el mundo»: no está medido.",
+    "El caso COSOV. se puede citar tal como está en src/lib/marketing.ts (CASE_STUDY), sin cifras de resultados.",
+    "Precios siempre con su fecha (octubre de 2026) y en pesos con IVA incluido."
+  ],
+  "blockers": [
+    {
+      "id": "pixel",
+      "severity": "high",
+      "detail": "El /conv en producción no carga el píxel de Meta: falta NEXT_PUBLIC_META_PIXEL_ID en Vercel (proyecto gastroos)."
+    },
+    {
+      "id": "capi",
+      "severity": "high",
+      "detail": "Falta META_CAPI_TOKEN: el Lead del servidor no llega a Meta."
+    },
+    {
+      "id": "purchase",
+      "severity": "medium",
+      "detail": "Purchase no se envía al aprobar un pago (decideSignup en sovare-panel)."
+    },
+    {
+      "id": "graph-version",
+      "severity": "low",
+      "detail": "src/lib/conv/meta-servidor.ts usa Graph v21.0, que Meta retira el 21/01/2027. Pasar a v26.0."
+    }
+  ]
+}
