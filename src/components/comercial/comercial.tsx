@@ -106,6 +106,9 @@ export function Comercial() {
       <main>
         <Hero />
         <Cinta />
+        {/* Los precios, segundos: antes iban décimos y había que bajar ocho
+            pantallas para saber cuánto sale. */}
+        <Precios />
         <ElProblema />
         <ElCambio />
         <ElPanel />
@@ -113,7 +116,6 @@ export function Comercial() {
         <LaDemo />
         <ElCaso />
         <LaCuenta />
-        <Precios />
         <ComoArrancamos />
         <Preguntas />
         <Cierre />

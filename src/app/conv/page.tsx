@@ -132,6 +132,13 @@ export default async function PaginaDeConversion({ searchParams }: { searchParam
           </div>
         </section>
 
+        {/* ---------- Planes: el objetivo, apenas termina el hero ----------
+            Antes iban sextos, después del problema, la demo y el proceso: el
+            que llegaba de un anuncio tenía que scrollear cinco pantallas para
+            ver cuánto sale, y la mayoría no llega. El que ya decidió contrata
+            acá; el que necesita convencerse sigue bajando. */}
+        <Precios id="planes" />
+
         {/* ---------- Problema → solución ---------- */}
         <Seccion hondo>
           <div data-revelar="pendiente">
@@ -231,9 +238,6 @@ export default async function PaginaDeConversion({ searchParams }: { searchParam
             ))}
           </ol>
         </Seccion>
-
-        {/* ---------- Planes: el objetivo ---------- */}
-        <Precios id="planes" />
 
         {/* ---------- Objeciones ---------- */}
         <Seccion hondo ancho="max-w-3xl">
