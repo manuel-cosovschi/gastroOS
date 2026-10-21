@@ -1,0 +1,356 @@
+{
+  "id": "alojaos",
+  "name": "AlojaOS",
+  "brand_owner": "SOVARE",
+  "status": "active",
+  "marketable": true,
+  "category": "Sistema de reservas propio para complejos chicos de alojamiento",
+  "tagline": "El sistema de reservas de tu complejo.",
+  "country": "AR",
+  "currency": "ARS",
+  "language": "es-AR",
+  "urls": {
+    "home": "https://alojaos.shop/",
+    "conv": "https://alojaos.shop/conv",
+    "demo": "https://alojaos.shop/#demo",
+    "example_site": "https://cabanias-del-sol.alojaos.shop/"
+  },
+  "repo": {
+    "github": "manuel-cosovschi/alojaOS",
+    "git": "https://github.com/manuel-cosovschi/alojaOS",
+    "branch": "main",
+    "local": "alojaOS"
+  },
+  "stack": [
+    "Next.js 15",
+    "React 19",
+    "TypeScript",
+    "Supabase (Postgres + RLS)",
+    "Vercel",
+    "Resend"
+  ],
+  "sales_path": "assisted",
+  "conv": {
+    "path": "/conv",
+    "primary_action": "Formulario de consulta",
+    "secondary_actions": [
+      "WhatsApp",
+      "Demo"
+    ],
+    "variants": [
+      "base",
+      "comision",
+      "whatsapp"
+    ],
+    "events": [
+      "PageView",
+      "Demo",
+      "Contact",
+      "Lead"
+    ],
+    "purchase_event": "no aplica online: la venta es asistida; la compra se registra cuando una consulta pasa a estado «cliente»",
+    "pixel_env": "NEXT_PUBLIC_META_PIXEL_ID",
+    "capi_env": "META_CAPI_TOKEN",
+    "lead_store": "public.consultas (origen = atribución, estado nueva/contactada/cliente/descartada) en el Supabase alojaos (rlejzukedyzfnlatyjfk)",
+    "purchase_store": "public.consultas con estado = cliente"
+  },
+  "audiences": [
+    {
+      "id": "complejos",
+      "label": "Complejos chicos de alojamiento por noche (3 a 15 unidades), atendidos por sus dueños",
+      "detail": "Cabañas, departamentos temporarios, posadas.",
+      "evidence": {
+        "file": "alojaOS/README.md",
+        "contains": "de entre 3 y 15 unidades, atendidos por sus dueños."
+      }
+    },
+    {
+      "id": "portales",
+      "label": "Complejos que hoy le pagan comisión a un portal",
+      "evidence": {
+        "file": "alojaOS/src/app/conv/variantes.ts",
+        "contains": "Para complejos que hoy le pagan a un portal"
+      }
+    },
+    {
+      "id": "whatsapp",
+      "label": "Los que atienden las reservas por WhatsApp",
+      "evidence": {
+        "file": "alojaOS/src/app/conv/variantes.ts",
+        "contains": "Para los que atienden las reservas por WhatsApp"
+      }
+    }
+  ],
+  "not_for": [
+    {
+      "text": "Hoteles con recepción y decenas de habitaciones; alquileres que viven de Booking o Airbnb y no quieren una página propia.",
+      "evidence": {
+        "file": "alojaOS/README.md",
+        "contains": "**Para quién no es:**"
+      }
+    }
+  ],
+  "angles": [
+    {
+      "id": "base",
+      "conv_variant": "base",
+      "audience": "complejos",
+      "eyebrow": "Para complejos de 3 a 15 unidades",
+      "headline": "Tu complejo se reserva mientras dormís.",
+      "body": "Tu propia página de reservas, con tu nombre. El huésped elige las noches, ve el precio, transfiere la seña a tu cuenta y vos confirmás desde el teléfono.",
+      "evidence": {
+        "file": "alojaOS/src/app/conv/variantes.ts",
+        "contains": "Tu propia página de reservas, con tu nombre."
+      },
+      "assets": [
+        "reservar-video",
+        "huesped-eligiendo",
+        "panel-senas"
+      ]
+    },
+    {
+      "id": "comision",
+      "conv_variant": "comision",
+      "audience": "portales",
+      "eyebrow": "Para complejos que hoy le pagan a un portal",
+      "headline": "Tus reservas, sin comisión por cada una",
+      "body": "Una página propia donde el huésped reserva y la seña va directo a tu cuenta. Pagás un número fijo por mes, vendas mucho o poco.",
+      "evidence": {
+        "file": "alojaOS/src/app/conv/variantes.ts",
+        "contains": "Pagás un número fijo por mes, vendas mucho o poco."
+      },
+      "assets": [
+        "huesped-transferir",
+        "panel-precios"
+      ]
+    },
+    {
+      "id": "whatsapp",
+      "conv_variant": "whatsapp",
+      "audience": "whatsapp",
+      "eyebrow": "Para los que atienden las reservas por WhatsApp",
+      "headline": "Dejá de contestar «¿está libre?» todo el día",
+      "body": "El huésped ve en tu página qué noches están libres y cuánto sale. Te llega la reserva con el comprobante y la confirmás con un botón.",
+      "evidence": {
+        "file": "alojaOS/src/app/conv/variantes.ts",
+        "contains": "Te llega la reserva con el comprobante y la confirmás con un botón."
+      },
+      "assets": [
+        "huesped-eligiendo",
+        "panel-senas",
+        "reservar-video"
+      ]
+    }
+  ],
+  "claims": [
+    {
+      "id": "sin-comision",
+      "text": "Sin comisión por reserva",
+      "kind": "pricing",
+      "evidence": {
+        "file": "alojaOS/src/components/comercial/Comercial.tsx",
+        "contains": "Sin comisión por reserva"
+      }
+    },
+    {
+      "id": "sena-a-tu-cuenta",
+      "text": "La seña va a tu cuenta",
+      "kind": "feature",
+      "evidence": {
+        "file": "alojaOS/src/components/comercial/Comercial.tsx",
+        "contains": "La seña va a tu cuenta"
+      }
+    },
+    {
+      "id": "celular",
+      "text": "Se usa del celular",
+      "kind": "feature",
+      "evidence": {
+        "file": "alojaOS/src/components/comercial/Comercial.tsx",
+        "contains": "Se usa del celular"
+      }
+    },
+    {
+      "id": "sin-superponer",
+      "text": "Imposible superponer dos reservas sobre la misma unidad",
+      "kind": "feature",
+      "evidence": {
+        "file": "alojaOS/README.md",
+        "contains": "Imposible superponer dos reservas sobre la misma unidad."
+      }
+    },
+    {
+      "id": "precios-periodo",
+      "text": "Precios por temporada: cada noche se cobra según su fecha",
+      "kind": "feature",
+      "evidence": {
+        "file": "alojaOS/README.md",
+        "contains": "Cada noche se cobra según su propia fecha."
+      }
+    },
+    {
+      "id": "sin-permanencia",
+      "text": "Sin permanencia: te vas cuando quieras y te llevás tus datos",
+      "kind": "pricing",
+      "evidence": {
+        "file": "alojaOS/src/components/comercial/Comercial.tsx",
+        "contains": "Sin permanencia: te vas cuando quieras y te llevás tus datos."
+      }
+    },
+    {
+      "id": "caso-real",
+      "text": "Sale de un sistema que funciona desde 2026 en un complejo real de la costa atlántica",
+      "kind": "proof",
+      "evidence": {
+        "file": "alojaOS/README.md",
+        "contains": "De un sistema de reservas que funciona desde 2026 en un complejo real de la\ncosta atlántica"
+      }
+    }
+  ],
+  "pricing": {
+    "currency": "ARS",
+    "tax": "no informado en la página",
+    "as_of_evidence": {
+      "file": "alojaOS/src/lib/precios-alojaos.ts",
+      "contains": "export const PLANES: Plan[]"
+    },
+    "extract": {
+      "type": "ts-const",
+      "file": "alojaOS/src/lib/precios-alojaos.ts",
+      "name": "PLANES",
+      "map": {
+        "name": "nombre",
+        "units": "unidades",
+        "monthly": "mensual",
+        "setup": "puestaAPunto",
+        "from": "desde",
+        "for": "paraQuien"
+      }
+    },
+    "price_note": "Precio por mes publicado en alojaos.shop."
+  },
+  "features_extract": {
+    "type": "md-table",
+    "file": "alojaOS/README.md",
+    "section": "AlojaOS"
+  },
+  "assets": [
+    {
+      "id": "huesped-eligiendo",
+      "kind": "screenshot",
+      "file": "alojaOS/public/capturas/huesped-eligiendo.png",
+      "what": "El huésped elige las noches y ve el total y la seña",
+      "data": "complejo de ejemplo (Cabañas del Sol)",
+      "device": "phone"
+    },
+    {
+      "id": "huesped-transferir",
+      "kind": "screenshot",
+      "file": "alojaOS/public/capturas/huesped-transferir.png",
+      "what": "El plazo de la seña, el alias y el CBU para transferir",
+      "data": "complejo de ejemplo",
+      "device": "phone"
+    },
+    {
+      "id": "panel-senas",
+      "kind": "screenshot",
+      "file": "alojaOS/public/capturas/panel-senas.png",
+      "what": "Las señas esperando, con su comprobante y su plazo",
+      "data": "complejo de ejemplo",
+      "device": "desktop-strip"
+    },
+    {
+      "id": "panel-precios",
+      "kind": "screenshot",
+      "file": "alojaOS/public/capturas/panel-precios.png",
+      "what": "Los precios por temporada, cargados desde el panel",
+      "data": "complejo de ejemplo",
+      "device": "desktop-strip"
+    },
+    {
+      "id": "panel-fechas",
+      "kind": "screenshot",
+      "file": "alojaOS/public/capturas/panel-fechas.png",
+      "what": "Las fechas cerradas a mano",
+      "data": "complejo de ejemplo",
+      "device": "desktop-strip"
+    },
+    {
+      "id": "demo-guia",
+      "kind": "screenshot",
+      "file": "alojaOS/public/capturas/demo-guia.png",
+      "what": "El demo guiado",
+      "data": "demo",
+      "device": "desktop"
+    },
+    {
+      "id": "reservar-video",
+      "kind": "recording",
+      "file": "alojaOS/public/videos/reservar.mp4",
+      "what": "Grabación real: un huésped reservando en la página de un complejo",
+      "data": "complejo de ejemplo",
+      "device": "phone"
+    },
+    {
+      "id": "caso-las-canas-video",
+      "kind": "recording",
+      "file": "alojaOS/public/caso/las-canas.mp4",
+      "what": "Grabación real de la página de Las Cañas, el complejo de donde sale el sistema",
+      "data": "público (página real del complejo)",
+      "device": "phone"
+    }
+  ],
+  "brand": {
+    "logo": "alojaOS/src/app/icon.svg",
+    "colors": {
+      "bg": "#06191b",
+      "bgDeep": "#041214",
+      "surface": "rgba(255,255,255,.045)",
+      "text": "#ffffff",
+      "textSoft": "#9fb5b3",
+      "accent": "#6fd6ae",
+      "accentStrong": "#b14e2b",
+      "onAccent": "#ffffff"
+    },
+    "fonts": {
+      "display": "Archivo",
+      "body": "Archivo"
+    },
+    "evidence": {
+      "file": "alojaOS/src/lib/marca-alojaos.ts",
+      "contains": "accion: '#b14e2b'"
+    }
+  },
+  "cta": {
+    "default": "Consultá",
+    "meta_cta_type": "LEARN_MORE",
+    "options": [
+      "Consultá",
+      "Mirá la demo",
+      "Escribinos"
+    ]
+  },
+  "rules": [
+    "La venta es asistida: el objetivo de campaña es la consulta (Lead), no la compra online.",
+    "No nombrar competidores (ver PISO_DE_LOS_SISTEMAS_GRANDES en src/lib/precios-alojaos.ts).",
+    "No mostrar huéspedes reales: sólo el complejo de ejemplo o la página pública de Las Cañas.",
+    "Hablar de unidades, no de reservas: el precio es por cantidad de unidades."
+  ],
+  "blockers": [
+    {
+      "id": "pixel",
+      "severity": "high",
+      "detail": "El /conv en producción no carga el píxel de Meta: falta NEXT_PUBLIC_META_PIXEL_ID en Vercel (proyecto alojaos)."
+    },
+    {
+      "id": "capi",
+      "severity": "high",
+      "detail": "Falta META_CAPI_TOKEN: el Lead del servidor no llega a Meta."
+    },
+    {
+      "id": "graph-version",
+      "severity": "low",
+      "detail": "src/lib/conv/meta-servidor.ts usa Graph v21.0, que Meta retira el 21/01/2027."
+    }
+  ]
+}

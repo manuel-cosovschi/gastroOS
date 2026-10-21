@@ -1,0 +1,22 @@
+{
+  "_doc": "Todo lo que la auditoría encontró y NO es un producto para anunciar hoy. Para que algo entre en campañas tiene que tener su archivo en catalog/products/ con marketable: true, y eso lo decide el dueño. `smf discover` compara los repositorios con esta lista y avisa de lo nuevo.",
+  "audited_at": "2026-10-20",
+  "entries": [
+    { "repo": "manuel-cosovschi/gastroOS", "role": "product", "product": "gastroos", "note": "Incluye sovare-panel/ (panel interno, no se anuncia)." },
+    { "repo": "manuel-cosovschi/alojaOS", "role": "product", "product": "alojaos" },
+    { "repo": "manuel-cosovschi/restOps", "role": "candidate", "status": "in_development", "note": "«El sistema operativo de las operaciones internas de un restaurante». Sprint 0: base de datos lista, sin interfaz. No se anuncia hasta que tenga producto usable, /conv y precios." },
+    { "repo": "manuel-cosovschi/cosovGO", "role": "client_case", "note": "Instalación de GastroOS para COSOV. (pastelería). Se usa sólo como caso, tal como lo describe gastroOS/src/lib/marketing.ts." },
+    { "repo": "manuel-cosovschi/las_canias_landing", "role": "client_case", "note": "Sistema del complejo Las Cañas, origen de AlojaOS. Caso real citado por AlojaOS." },
+    { "repo": "manuel-cosovschi/casacadecancha", "role": "out_of_scope", "note": "Ecommerce de indumentaria de fútbol (Casaca de Cancha). No es un producto de SOVARE." },
+    { "repo": "manuel-cosovschi/mgb_platform", "role": "out_of_scope", "note": "Plataforma de MGB Software (otra marca). Requiere confirmación del dueño." },
+    { "repo": "manuel-cosovschi/cerquita", "role": "out_of_scope", "note": "Marketplace hiperlocal. Sin marca SOVARE." },
+    { "repo": "manuel-cosovschi/tuday_app", "role": "out_of_scope", "note": "App de productividad personal." },
+    { "repo": "manuel-cosovschi/matchTurn", "role": "out_of_scope", "note": "Turnos fijos de fútbol." },
+    { "repo": "manuel-cosovschi/rankeate", "role": "out_of_scope", "note": "Rankings deportivos." },
+    { "repo": "manuel-cosovschi/ic-comercial-crm", "role": "client_case", "note": "CRM para Inmuebles Comerciales SRL (cliente)." },
+    { "repo": "manuel-cosovschi/cuanto_cuesta", "role": "out_of_scope", "note": "Sitio editorial con AdSense." },
+    { "repo": "manuel-cosovschi/smart_landing", "role": "client_case", "note": "Landing de Smart Center Gym (cliente)." },
+    { "repo": "manuel-cosovschi/trove", "role": "out_of_scope", "note": "PWA personal." },
+    { "repo": "manuel-cosovschi/lista_espera", "role": "out_of_scope", "note": "Repositorio vacío (sólo README)." }
+  ]
+}
