@@ -157,8 +157,16 @@ function simulated(path: string, id: string): Record<string, unknown> {
   return { id, success: true, simulated: true };
 }
 
-export const act = () => {
-  if (!config.meta.adAccountId) throw new SmfError('Falta META_AD_ACCOUNT_ID.', 'meta_not_configured');
+/**
+ * La cuenta publicitaria. En una simulación sin cuenta configurada devuelve un
+ * marcador: el modo de prueba tiene que poder ensayar el flujo entero antes de
+ * tener credenciales, y el registro de llamadas deja a la vista que no había cuenta.
+ */
+export const act = (dryRun = false) => {
+  if (!config.meta.adAccountId) {
+    if (dryRun) return 'act_SIN_CONFIGURAR';
+    throw new SmfError('Falta META_AD_ACCOUNT_ID.', 'meta_not_configured');
+  }
   return `act_${config.meta.adAccountId}`;
 };
 

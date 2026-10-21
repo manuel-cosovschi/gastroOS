@@ -192,7 +192,7 @@ export async function pushCampaign(id: string, actor: Actor): Promise<CampaignRo
   const plan = c.plan;
   let campaignId = c.meta_campaign_id;
   if (!campaignId) {
-    const r = await graph<{ id: string }>('POST', `${act()}/campaigns`, {
+    const r = await graph<{ id: string }>('POST', `${act(dec.dryRun)}/campaigns`, {
       name: c.name,
       objective: plan.meta_objective,
       status: 'PAUSED',
@@ -206,7 +206,7 @@ export async function pushCampaign(id: string, actor: Actor): Promise<CampaignRo
   }
   let adsetId = c.meta_adset_id;
   if (!adsetId) {
-    const r = await graph<{ id: string }>('POST', `${act()}/adsets`, {
+    const r = await graph<{ id: string }>('POST', `${act(dec.dryRun)}/adsets`, {
       name: `${c.name} · conjunto`,
       campaign_id: campaignId,
       status: 'PAUSED',
@@ -230,17 +230,17 @@ export async function pushCampaign(id: string, actor: Actor): Promise<CampaignRo
     const concept = await getConcept(ad.concept_id);
     let videoId = cr.meta_video_id;
     if (!videoId || (isSimulatedId(videoId) !== dec.dryRun)) {
-      const v = await graph<{ id: string }>('POST', `${act()}/advideos`, { name: `${cr.id}.mp4` }, { decision: up, file: cr.path!, video: true, dryKind: 'video' });
+      const v = await graph<{ id: string }>('POST', `${act(dec.dryRun)}/advideos`, { name: `${cr.id}.mp4` }, { decision: up, file: cr.path!, video: true, dryKind: 'video' });
       videoId = v.id;
       await d.query('UPDATE smf.creatives SET meta_video_id = $2, updated_at = now() WHERE id = $1', [cr.id, videoId]);
       if (!dec.dryRun) await waitVideoReady(videoId);
     }
     let thumbHash: string | undefined;
     if (cr.poster_path) {
-      const img = await graph<{ images: Record<string, { hash: string }> }>('POST', `${act()}/adimages`, {}, { decision: up, file: cr.poster_path, dryKind: 'img' });
+      const img = await graph<{ images: Record<string, { hash: string }> }>('POST', `${act(dec.dryRun)}/adimages`, {}, { decision: up, file: cr.poster_path, dryKind: 'img' });
       thumbHash = Object.values(img.images ?? {})[0]?.hash;
     }
-    const creative = await graph<{ id: string }>('POST', `${act()}/adcreatives`, {
+    const creative = await graph<{ id: string }>('POST', `${act(dec.dryRun)}/adcreatives`, {
       name: `${concept.headline.slice(0, 60)} · ${cr.format}`,
       object_story_spec: {
         page_id: config.meta.pageId || 'dry_page',
@@ -256,7 +256,7 @@ export async function pushCampaign(id: string, actor: Actor): Promise<CampaignRo
       // No se toman las mejoras automáticas que cambian el texto o el video.
       degrees_of_freedom_spec: { creative_features_spec: { standard_enhancements: { enroll_status: 'OPT_OUT' } } },
     }, { decision: dec, dryKind: 'creative' });
-    const metaAd = await graph<{ id: string }>('POST', `${act()}/ads`, {
+    const metaAd = await graph<{ id: string }>('POST', `${act(dec.dryRun)}/ads`, {
       name: `${concept.angle} · ${cr.format} · ${ad.id}`,
       adset_id: adsetId,
       creative: { creative_id: creative.id },

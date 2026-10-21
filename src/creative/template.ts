@@ -214,7 +214,22 @@ window.__ready = Promise.all([
   ...$$('img').map((i) => (i.complete ? Promise.resolve() : new Promise((r) => { i.onload = r; i.onerror = r; }))),
   ...D.media.filter((m) => m.kind === 'recording').map((m) =>
     Promise.all(m.frames.map((src) => new Promise((r) => { const im = new Image(); im.onload = () => r(im); im.onerror = () => r(null); im.src = src; }))).then((ims) => {
-      REC[m.i] = ims.filter(Boolean);
+      // Las grabaciones suelen empezar con la página en blanco mientras carga:
+      // se descartan los cuadros iniciales sin contenido (casi sin variación).
+      const ok = ims.filter(Boolean);
+      const cv0 = document.createElement('canvas');
+      cv0.width = 24; cv0.height = 48;
+      const cx0 = cv0.getContext('2d', { willReadFrequently: true });
+      const vacio = (im) => {
+        cx0.drawImage(im, 0, 0, 24, 48);
+        const d = cx0.getImageData(0, 0, 24, 48).data;
+        let s = 0, s2 = 0, n = 0;
+        for (let k = 0; k < d.length; k += 4) { const y = 0.3 * d[k] + 0.59 * d[k + 1] + 0.11 * d[k + 2]; s += y; s2 += y * y; n++; }
+        return s2 / n - (s / n) ** 2 < 60;
+      };
+      let desde = 0;
+      while (desde < ok.length - 1 && vacio(ok[desde])) desde++;
+      REC[m.i] = ok.slice(desde);
       const cv = $('canvas.rec[data-i="' + m.i + '"]');
       if (cv && REC[m.i][0]) { cv.width = REC[m.i][0].naturalWidth; cv.height = REC[m.i][0].naturalHeight; }
     })

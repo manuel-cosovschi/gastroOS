@@ -92,7 +92,7 @@ export async function notify(n: NotifyInput): Promise<NotifyResult> {
     }
     await d.query('UPDATE smf.alerts SET notified = $2::jsonb WHERE id = $1', [id, j(delivered)]);
   }
-  console.log(`[aviso:${n.severity}] ${n.title}${delivered.length ? ` → ${delivered.map((x) => `${x.channel}:${x.ok ? 'ok' : 'error'}`).join(', ')}` : ''}`);
+  console.error(`[aviso:${n.severity}] ${n.title}${delivered.length ? ` → ${delivered.map((x) => `${x.channel}:${x.ok ? 'ok' : 'error'}`).join(', ')}` : ''}`);
   return { alertId: id, duplicate: false, delivered };
 }
 
