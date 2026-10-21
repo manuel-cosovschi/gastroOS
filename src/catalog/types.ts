@@ -58,7 +58,7 @@ export const Product = z.object({
     })
   ),
   claims: z.array(z.object({ id: z.string(), text: z.string(), kind: z.enum(['feature', 'pricing', 'offer', 'proof']), evidence: Evidence })),
-  pricing: z.object({ currency: z.string(), tax: z.string(), as_of_evidence: Evidence, extract: Extract }),
+  pricing: z.object({ currency: z.string(), tax: z.string(), price_note: z.string().default(''), as_of_evidence: Evidence, extract: Extract }),
   features_extract: Extract.optional(),
   assets: z.array(
     z.object({
