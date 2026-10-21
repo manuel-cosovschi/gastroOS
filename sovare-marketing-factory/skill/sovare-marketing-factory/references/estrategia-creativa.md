@@ -25,7 +25,9 @@ Todas cierran con: claims con tilde → precio (si va) → logo, CTA y la direcc
 | `square_1x1` | 1080×1080 | Feed, Marketplace |
 | `landscape_16x9` | 1920×1080 | In-stream y feed de Facebook |
 
-Para una campaña: 9:16 + 4:5 de cada concepto. Videos de 15 s (10 a 30). Sin narración: el texto en pantalla es el mensaje y va también como subtítulos (`captions.srt`). Llevan pista de audio silenciosa porque algunas ubicaciones la exigen.
+Para una campaña: 9:16 + 4:5 de cada concepto. Videos de 15 s (10 a 30).
+
+**Requisito del dueño, todavía no implementado** (`docs/REQUISITOS-VIDEO.md` del servicio): Remotion, música y efectos, voz en off rioplatense natural, subtítulos sincronizados con la voz, y hooks de verdad en el primer segundo. Los videos actuales son mudos y con el titular como gancho: no los presentes como la versión final. Si te piden videos antes de que esté listo, decilo.
 
 ## Validación
 
