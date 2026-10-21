@@ -162,6 +162,9 @@ export async function guard(input: GuardInput): Promise<Decision> {
     if (problema) return fin(await pedir({ ...input, action: 'budget.limits.raise', requestIfMissing: input.requestIfMissing && { summary: problema, scope: { product: input.product, daily: input.newDailyBudget } } }, 3, base, problema));
   }
   if (input.actor === 'owner') return fin({ allowed: true, tier: 2, ...base, reason: 'decidido por el dueño' });
+  // Nivel 2 sin efectos afuera (programar en el calendario): la aprobación se
+  // pide cuando de verdad sale, no antes.
+  if (!def.effects) return fin({ allowed: true, tier: 2, ...base, reason: 'sin efectos externos; se autoriza al ejecutarse' });
   if (def.autopilot && policy.autopilot[def.autopilot]) return fin({ allowed: true, tier: 2, ...base, reason: `regla autorizada: ${def.autopilot}` });
   const single = await consumeApproval(input);
   if (single) return fin({ allowed: true, tier: 2, ...base, reason: `autorizado (${single})`, approvalId: single });
